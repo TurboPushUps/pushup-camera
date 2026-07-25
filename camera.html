@@ -6,7 +6,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { margin: 0; text-align: center; background: #111; color: white; font-family: Arial, sans-serif; }
-        .container { width: 640px; max-width: 100%; margin: 0 auto; }
+        .container { width: 480px; max-width: 100%; margin: 0 auto; }
         video { display: none; }
         canvas { display: block; width: 100%; height: auto; margin: 0 auto; }
     </style>
@@ -18,8 +18,8 @@
     <button id="finishBtn" style="font-size: 20px; padding: 10px 20px; margin: 10px; background: #00FF00; border: none; border-radius: 8px;">Завершить подход</button>
 
     <div class="container">
-        <video id="video" width="640" height="480" autoplay playsinline muted></video>
-        <canvas id="canvas" width="640" height="480"></canvas>
+        <video id="video" width="480" height="640" autoplay playsinline muted></video>
+        <canvas id="canvas" width="480" height="640"></canvas>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
@@ -43,7 +43,6 @@
             return angle;
         }
 
-        // Индексы нужных точек
         const LEFT_SHOULDER = 11;
         const RIGHT_SHOULDER = 12;
         const LEFT_ELBOW = 13;
@@ -51,10 +50,8 @@
         const LEFT_WRIST = 15;
         const RIGHT_WRIST = 16;
 
-        // Только эти точки будем рисовать
         const POINTS_TO_SHOW = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
 
-        // Только эти линии будем рисовать (пара точек = одна линия)
         const CONNECTIONS_TO_SHOW = [
             [LEFT_SHOULDER, LEFT_ELBOW],
             [LEFT_ELBOW, LEFT_WRIST],
@@ -81,12 +78,10 @@
             }
         }
 
-        // Рисуем только выбранные точки и линии между ними
         function drawSelectedLandmarks(landmarks) {
             ctx.strokeStyle = '#00FF00';
             ctx.lineWidth = 3;
 
-            // Рисуем линии
             for (const [startIdx, endIdx] of CONNECTIONS_TO_SHOW) {
                 const start = landmarks[startIdx];
                 const end = landmarks[endIdx];
@@ -96,7 +91,6 @@
                 ctx.stroke();
             }
 
-            // Рисуем точки
             ctx.fillStyle = '#FF0000';
             for (const idx of POINTS_TO_SHOW) {
                 const point = landmarks[idx];
@@ -121,6 +115,11 @@
 
         function onResults(results) {
             ctx.save();
+
+            // Отражаем изображение по горизонтали (эффект зеркала)
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
@@ -136,8 +135,8 @@
             onFrame: async () => {
                 await pose.send({ image: video });
             },
-            width: 640,
-            height: 480
+            width: 480,
+            height: 640
         });
         camera.start();
 
