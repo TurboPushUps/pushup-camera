@@ -140,10 +140,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
 
     <script>
-        // ===== АДРЕС НАШЕГО СЕРВЕРА С БОТОМ И API =====
         const API_BASE = "https://pushup-bot-server.onrender.com";
-
-        // ===== НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ =====
 
         let cameraStarted = false;
 
@@ -166,14 +163,14 @@
             }
         }
 
-        // ===== ПОЛУЧАЕМ ID ПОЛЬЗОВАТЕЛЯ ИЗ TELEGRAM =====
-
         function getUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idFromUrl = urlParams.get('user_id');
+            if (idFromUrl) return idFromUrl;
+
             const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
             return tgUser ? tgUser.id : null;
         }
-
-        // ===== РЕАЛЬНЫЕ ДАННЫЕ С СЕРВЕРА =====
 
         async function loadProfile() {
             const userId = getUserId();
@@ -232,8 +229,6 @@
             }
         }
 
-        // ===== ДОСТИЖЕНИЯ (пока тестовые данные) =====
-
         function loadAchievementsMock() {
             const mockAchievements = [
                 { title: "🥉 Первые 10 отжиманий", unlocked: true },
@@ -250,8 +245,6 @@
                 list.appendChild(row);
             });
         }
-
-        // ===== ЛОГИКА КАМЕРЫ И ПОДСЧЁТА (без изменений) =====
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -397,15 +390,36 @@
             cameraObj.start();
         }
 
-        // ===== TELEGRAM WEB APP =====
-
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        document.getElementById('finishBtn').addEventListener('click', () => {
-            tg.sendData(String(pushupCount));
-            tg.close();
+        document.getElementById('finishBtn').addEventListener('click', async () => {
+            const userId = getUserId();
+            const finishedCount = pushupCount;
+
+            if (cameraObj) {
+                cameraObj.stop();
+            }
+
+            if (userId && finishedCount > 0) {
+                try {
+                    await fetch(`${API_BASE}/api/save_pushups`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, count: finishedCount })
+                    });
+                } catch (error) {
+                    console.error("Не удалось сохранить подход:", error);
+                }
+            }
+
+            pushupCount = 0;
+            stage = "up";
+            document.getElementById('counter').innerText = "0";
+            cameraStarted = false;
+
+            showScreen('menu');
         });
     </script>
 </body>
