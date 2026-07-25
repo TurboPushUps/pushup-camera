@@ -80,12 +80,42 @@
         .achievement-row.locked { opacity: 0.4; }
 
         .loading { opacity: 0.6; font-size: 14px; margin: 10px; }
+
+        .nickname-input {
+            display: block;
+            width: 100%;
+            max-width: 280px;
+            margin: 20px auto;
+            padding: 14px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            background: #1c1c1c;
+            color: white;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .nickname-error {
+            color: #ff5555;
+            font-size: 14px;
+            min-height: 20px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- ===== ЭКРАН: РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
+    <div id="screen-register" class="screen">
+        <h1>💪 Pushup Tracker</h1>
+        <p>Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
+        <input type="text" id="nickname-input" class="nickname-input" maxlength="20" placeholder="Например: TigerPower">
+        <div id="nickname-error" class="nickname-error"></div>
+        <button class="menu-button primary" onclick="submitNickname()">Продолжить</button>
+    </div>
+
     <!-- ===== ЭКРАН: ГЛАВНОЕ МЕНЮ ===== -->
-    <div id="screen-menu" class="screen active">
+    <div id="screen-menu" class="screen">
         <h1>💪 Pushup Tracker</h1>
         <button class="menu-button primary" onclick="showScreen('camera')">📷 Начать поход</button>
         <button class="menu-button" onclick="showScreen('profile')">👤 Профиль</button>
@@ -172,6 +202,70 @@
             return tgUser ? tgUser.id : null;
         }
 
+        // ===== РЕГИСТРАЦИЯ НИКНЕЙМА =====
+
+        async function checkUserStatus() {
+            const userId = getUserId();
+
+            if (!userId) {
+                document.getElementById('screen-register').classList.add('active');
+                document.getElementById('nickname-error').innerText = "Не удалось определить пользователя";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`);
+                const data = await response.json();
+
+                if (data.has_nickname) {
+                    showScreen('menu');
+                } else {
+                    document.getElementById('screen-register').classList.add('active');
+                }
+            } catch (error) {
+                document.getElementById('screen-register').classList.add('active');
+                document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
+            }
+        }
+
+        async function submitNickname() {
+            const userId = getUserId();
+            const input = document.getElementById('nickname-input');
+            const errorEl = document.getElementById('nickname-error');
+            const nickname = input.value.trim();
+
+            errorEl.innerText = "";
+
+            if (!userId) {
+                errorEl.innerText = "Не удалось определить пользователя";
+                return;
+            }
+
+            if (nickname.length < 2 || nickname.length > 20) {
+                errorEl.innerText = "Имя должно быть от 2 до 20 символов";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/register_nickname`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, nickname: nickname })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showScreen('menu');
+                } else {
+                    errorEl.innerText = data.error || "Не удалось сохранить имя";
+                }
+            } catch (error) {
+                errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз.";
+            }
+        }
+
+        // ===== РЕАЛЬНЫЕ ДАННЫЕ С СЕРВЕРА =====
+
         async function loadProfile() {
             const userId = getUserId();
             document.getElementById('profile-loading').style.display = 'block';
@@ -245,6 +339,8 @@
                 list.appendChild(row);
             });
         }
+
+        // ===== ЛОГИКА КАМЕРЫ И ПОДСЧЁТА =====
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -421,6 +517,9 @@
 
             showScreen('menu');
         });
+
+        // ===== СТАРТ: проверяем, есть ли уже никнейм =====
+        checkUserStatus();
     </script>
 </body>
 </html>
