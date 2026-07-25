@@ -53,7 +53,6 @@
         const RIGHT_ELBOW = 14;
         const LEFT_WRIST = 15;
         const RIGHT_WRIST = 16;
-        const LEFT_HIP = 23;
 
         const POINTS_TO_SHOW = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
 
@@ -66,33 +65,14 @@
         ];
 
         function checkPosition(landmarks) {
-            const leftShoulder = landmarks[LEFT_SHOULDER];
-            const rightShoulder = landmarks[RIGHT_SHOULDER];
-            const leftHip = landmarks[LEFT_HIP];
-            const leftWrist = landmarks[LEFT_WRIST];
-            const rightWrist = landmarks[RIGHT_WRIST];
+            const requiredPoints = [
+                LEFT_SHOULDER, RIGHT_SHOULDER,
+                LEFT_ELBOW, RIGHT_ELBOW,
+                LEFT_WRIST, RIGHT_WRIST
+            ];
 
-            // Вариант 1: если бедро хорошо видно (камера сбоку) — проверяем угол линии плечо-бедро
-            if (leftHip.visibility > 0.6) {
-                const dx = Math.abs(leftHip.x - leftShoulder.x);
-                const dy = Math.abs(leftHip.y - leftShoulder.y);
-                const angleFromHorizontal = Math.atan2(dy, dx) * 180 / Math.PI;
-                if (angleFromHorizontal < 35) return true;
-            }
-
-            // Вариант 2: бедро не видно (камера снизу-спереди, крупный план) —
-            // проверяем, что запястья заметно шире плеч и ниже них (руки упираются в пол)
-            if (leftWrist.visibility > 0.5 && rightWrist.visibility > 0.5) {
-                const shoulderWidth = Math.abs(rightShoulder.x - leftShoulder.x);
-                const wristWidth = Math.abs(rightWrist.x - leftWrist.x);
-                const wristsBelowShoulders =
-                    (leftWrist.y - leftShoulder.y) > 0.05 &&
-                    (rightWrist.y - rightShoulder.y) > 0.05;
-
-                return wristWidth > shoulderWidth * 1.3 && wristsBelowShoulders;
-            }
-
-            return false;
+            // Позиция засчитана, если ВСЕ шесть точек видны с достаточной уверенностью
+            return requiredPoints.every(idx => landmarks[idx].visibility > 0.6);
         }
 
         function countPushups(landmarks) {
