@@ -11,6 +11,7 @@
 </head>
 <body>
     <h2>Подсчёт отжиманий</h2>
+    <h1 id="counter" style="font-size: 60px; color: #00FF00;">0</h1>
     <div class="container">
         <video id="video" width="400" height="300" autoplay playsinline muted></video>
         <canvas id="canvas" width="400" height="300"></canvas>
@@ -28,7 +29,7 @@
 
         // Создаём объект Pose — это и есть нейросеть распознавания тела
         const pose = new Pose({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+            locateFile: (file) => https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}
         });
 
         // Настройки точности распознавания
@@ -43,17 +44,15 @@
         pose.onResults(onResults);
 
         function onResults(results) {
-            // Очищаем канвас перед рисованием нового кадра
             ctx.save();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Рисуем сам кадр с камеры на канвасе
             ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
-            // Если тело найдено — рисуем точки и соединения между ними
             if (results.poseLandmarks) {
                 drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#00FF00', lineWidth: 2 });
                 drawLandmarks(ctx, results.poseLandmarks, { color: '#FF0000', radius: 3 });
+
+                countPushups(results.poseLandmarks);
             }
 
             ctx.restore();
@@ -68,6 +67,46 @@
             height: 300
         });
         camera.start();
+        // ===== ПОДСЧЁТ ОТЖИМАНИЙ =====
+
+        let pushupCount = 0;
+        let stage = "up"; // текущее состояние: "up" (наверху) или "down" (внизу)
+
+        // Функция вычисляет угол между тремя точками (в градусах)
+        function calculateAngle(a, b, c) {
+            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
+            let angle = Math.abs(radians * 180.0 / Math.PI);
+            if (angle > 180.0) {
+                angle = 360 - angle;
+            }
+            return angle;
+        }
+
+        // Индексы нужных нам точек в массиве poseLandmarks (стандарт MediaPipe)
+        const LEFT_SHOULDER = 11;
+        const LEFT_ELBOW = 13;
+        const LEFT_WRIST = 15;
+
+        function countPushups(landmarks) {
+            const shoulder = landmarks[LEFT_SHOULDER];
+            const elbow = landmarks[LEFT_ELBOW];
+            const wrist = landmarks[LEFT_WRIST];
+
+            const angle = calculateAngle(shoulder, elbow, wrist);
+
+            // Если рука согнулась достаточно сильно — переходим в состояние "внизу"
+            if (angle < 90) {
+                stage = "down";
+            }
+
+            // Если рука разогнулась, и до этого мы были "внизу" — засчитываем отжимание
+            if (angle > 160 && stage === "down") {
+                stage = "up";
+                pushupCount++;
+                document.getElementById('counter').innerText = pushupCount;
+            }
+        }
+        // ===== КОНЕЦ БЛОКА ПОДСЧЁТА =====
     </script>
 </body>
 </html>
