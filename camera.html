@@ -114,6 +114,12 @@
         pose.onResults(onResults);
 
         function onResults(results) {
+            // Подстраиваем размер canvas под реальные пропорции кадра с камеры
+            if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
+                canvas.width = results.image.width;
+                canvas.height = results.image.height;
+            }
+
             ctx.save();
 
             // Отражаем изображение по горизонтали (эффект зеркала)
