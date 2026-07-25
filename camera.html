@@ -6,8 +6,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { margin: 0; text-align: center; background: #111; color: white; font-family: Arial, sans-serif; }
-        .container { position: relative; width: 400px; margin: 0 auto; }
-        video, canvas { position: absolute; top: 0; left: 0; width: 400px; height: 300px; }
+        .container { position: relative; width: 640px; max-width: 100%; margin: 0 auto; }
+        video, canvas { position: absolute; top: 0; left: 0; width: 100%; height: auto; }
     </style>
 </head>
 <body>
@@ -17,8 +17,8 @@
     <button id="finishBtn" style="font-size: 20px; padding: 10px 20px; margin: 10px; background: #00FF00; border: none; border-radius: 8px;">Завершить подход</button>
 
     <div class="container">
-        <video id="video" width="400" height="300" autoplay playsinline muted></video>
-        <canvas id="canvas" width="400" height="300"></canvas>
+        <video id="video" width="640" height="480" autoplay playsinline muted></video>
+        <canvas id="canvas" width="640" height="480"></canvas>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
@@ -42,9 +42,25 @@
             return angle;
         }
 
+        // Индексы нужных точек
         const LEFT_SHOULDER = 11;
+        const RIGHT_SHOULDER = 12;
         const LEFT_ELBOW = 13;
+        const RIGHT_ELBOW = 14;
         const LEFT_WRIST = 15;
+        const RIGHT_WRIST = 16;
+
+        // Только эти точки будем рисовать
+        const POINTS_TO_SHOW = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
+
+        // Только эти линии будем рисовать (пара точек = одна линия)
+        const CONNECTIONS_TO_SHOW = [
+            [LEFT_SHOULDER, LEFT_ELBOW],
+            [LEFT_ELBOW, LEFT_WRIST],
+            [RIGHT_SHOULDER, RIGHT_ELBOW],
+            [RIGHT_ELBOW, RIGHT_WRIST],
+            [LEFT_SHOULDER, RIGHT_SHOULDER]
+        ];
 
         function countPushups(landmarks) {
             const shoulder = landmarks[LEFT_SHOULDER];
@@ -61,6 +77,31 @@
                 stage = "up";
                 pushupCount++;
                 document.getElementById('counter').innerText = pushupCount;
+            }
+        }
+
+        // Рисуем только выбранные точки и линии между ними
+        function drawSelectedLandmarks(landmarks) {
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 3;
+
+            // Рисуем линии
+            for (const [startIdx, endIdx] of CONNECTIONS_TO_SHOW) {
+                const start = landmarks[startIdx];
+                const end = landmarks[endIdx];
+                ctx.beginPath();
+                ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
+                ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
+                ctx.stroke();
+            }
+
+            // Рисуем точки
+            ctx.fillStyle = '#FF0000';
+            for (const idx of POINTS_TO_SHOW) {
+                const point = landmarks[idx];
+                ctx.beginPath();
+                ctx.arc(point.x * canvas.width, point.y * canvas.height, 6, 0, 2 * Math.PI);
+                ctx.fill();
             }
         }
 
@@ -83,9 +124,7 @@
             ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
             if (results.poseLandmarks) {
-                drawConnectors(ctx, results.poseLandmarks, POSE_CONNECTIONS, { color: '#00FF00', lineWidth: 2 });
-                drawLandmarks(ctx, results.poseLandmarks, { color: '#FF0000', radius: 3 });
-
+                drawSelectedLandmarks(results.poseLandmarks);
                 countPushups(results.poseLandmarks);
             }
 
@@ -96,17 +135,15 @@
             onFrame: async () => {
                 await pose.send({ image: video });
             },
-            width: 400,
-            height: 300
+            width: 640,
+            height: 480
         });
         camera.start();
 
-        // Инициализируем Telegram Web App
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // Обработка нажатия на кнопку "Завершить подход"
         document.getElementById('finishBtn').addEventListener('click', () => {
             tg.sendData(String(pushupCount));
             tg.close();
