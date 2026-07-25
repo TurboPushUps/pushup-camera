@@ -12,12 +12,12 @@
 <body>
     <h2>Подсчёт отжиманий</h2>
     <h1 id="counter" style="font-size: 60px; color: #00FF00;">0</h1>
+
     <div class="container">
         <video id="video" width="400" height="300" autoplay playsinline muted></video>
         <canvas id="canvas" width="400" height="300"></canvas>
     </div>
 
-    <!-- Подключаем библиотеки MediaPipe через интернет (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
@@ -27,12 +27,44 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
-        // Создаём объект Pose — это и есть нейросеть распознавания тела
+        let pushupCount = 0;
+        let stage = "up";
+
+        function calculateAngle(a, b, c) {
+            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
+            let angle = Math.abs(radians * 180.0 / Math.PI);
+            if (angle > 180.0) {
+                angle = 360 - angle;
+            }
+            return angle;
+        }
+
+        const LEFT_SHOULDER = 11;
+        const LEFT_ELBOW = 13;
+        const LEFT_WRIST = 15;
+
+        function countPushups(landmarks) {
+            const shoulder = landmarks[LEFT_SHOULDER];
+            const elbow = landmarks[LEFT_ELBOW];
+            const wrist = landmarks[LEFT_WRIST];
+
+            const angle = calculateAngle(shoulder, elbow, wrist);
+
+            if (angle < 90) {
+                stage = "down";
+            }
+
+            if (angle > 160 && stage === "down") {
+                stage = "up";
+                pushupCount++;
+                document.getElementById('counter').innerText = pushupCount;
+            }
+        }
+
         const pose = new Pose({
-            locateFile: (file) => https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
         });
 
-        // Настройки точности распознавания
         pose.setOptions({
             modelComplexity: 1,
             smoothLandmarks: true,
@@ -40,7 +72,6 @@
             minTrackingConfidence: 0.5
         });
 
-        // Эта функция вызывается КАЖДЫЙ РАЗ, когда нейросеть находит позу на новом кадре
         pose.onResults(onResults);
 
         function onResults(results) {
@@ -58,7 +89,6 @@
             ctx.restore();
         }
 
-        // Настраиваем камеру и подключаем её к нейросети
         const camera = new Camera(video, {
             onFrame: async () => {
                 await pose.send({ image: video });
@@ -67,46 +97,6 @@
             height: 300
         });
         camera.start();
-        // ===== ПОДСЧЁТ ОТЖИМАНИЙ =====
-
-        let pushupCount = 0;
-        let stage = "up"; // текущее состояние: "up" (наверху) или "down" (внизу)
-
-        // Функция вычисляет угол между тремя точками (в градусах)
-        function calculateAngle(a, b, c) {
-            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
-            let angle = Math.abs(radians * 180.0 / Math.PI);
-            if (angle > 180.0) {
-                angle = 360 - angle;
-            }
-            return angle;
-        }
-
-        // Индексы нужных нам точек в массиве poseLandmarks (стандарт MediaPipe)
-        const LEFT_SHOULDER = 11;
-        const LEFT_ELBOW = 13;
-        const LEFT_WRIST = 15;
-
-        function countPushups(landmarks) {
-            const shoulder = landmarks[LEFT_SHOULDER];
-            const elbow = landmarks[LEFT_ELBOW];
-            const wrist = landmarks[LEFT_WRIST];
-
-            const angle = calculateAngle(shoulder, elbow, wrist);
-
-            // Если рука согнулась достаточно сильно — переходим в состояние "внизу"
-            if (angle < 90) {
-                stage = "down";
-            }
-
-            // Если рука разогнулась, и до этого мы были "внизу" — засчитываем отжимание
-            if (angle > 160 && stage === "down") {
-                stage = "up";
-                pushupCount++;
-                document.getElementById('counter').innerText = pushupCount;
-            }
-        }
-        // ===== КОНЕЦ БЛОКА ПОДСЧЁТА =====
     </script>
 </body>
 </html>
