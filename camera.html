@@ -9,11 +9,13 @@
         .container { width: 480px; max-width: 100%; margin: 0 auto; }
         video { display: none; }
         canvas { display: block; width: 100%; height: auto; margin: 0 auto; }
+        #status { font-size: 18px; margin: 8px; min-height: 24px; }
     </style>
 </head>
 <body>
     <h2>Подсчёт отжиманий</h2>
     <h1 id="counter" style="font-size: 60px; color: #00FF00;">0</h1>
+    <p id="status">Займите позицию для отжиманий 🧎</p>
 
     <button id="finishBtn" style="font-size: 20px; padding: 10px 20px; margin: 10px; background: #00FF00; border: none; border-radius: 8px;">Завершить подход</button>
 
@@ -30,9 +32,11 @@
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const statusEl = document.getElementById('status');
 
         let pushupCount = 0;
         let stage = "up";
+        let inPosition = false; // занял ли пользователь позицию для отжиманий
 
         function calculateAngle(a, b, c) {
             const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
@@ -49,6 +53,8 @@
         const RIGHT_ELBOW = 14;
         const LEFT_WRIST = 15;
         const RIGHT_WRIST = 16;
+        const LEFT_HIP = 23;
+        const RIGHT_HIP = 24;
 
         const POINTS_TO_SHOW = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
 
@@ -59,6 +65,20 @@
             [RIGHT_ELBOW, RIGHT_WRIST],
             [LEFT_SHOULDER, RIGHT_SHOULDER]
         ];
+
+        // Проверяем, лежит ли человек в позиции для отжиманий (линия плечо-бедро почти горизонтальна)
+        function checkPosition(landmarks) {
+            const shoulder = landmarks[LEFT_SHOULDER];
+            const hip = landmarks[LEFT_HIP];
+
+            const dx = Math.abs(hip.x - shoulder.x);
+            const dy = Math.abs(hip.y - shoulder.y);
+
+            const angleFromHorizontal = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            // Если угол маленький — тело почти горизонтально (упор лёжа)
+            return angleFromHorizontal < 35;
+        }
 
         function countPushups(landmarks) {
             const shoulder = landmarks[LEFT_SHOULDER];
@@ -114,24 +134,33 @@
         pose.onResults(onResults);
 
         function onResults(results) {
-            // Подстраиваем размер canvas под реальные пропорции кадра с камеры
             if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
                 canvas.width = results.image.width;
                 canvas.height = results.image.height;
             }
 
             ctx.save();
-
-            // Отражаем изображение по горизонтали (эффект зеркала)
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
             if (results.poseLandmarks) {
                 drawSelectedLandmarks(results.poseLandmarks);
-                countPushups(results.poseLandmarks);
+
+                inPosition = checkPosition(results.poseLandmarks);
+
+                if (inPosition) {
+                    statusEl.innerText = "Позиция ОК, считаем! 💪";
+                    statusEl.style.color = "#00FF00";
+                    countPushups(results.poseLandmarks);
+                } else {
+                    statusEl.innerText = "Займите позицию для отжиманий 🧎";
+                    statusEl.style.color = "white";
+                }
+            } else {
+                statusEl.innerText = "Не вижу тело в кадре 👀";
+                statusEl.style.color = "white";
             }
 
             ctx.restore();
