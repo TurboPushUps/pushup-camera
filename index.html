@@ -78,6 +78,8 @@
             text-align: left;
         }
         .achievement-row.locked { opacity: 0.4; }
+
+        .loading { opacity: 0.6; font-size: 14px; margin: 10px; }
     </style>
 </head>
 <body>
@@ -108,19 +110,21 @@
     <div id="screen-profile" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>👤 Профиль</h2>
-        <div class="stat-row"><span>Звание</span><span id="profile-level">🐣 Новичок</span></div>
-        <div class="stat-row"><span>Очки</span><span id="profile-points">0 ⭐</span></div>
-        <div class="stat-row"><span>Отжиманий сегодня</span><span id="profile-today">0</span></div>
-        <div class="stat-row"><span>Отжиманий всего</span><span id="profile-total">0</span></div>
-        <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, реальные подключим позже)</p>
+        <div id="profile-loading" class="loading">Загрузка...</div>
+        <div id="profile-content" style="display: none;">
+            <div class="stat-row"><span>Звание</span><span id="profile-level">—</span></div>
+            <div class="stat-row"><span>Очки</span><span id="profile-points">—</span></div>
+            <div class="stat-row"><span>Отжиманий всего</span><span id="profile-total">—</span></div>
+            <div class="stat-row"><span>До след. звания</span><span id="profile-next">—</span></div>
+        </div>
     </div>
 
     <!-- ===== ЭКРАН: ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>🏆 Таблица лидеров</h2>
+        <div id="leaderboard-loading" class="loading">Загрузка...</div>
         <div id="leaderboard-list"></div>
-        <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, реальные подключим позже)</p>
     </div>
 
     <!-- ===== ЭКРАН: ДОСТИЖЕНИЯ ===== -->
@@ -128,7 +132,7 @@
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>🎖 Достижения</h2>
         <div id="achievements-list"></div>
-        <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, реальные подключим позже)</p>
+        <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, подключим позже)</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
@@ -136,6 +140,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
 
     <script>
+        // ===== АДРЕС НАШЕГО СЕРВЕРА С БОТОМ И API =====
+        const API_BASE = "https://pushup-bot-server.onrender.com";
+
         // ===== НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ =====
 
         let cameraStarted = false;
@@ -149,41 +156,83 @@
                 cameraStarted = true;
             }
             if (name === 'profile') {
-                loadProfileMock();
+                loadProfile();
             }
             if (name === 'leaderboard') {
-                loadLeaderboardMock();
+                loadLeaderboard();
             }
             if (name === 'achievements') {
                 loadAchievementsMock();
             }
         }
 
-        // ===== ЗАГЛУШКИ С ТЕСТОВЫМИ ДАННЫМИ (заменим на реальный API на Этапе 2) =====
+        // ===== ПОЛУЧАЕМ ID ПОЛЬЗОВАТЕЛЯ ИЗ TELEGRAM =====
 
-        function loadProfileMock() {
-            document.getElementById('profile-level').innerText = "💪 Крепыш";
-            document.getElementById('profile-points').innerText = "340 ⭐";
-            document.getElementById('profile-today').innerText = "24";
-            document.getElementById('profile-total').innerText = "158";
+        function getUserId() {
+            const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+            return tgUser ? tgUser.id : null;
         }
 
-        function loadLeaderboardMock() {
-            const mockData = [
-                { name: "Алексей", points: 1200 },
-                { name: "Мария", points: 980 },
-                { name: "Ты", points: 340 },
-                { name: "Игорь", points: 210 }
-            ];
+        // ===== РЕАЛЬНЫЕ ДАННЫЕ С СЕРВЕРА =====
+
+        async function loadProfile() {
+            const userId = getUserId();
+            document.getElementById('profile-loading').style.display = 'block';
+            document.getElementById('profile-content').style.display = 'none';
+
+            if (!userId) {
+                document.getElementById('profile-loading').innerText = "Не удалось определить пользователя";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
+                const data = await response.json();
+
+                document.getElementById('profile-level').innerText = data.level;
+                document.getElementById('profile-points').innerText = data.points + " ⭐";
+                document.getElementById('profile-total').innerText = data.total_pushups;
+                document.getElementById('profile-next').innerText =
+                    data.points_to_next_level !== null
+                        ? `${data.points_to_next_level} очков до «${data.next_level}»`
+                        : "Максимальный уровень! 🎉";
+
+                document.getElementById('profile-loading').style.display = 'none';
+                document.getElementById('profile-content').style.display = 'block';
+            } catch (error) {
+                document.getElementById('profile-loading').innerText = "Не удалось загрузить профиль. Попробуйте позже.";
+            }
+        }
+
+        async function loadLeaderboard() {
             const list = document.getElementById('leaderboard-list');
+            const loading = document.getElementById('leaderboard-loading');
+            loading.style.display = 'block';
             list.innerHTML = "";
-            mockData.forEach((user, index) => {
-                const row = document.createElement('div');
-                row.className = 'leader-row';
-                row.innerHTML = `<span>${index + 1}. ${user.name}</span><span>${user.points} ⭐</span>`;
-                list.appendChild(row);
-            });
+
+            try {
+                const response = await fetch(`${API_BASE}/api/leaderboard`);
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                if (data.leaderboard.length === 0) {
+                    list.innerHTML = "<p>Пока никто не отжимался 🤷</p>";
+                    return;
+                }
+
+                data.leaderboard.forEach((user, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'leader-row';
+                    row.innerHTML = `<span>${index + 1}. ${user.name}</span><span>${user.points} ⭐</span>`;
+                    list.appendChild(row);
+                });
+            } catch (error) {
+                loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже.";
+            }
         }
+
+        // ===== ДОСТИЖЕНИЯ (пока тестовые данные) =====
 
         function loadAchievementsMock() {
             const mockAchievements = [
@@ -202,7 +251,7 @@
             });
         }
 
-        // ===== ЛОГИКА КАМЕРЫ И ПОДСЧЁТА (без изменений по сути, только обёрнута в функцию) =====
+        // ===== ЛОГИКА КАМЕРЫ И ПОДСЧЁТА (без изменений) =====
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -236,128 +285,4 @@
             [LEFT_ELBOW, LEFT_WRIST],
             [RIGHT_SHOULDER, RIGHT_ELBOW],
             [RIGHT_ELBOW, RIGHT_WRIST],
-            [LEFT_SHOULDER, RIGHT_SHOULDER]
-        ];
-
-        function checkPosition(landmarks) {
-            const requiredPoints = [
-                LEFT_SHOULDER, RIGHT_SHOULDER,
-                LEFT_ELBOW, RIGHT_ELBOW,
-                LEFT_WRIST, RIGHT_WRIST
-            ];
-            return requiredPoints.every(idx => landmarks[idx].visibility > 0.6);
-        }
-
-        function countPushups(landmarks) {
-            const shoulder = landmarks[LEFT_SHOULDER];
-            const elbow = landmarks[LEFT_ELBOW];
-            const wrist = landmarks[LEFT_WRIST];
-
-            const angle = calculateAngle(shoulder, elbow, wrist);
-
-            if (angle < 90) {
-                stage = "down";
-            }
-
-            if (angle > 160 && stage === "down") {
-                stage = "up";
-                pushupCount++;
-                document.getElementById('counter').innerText = pushupCount;
-            }
-        }
-
-        function drawSelectedLandmarks(landmarks) {
-            ctx.strokeStyle = '#00FF00';
-            ctx.lineWidth = 3;
-
-            for (const [startIdx, endIdx] of CONNECTIONS_TO_SHOW) {
-                const start = landmarks[startIdx];
-                const end = landmarks[endIdx];
-                ctx.beginPath();
-                ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
-                ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
-                ctx.stroke();
-            }
-
-            ctx.fillStyle = '#FF0000';
-            for (const idx of POINTS_TO_SHOW) {
-                const point = landmarks[idx];
-                ctx.beginPath();
-                ctx.arc(point.x * canvas.width, point.y * canvas.height, 6, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-        }
-
-        const pose = new Pose({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-        });
-
-        pose.setOptions({
-            modelComplexity: 1,
-            smoothLandmarks: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5
-        });
-
-        pose.onResults(onResults);
-
-        function onResults(results) {
-            if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
-                canvas.width = results.image.width;
-                canvas.height = results.image.height;
-            }
-
-            ctx.save();
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-
-            if (results.poseLandmarks) {
-                drawSelectedLandmarks(results.poseLandmarks);
-
-                inPosition = checkPosition(results.poseLandmarks);
-
-                if (inPosition) {
-                    statusEl.innerText = "Позиция ОК, считаем! 💪";
-                    statusEl.style.color = "#00FF00";
-                    countPushups(results.poseLandmarks);
-                } else {
-                    statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                    statusEl.style.color = "white";
-                }
-            } else {
-                inPosition = false;
-                statusEl.innerText = "Не вижу тело в кадре 👀";
-                statusEl.style.color = "white";
-            }
-
-            ctx.restore();
-        }
-
-        let cameraObj = null;
-
-        function startCamera() {
-            cameraObj = new Camera(video, {
-                onFrame: async () => {
-                    await pose.send({ image: video });
-                },
-                width: 480,
-                height: 640
-            });
-            cameraObj.start();
-        }
-
-        // ===== TELEGRAM WEB APP =====
-
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-
-        document.getElementById('finishBtn').addEventListener('click', () => {
-            tg.sendData(String(pushupCount));
-            tg.close();
-        });
-    </script>
-</body>
-</html>
+            [LEFT_SHOULD
