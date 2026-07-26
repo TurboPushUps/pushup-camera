@@ -6,68 +6,29 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         html, body {
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background: #111;
-            color: white;
-            font-family: Arial, sans-serif;
-            height: 100%;
+            margin: 0; padding: 0; text-align: center;
+            background: #111; color: white; font-family: Arial, sans-serif; height: 100%;
         }
+        body { min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
 
-        body {
-            min-height: var(--tg-viewport-height, 100vh);
-            box-sizing: border-box;
-        }
-
-        .screen {
-            display: none;
-            padding: 20px 10px 40px;
-            min-height: var(--tg-viewport-height, 100vh);
-            box-sizing: border-box;
-        }
+        .screen { display: none; padding: 20px 10px 40px; min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
         .screen.active { display: block; }
-
-        .screen.center-content.active {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .screen.center-content.active .menu-button {
-            margin: 14px 0;
-        }
+        .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.center-content.active .menu-button { margin: 14px 0; }
 
         h1 { font-size: 32px; }
         h2 { font-size: 24px; }
 
         .menu-button {
-            display: block;
-            width: 100%;
-            max-width: 380px;
-            margin: 14px auto;
-            padding: 20px;
-            font-size: 21px;
-            background: #1c1c1c;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 14px;
+            display: block; width: 100%; max-width: 380px; margin: 14px auto; padding: 20px;
+            font-size: 21px; background: #1c1c1c; color: white; border: 1px solid #333; border-radius: 14px;
         }
-        .menu-button.primary {
-            background: #00FF00;
-            color: #111;
-            font-weight: bold;
-            border: none;
-        }
+        .menu-button.primary { background: #00FF00; color: #111; font-weight: bold; border: none; }
+        .menu-button.locked { opacity: 0.35; }
+        .menu-button.replay { border-color: #00FF00; color: #00FF00; }
 
         .back-button {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: none;
-            border: none;
-            color: #00FF00;
-            font-size: 20px;
+            position: absolute; top: 15px; left: 15px; background: none; border: none; color: #00FF00; font-size: 20px;
         }
 
         .container { width: 560px; max-width: 100%; margin: 0 auto; }
@@ -76,128 +37,85 @@
         #status { font-size: 20px; margin: 10px; min-height: 26px; }
 
         .stat-row {
-            display: flex;
-            justify-content: space-between;
-            max-width: 380px;
-            margin: 12px auto;
-            padding: 16px 18px;
-            background: #1c1c1c;
-            border-radius: 12px;
-            font-size: 17px;
+            display: flex; justify-content: space-between; max-width: 380px; margin: 12px auto;
+            padding: 16px 18px; background: #1c1c1c; border-radius: 12px; font-size: 17px;
         }
-
         .leader-row {
-            display: flex;
-            justify-content: space-between;
-            max-width: 380px;
-            margin: 8px auto;
-            padding: 14px 18px;
-            background: #1c1c1c;
-            border-radius: 12px;
-            font-size: 17px;
+            display: flex; justify-content: space-between; max-width: 380px; margin: 8px auto;
+            padding: 14px 18px; background: #1c1c1c; border-radius: 12px; font-size: 17px;
         }
-
         .achievement-row {
-            max-width: 380px;
-            margin: 10px auto;
-            padding: 14px 18px;
-            background: #1c1c1c;
-            border-radius: 12px;
-            text-align: left;
-            font-size: 17px;
+            max-width: 380px; margin: 10px auto; padding: 14px 18px; background: #1c1c1c;
+            border-radius: 12px; text-align: left; font-size: 17px;
         }
         .achievement-row.locked { opacity: 0.4; }
-
         .loading { opacity: 0.6; font-size: 15px; margin: 12px; }
 
         .nickname-input {
-            display: block;
-            width: 100%;
-            max-width: 320px;
-            margin: 20px auto;
-            padding: 16px;
-            font-size: 19px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            background: #1c1c1c;
-            color: white;
-            text-align: center;
-            box-sizing: border-box;
+            display: block; width: 100%; max-width: 320px; margin: 20px auto; padding: 16px;
+            font-size: 19px; border-radius: 12px; border: 1px solid #333; background: #1c1c1c;
+            color: white; text-align: center; box-sizing: border-box;
         }
-        .nickname-error {
-            color: #ff5555;
-            font-size: 15px;
-            min-height: 20px;
-            margin-bottom: 10px;
-        }
+        .nickname-error { color: #ff5555; font-size: 15px; min-height: 20px; margin-bottom: 10px; }
 
-        .tab-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            max-width: 380px;
-            margin: 18px auto 12px;
-        }
+        .tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 18px auto 12px; }
         .tab-button {
-            flex: 1;
-            padding: 12px;
-            font-size: 16px;
-            background: #1c1c1c;
-            color: #888;
-            border: 1px solid #333;
-            border-radius: 10px;
+            flex: 1; padding: 12px; font-size: 16px; background: #1c1c1c; color: #888;
+            border: 1px solid #333; border-radius: 10px;
         }
-        .tab-button.active {
-            background: #00FF00;
-            color: #111;
-            font-weight: bold;
-            border: none;
-        }
-        .sub-tab-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            max-width: 380px;
-            margin: 0 auto 18px;
-        }
+        .tab-button.active { background: #00FF00; color: #111; font-weight: bold; border: none; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 0 auto 18px; }
         .sub-tab-button {
-            flex: 1;
-            padding: 10px;
-            font-size: 14px;
-            background: transparent;
-            color: #888;
-            border: 1px solid #333;
-            border-radius: 10px;
+            flex: 1; padding: 10px; font-size: 14px; background: transparent; color: #888;
+            border: 1px solid #333; border-radius: 10px;
         }
-        .sub-tab-button.active {
-            border-color: #00FF00;
-            color: #00FF00;
-        }
+        .sub-tab-button.active { border-color: #00FF00; color: #00FF00; }
 
-        .save-overlay {
-            display: none;
-            margin: 15px auto;
-            font-size: 17px;
-            color: #00FF00;
-        }
+        .save-overlay { display: none; margin: 15px auto; font-size: 17px; color: #00FF00; }
         .save-overlay.active { display: block; }
-
         .retry-button {
-            display: none;
-            margin: 10px auto;
-            padding: 14px 24px;
-            font-size: 16px;
-            background: #ff5555;
-            color: white;
-            border: none;
-            border-radius: 10px;
+            display: none; margin: 10px auto; padding: 14px 24px; font-size: 16px;
+            background: #ff5555; color: white; border: none; border-radius: 10px;
         }
         .retry-button.active { display: inline-block; }
+
+        /* ===== ПОДЗЕМЕЛЬЯ ===== */
+        .dungeon-list-row {
+            display: flex; justify-content: space-between; align-items: center; max-width: 380px;
+            margin: 8px auto; padding: 14px 18px; background: #1c1c1c; border-radius: 12px; font-size: 16px;
+        }
+        .dungeon-list-row.boss { border: 1px solid #ffcc00; }
+        .dungeon-list-row.locked { opacity: 0.35; }
+        .dungeon-list-row button {
+            padding: 8px 14px; font-size: 14px; background: #00FF00; color: #111;
+            border: none; border-radius: 8px; font-weight: bold;
+        }
+        .dungeon-list-row.locked button { background: #444; color: #888; }
+
+        .dungeon-hud {
+            max-width: 380px; margin: 10px auto; padding: 14px; background: #1c1c1c; border-radius: 12px;
+        }
+        .dungeon-hud-title { font-size: 16px; opacity: 0.8; margin-bottom: 8px; }
+        .hp-bar-bg { width: 100%; height: 22px; background: #333; border-radius: 11px; overflow: hidden; }
+        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3333, #ff8800); transition: width 0.2s; }
+        .hp-bar-text { font-size: 14px; margin-top: 6px; opacity: 0.8; }
+
+        .overlay-panel {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
+        }
+        .overlay-panel.active { display: flex; }
+        .overlay-box {
+            background: #1c1c1c; border-radius: 16px; padding: 30px 20px; max-width: 320px; text-align: center;
+        }
+        .overlay-box h3 { margin-top: 0; }
+        .overlay-box .menu-button { max-width: 260px; }
+        .countdown-number { font-size: 48px; color: #00FF00; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- ===== ЭКРАН: РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
+    <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
     <div id="screen-register" class="screen center-content">
         <h1>💪 Pushup Tracker</h1>
         <p>Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
@@ -206,27 +124,50 @@
         <button class="menu-button primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-    <!-- ===== ЭКРАН: ГЛАВНОЕ МЕНЮ ===== -->
+    <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
     <div id="screen-menu" class="screen center-content">
         <h1>💪 Pushup Tracker</h1>
-        <button class="menu-button primary" onclick="showScreen('select-mode')">📷 Начать поход</button>
+        <button class="menu-button primary" onclick="showScreen('training-type')">📷 Начать поход</button>
         <button class="menu-button" onclick="showScreen('profile')">👤 Профиль</button>
         <button class="menu-button" onclick="showScreen('leaderboard')">🏆 Таблица лидеров</button>
         <button class="menu-button" onclick="showScreen('achievements')">🎖 Достижения</button>
     </div>
 
-    <!-- ===== ЭКРАН: ВЫБОР РЕЖИМА ===== -->
-    <div id="screen-select-mode" class="screen center-content">
+    <!-- ===== ВЫБОР: ПОДЗЕМЕЛЬЯ / СВОБОДНАЯ ТРЕНИРОВКА ===== -->
+    <div id="screen-training-type" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
-        <h1>Выбери упражнение</h1>
-        <button class="menu-button primary" onclick="startActivity('pushup')">🤸 Отжимания</button>
-        <button class="menu-button primary" onclick="startActivity('plank')">🧘 Планка</button>
+        <h1>Как хочешь тренироваться?</h1>
+        <button class="menu-button primary" onclick="chooseFlow('dungeon')">⚔️ Подземелья</button>
+        <button class="menu-button primary" onclick="chooseFlow('free')">🏋️ Свободная тренировка</button>
     </div>
 
-    <!-- ===== ЭКРАН: КАМЕРА ===== -->
+    <!-- ===== ВЫБОР АКТИВНОСТИ (Отжимания/Планка) ===== -->
+    <div id="screen-select-mode" class="screen center-content">
+        <button class="back-button" onclick="showScreen('training-type')">← Назад</button>
+        <h1>Выбери упражнение</h1>
+        <button class="menu-button primary" onclick="selectActivityForFlow('pushup')">🤸 Отжимания</button>
+        <button class="menu-button primary" onclick="selectActivityForFlow('plank')">🧘 Планка</button>
+    </div>
+
+    <!-- ===== ВЫБОР ПОДЗЕМЕЛЬЯ ===== -->
+    <div id="screen-dungeon-select" class="screen">
+        <button class="back-button" onclick="showScreen('training-type')">← Назад</button>
+        <h2 id="dungeon-select-title">Подземелья</h2>
+        <div id="dungeon-select-loading" class="loading">Загрузка...</div>
+        <div id="dungeon-select-list"></div>
+    </div>
+
+    <!-- ===== КАМЕРА (свободная тренировка и подземелья) ===== -->
     <div id="screen-activity" class="screen">
         <button class="back-button" id="activityBackBtn" onclick="exitActivity()">← Назад</button>
         <h2 id="activity-title">Подсчёт отжиманий</h2>
+
+        <div id="dungeon-hud" class="dungeon-hud" style="display:none;">
+            <div class="dungeon-hud-title" id="dungeon-hud-title">Подземелье 1 — Враг 1 из 1</div>
+            <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div></div>
+            <div class="hp-bar-text" id="hp-bar-text">HP: 18 / 18</div>
+        </div>
+
         <h1 id="counter" style="font-size: 72px; color: #00FF00;">0</h1>
         <p id="status">Займите позицию 🧎</p>
         <button id="finishBtn" class="menu-button primary" style="max-width: 260px;">Завершить</button>
@@ -238,13 +179,11 @@
         </div>
     </div>
 
-    <!-- ===== ЭКРАН: ПРОФИЛЬ ===== -->
+    <!-- ===== ПРОФИЛЬ ===== -->
     <div id="screen-profile" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>👤 Профиль</h2>
-
         <div id="profile-loading" class="loading">Загрузка...</div>
-
         <div id="profile-content" style="display: none;">
             <div class="stat-row"><span>Звание</span><span id="profile-level">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points">—</span></div>
@@ -259,21 +198,22 @@
                 <div class="stat-row"><span>Сегодня</span><span id="profile-pushup-today">—</span></div>
                 <div class="stat-row"><span>Дней подряд</span><span id="profile-pushup-streak">—</span></div>
                 <div class="stat-row"><span>Всего</span><span id="profile-pushup-total">—</span></div>
+                <div class="stat-row"><span>Подземелье</span><span id="profile-pushup-dungeon">—</span></div>
             </div>
 
             <div id="profile-plank-stats" style="display: none;">
                 <div class="stat-row"><span>Сегодня</span><span id="profile-plank-today">—</span></div>
                 <div class="stat-row"><span>Дней подряд</span><span id="profile-plank-streak">—</span></div>
                 <div class="stat-row"><span>Всего</span><span id="profile-plank-total">—</span></div>
+                <div class="stat-row"><span>Подземелье</span><span id="profile-plank-dungeon">—</span></div>
             </div>
         </div>
     </div>
 
-    <!-- ===== ЭКРАН: ТАБЛИЦА ЛИДЕРОВ ===== -->
+    <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>🏆 Таблица лидеров</h2>
-
         <div class="tab-row">
             <button class="tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">🤸 Отжимания</button>
             <button class="tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">🧘 Планка</button>
@@ -282,17 +222,34 @@
             <button class="sub-tab-button active" id="lb-period-today" onclick="switchLeaderboardPeriod('today')">Сегодня</button>
             <button class="sub-tab-button" id="lb-period-total" onclick="switchLeaderboardPeriod('total')">Всего</button>
         </div>
-
         <div id="leaderboard-loading" class="loading">Загрузка...</div>
         <div id="leaderboard-list"></div>
     </div>
 
-    <!-- ===== ЭКРАН: ДОСТИЖЕНИЯ ===== -->
+    <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <div id="screen-achievements" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>🎖 Достижения</h2>
         <div id="achievements-list"></div>
         <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, подключим позже)</p>
+    </div>
+
+    <!-- ===== ОВЕРЛЕИ: пауза между врагами / победа в подземелье ===== -->
+    <div id="overlay-enemy-pause" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Враг повержен! 💥</h3>
+            <p>Передышка перед следующим врагом</p>
+            <div class="countdown-number" id="pause-countdown">5</div>
+        </div>
+    </div>
+
+    <div id="overlay-dungeon-complete" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Подземелье пройдено! 🎉</h3>
+            <p id="dungeon-complete-xp">+0 XP</p>
+            <button class="menu-button primary" onclick="continueDungeon()">Продолжить в следующее</button>
+            <button class="menu-button" onclick="finishDungeonSession()">Закончить поход</button>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
@@ -329,22 +286,16 @@
 
         async function checkUserStatus() {
             const userId = getUserId();
-
             if (!userId) {
                 document.getElementById('screen-register').classList.add('active');
                 document.getElementById('nickname-error').innerText = "Не удалось определить пользователя";
                 return;
             }
-
             try {
                 const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`);
                 const data = await response.json();
-
-                if (data.has_nickname) {
-                    showScreen('menu');
-                } else {
-                    document.getElementById('screen-register').classList.add('active');
-                }
+                if (data.has_nickname) showScreen('menu');
+                else document.getElementById('screen-register').classList.add('active');
             } catch (error) {
                 document.getElementById('screen-register').classList.add('active');
                 document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
@@ -356,32 +307,19 @@
             const input = document.getElementById('nickname-input');
             const errorEl = document.getElementById('nickname-error');
             const nickname = input.value.trim();
-
             errorEl.innerText = "";
 
-            if (!userId) {
-                errorEl.innerText = "Не удалось определить пользователя";
-                return;
-            }
-
-            if (nickname.length < 2 || nickname.length > 20) {
-                errorEl.innerText = "Имя должно быть от 2 до 20 символов";
-                return;
-            }
+            if (!userId) { errorEl.innerText = "Не удалось определить пользователя"; return; }
+            if (nickname.length < 2 || nickname.length > 20) { errorEl.innerText = "Имя должно быть от 2 до 20 символов"; return; }
 
             try {
                 const response = await fetch(`${API_BASE}/api/register_nickname`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: userId, nickname: nickname })
                 });
                 const data = await response.json();
-
-                if (data.success) {
-                    showScreen('menu');
-                } else {
-                    errorEl.innerText = data.error || "Не удалось сохранить имя";
-                }
+                if (data.success) showScreen('menu');
+                else errorEl.innerText = data.error || "Не удалось сохранить имя";
             } catch (error) {
                 errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз.";
             }
@@ -399,11 +337,7 @@
             const userId = getUserId();
             document.getElementById('profile-loading').style.display = 'block';
             document.getElementById('profile-content').style.display = 'none';
-
-            if (!userId) {
-                document.getElementById('profile-loading').innerText = "Не удалось определить пользователя";
-                return;
-            }
+            if (!userId) { document.getElementById('profile-loading').innerText = "Не удалось определить пользователя"; return; }
 
             try {
                 const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
@@ -419,10 +353,12 @@
                 document.getElementById('profile-pushup-today').innerText = data.pushup.today;
                 document.getElementById('profile-pushup-streak').innerText = data.pushup.streak + " 🔥";
                 document.getElementById('profile-pushup-total').innerText = data.pushup.total;
+                document.getElementById('profile-pushup-dungeon').innerText = "№" + data.pushup.dungeon;
 
                 document.getElementById('profile-plank-today').innerText = formatSeconds(data.plank.today_seconds);
                 document.getElementById('profile-plank-streak').innerText = data.plank.streak + " 🔥";
                 document.getElementById('profile-plank-total').innerText = formatSeconds(data.plank.total_seconds);
+                document.getElementById('profile-plank-dungeon').innerText = "№" + data.plank.dungeon;
 
                 document.getElementById('profile-loading').style.display = 'none';
                 document.getElementById('profile-content').style.display = 'block';
@@ -449,14 +385,12 @@
             document.getElementById('lb-activity-plank').classList.toggle('active', activity === 'plank');
             loadLeaderboard();
         }
-
         function switchLeaderboardPeriod(period) {
             lbPeriod = period;
             document.getElementById('lb-period-today').classList.toggle('active', period === 'today');
             document.getElementById('lb-period-total').classList.toggle('active', period === 'total');
             loadLeaderboard();
         }
-
         function formatLeaderboardValue(value, activity) {
             if (activity === 'plank') {
                 const m = Math.floor(value / 60);
@@ -465,24 +399,16 @@
             }
             return value;
         }
-
         async function loadLeaderboard() {
             const list = document.getElementById('leaderboard-list');
             const loading = document.getElementById('leaderboard-loading');
             loading.style.display = 'block';
             list.innerHTML = "";
-
             try {
                 const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`);
                 const data = await response.json();
-
                 loading.style.display = 'none';
-
-                if (data.leaderboard.length === 0) {
-                    list.innerHTML = "<p>Пока никто не тренировался 🤷</p>";
-                    return;
-                }
-
+                if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
                 data.leaderboard.forEach((user, index) => {
                     const row = document.createElement('div');
                     row.className = 'leader-row';
@@ -510,6 +436,198 @@
                 row.innerText = a.title + (a.unlocked ? " ✅" : " 🔒");
                 list.appendChild(row);
             });
+        }
+
+        // ===== ВЫБОР ПОТОКА: ПОДЗЕМЕЛЬЯ / СВОБОДНАЯ =====
+
+        let pendingFlow = null; // 'dungeon' | 'free'
+
+        function chooseFlow(flow) {
+            pendingFlow = flow;
+            showScreen('select-mode');
+        }
+
+        function selectActivityForFlow(mode) {
+            if (pendingFlow === 'free') {
+                startActivity(mode, false);
+            } else {
+                openDungeonSelect(mode);
+            }
+        }
+
+        // ===== ВЫБОР ПОДЗЕМЕЛЬЯ =====
+
+        let dungeonSelectActivity = null;
+
+        async function openDungeonSelect(activity) {
+            dungeonSelectActivity = activity;
+            const title = activity === 'pushup' ? 'Подземелья — Отжимания' : 'Подземелья — Планка';
+            document.getElementById('dungeon-select-title').innerText = title;
+            document.getElementById('dungeon-select-loading').style.display = 'block';
+            document.getElementById('dungeon-select-list').innerHTML = '';
+            showScreen('dungeon-select');
+
+            const userId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`);
+                const data = await response.json();
+                renderDungeonList(data.current_dungeon, data.max_dungeon);
+            } catch (error) {
+                document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список подземелий.";
+            }
+        }
+
+        function renderDungeonList(currentDungeon, maxDungeon) {
+            document.getElementById('dungeon-select-loading').style.display = 'none';
+            const list = document.getElementById('dungeon-select-list');
+            list.innerHTML = '';
+
+            for (let n = 1; n <= currentDungeon; n++) {
+                const isBoss = (n % 5 === 0);
+                const isCurrent = (n === currentDungeon);
+                const row = document.createElement('div');
+                row.className = 'dungeon-list-row' + (isBoss ? ' boss' : '');
+                const label = (isBoss ? '👑 ' : '⚔️ ') + 'Подземелье ' + n + (isCurrent ? ' (текущее)' : ' ✅');
+                const btnText = isCurrent ? 'Начать' : 'Перепройти';
+                row.innerHTML = `<span>${label}</span><button onclick="startDungeonActivity('${dungeonSelectActivity}', ${n})">${btnText}</button>`;
+                list.appendChild(row);
+            }
+
+            if (currentDungeon < maxDungeon) {
+                const row = document.createElement('div');
+                row.className = 'dungeon-list-row locked';
+                row.innerHTML = `<span>🔒 Подземелье ${currentDungeon + 1}</span><button disabled>Закрыто</button>`;
+                list.appendChild(row);
+            }
+        }
+
+        // ===== СОСТОЯНИЕ ПОДЗЕМЕЛЬЯ ВО ВРЕМЯ БОЯ =====
+
+        let inDungeonMode = false;
+        let dungeonActivityType = null;
+        let dungeonNumber = null;
+        let dungeonEnemies = [];
+        let dungeonEnemyIndex = 0;
+        let dungeonEnemyRemainingHP = 0;
+        let dungeonEnemyMaxHP = 0;
+        let dungeonIsReplay = false;
+        let dungeonPaused = false;
+
+        async function startDungeonActivity(activity, dungeonN) {
+            const userId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`);
+                const data = await response.json();
+
+                inDungeonMode = true;
+                dungeonActivityType = activity;
+                dungeonNumber = data.requested_dungeon;
+                dungeonEnemies = data.enemies;
+                dungeonEnemyIndex = 0;
+                dungeonEnemyMaxHP = dungeonEnemies[0];
+                dungeonEnemyRemainingHP = dungeonEnemies[0];
+                dungeonIsReplay = data.is_replay;
+                dungeonPaused = false;
+
+                document.getElementById('dungeon-hud').style.display = 'block';
+                updateDungeonHUD();
+
+                startActivity(activity, true);
+            } catch (error) {
+                alert("Не удалось загрузить подземелье. Попробуйте позже.");
+            }
+        }
+
+        function updateDungeonHUD() {
+            const bossTag = (dungeonNumber % 5 === 0) ? '👑 БОСС — ' : '';
+            document.getElementById('dungeon-hud-title').innerText =
+                `${bossTag}Подземелье ${dungeonNumber} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
+            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP / dungeonEnemyMaxHP) * 100));
+            document.getElementById('hp-bar-fill').style.width = pct + '%';
+            document.getElementById('hp-bar-text').innerText =
+                `HP: ${Math.max(0, Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
+        }
+
+        function applyDungeonDamage(amount) {
+            if (!inDungeonMode || dungeonPaused) return;
+            dungeonEnemyRemainingHP -= amount;
+
+            if (dungeonEnemyRemainingHP <= 0) {
+                const overflow = -dungeonEnemyRemainingHP;
+                handleEnemyDefeated(overflow);
+            } else {
+                updateDungeonHUD();
+            }
+        }
+
+        function handleEnemyDefeated(overflow) {
+            const isLastEnemy = (dungeonEnemyIndex === dungeonEnemies.length - 1);
+
+            if (isLastEnemy) {
+                finishDungeonVictory();
+                return;
+            }
+
+            dungeonEnemyIndex++;
+            dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex];
+            dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
+            updateDungeonHUD();
+
+            if (dungeonActivityType === 'pushup') {
+                startEnemyPause();
+            }
+        }
+
+        function startEnemyPause() {
+            dungeonPaused = true;
+            const overlay = document.getElementById('overlay-enemy-pause');
+            const countdownEl = document.getElementById('pause-countdown');
+            overlay.classList.add('active');
+            let secondsLeft = 5;
+            countdownEl.innerText = secondsLeft;
+            const interval = setInterval(() => {
+                secondsLeft--;
+                countdownEl.innerText = secondsLeft;
+                if (secondsLeft <= 0) {
+                    clearInterval(interval);
+                    overlay.classList.remove('active');
+                    dungeonPaused = false;
+                }
+            }, 1000);
+        }
+
+        async function finishDungeonVictory() {
+            dungeonPaused = true;
+            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
+
+            const userId = getUserId();
+            let xpEarned = 0;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/dungeon_complete`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, activity: dungeonActivityType, dungeon: dungeonNumber })
+                });
+                const data = await response.json();
+                xpEarned = data.xp_earned || 0;
+            } catch (error) {
+                console.error("Ошибка завершения подземелья:", error);
+            }
+
+            document.getElementById('dungeon-complete-xp').innerText = `+${xpEarned} XP ⭐`;
+            document.getElementById('overlay-dungeon-complete').classList.add('active');
+        }
+
+        function continueDungeon() {
+            document.getElementById('overlay-dungeon-complete').classList.remove('active');
+            const nextN = dungeonNumber + 1;
+            dungeonPaused = false;
+            startDungeonActivity(dungeonActivityType, nextN);
+        }
+
+        function finishDungeonSession() {
+            document.getElementById('overlay-dungeon-complete').classList.remove('active');
+            attemptSave();
         }
 
         // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ =====
@@ -567,6 +685,7 @@
                 stage = "up";
                 pushupCount++;
                 counterEl.innerText = pushupCount;
+                if (inDungeonMode) applyDungeonDamage(1);
             }
         }
 
@@ -583,7 +702,6 @@
             const rightIndices = [RIGHT_SHOULDER, RIGHT_ELBOW, RIGHT_WRIST, RIGHT_HIP, RIGHT_KNEE, RIGHT_ANKLE];
             const leftScore = avgVisibility(leftIndices, landmarks);
             const rightScore = avgVisibility(rightIndices, landmarks);
-
             if (leftScore >= rightScore) {
                 return { shoulder: LEFT_SHOULDER, elbow: LEFT_ELBOW, wrist: LEFT_WRIST, hip: LEFT_HIP, knee: LEFT_KNEE, ankle: LEFT_ANKLE };
             } else {
@@ -596,11 +714,9 @@
             const required = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
             const allVisible = required.every(idx => landmarks[idx].visibility > 0.6);
             if (!allVisible) return { valid: false, reason: "not_visible", points: p };
-
             const bodyAngle = calculateAngle(landmarks[p.shoulder], landmarks[p.hip], landmarks[p.knee]);
             const legAngle = calculateAngle(landmarks[p.hip], landmarks[p.knee], landmarks[p.ankle]);
             const isStraight = bodyAngle > 150 && legAngle > 150;
-
             return { valid: isStraight, reason: isStraight ? "ok" : "not_straight", points: p };
         }
 
@@ -643,7 +759,9 @@
             const now = Date.now();
             if (isInPosition) {
                 if (plankLastTimestamp !== null) {
-                    plankSeconds += (now - plankLastTimestamp) / 1000;
+                    const delta = (now - plankLastTimestamp) / 1000;
+                    plankSeconds += delta;
+                    if (inDungeonMode) applyDungeonDamage(delta);
                 }
                 plankLastTimestamp = now;
             } else {
@@ -657,10 +775,8 @@
         });
 
         pose.setOptions({
-            modelComplexity: 1,
-            smoothLandmarks: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5
+            modelComplexity: 1, smoothLandmarks: true,
+            minDetectionConfidence: 0.5, minTrackingConfidence: 0.5
         });
 
         pose.onResults(onResults);
@@ -683,9 +799,9 @@
                     inPosition = checkPushupPosition(results.poseLandmarks);
 
                     if (inPosition) {
-                        statusEl.innerText = "Позиция ОК, считаем! 💪";
+                        statusEl.innerText = dungeonPaused ? "Передышка..." : "Позиция ОК, считаем! 💪";
                         statusEl.style.color = "#00FF00";
-                        countPushups(results.poseLandmarks);
+                        if (!dungeonPaused) countPushups(results.poseLandmarks);
                     } else {
                         statusEl.innerText = "Займите позицию для отжиманий 🧎";
                         statusEl.style.color = "white";
@@ -704,8 +820,7 @@
                         statusEl.innerText = "Отлично держите планку! 🔥";
                         statusEl.style.color = "#00FF00";
                     }
-
-                    updatePlankTimer(result.valid);
+                    updatePlankTimer(result.valid && !dungeonPaused);
                 }
             } else {
                 inPosition = false;
@@ -720,17 +835,14 @@
         function startCameraIfNeeded() {
             if (cameraStarted) return;
             cameraObj = new Camera(video, {
-                onFrame: async () => {
-                    await pose.send({ image: video });
-                },
-                width: 480,
-                height: 640
+                onFrame: async () => { await pose.send({ image: video }); },
+                width: 480, height: 640
             });
             cameraObj.start();
             cameraStarted = true;
         }
 
-        function startActivity(mode) {
+        function startActivity(mode, isDungeon) {
             currentMode = mode;
             pushupCount = 0;
             stage = "up";
@@ -741,15 +853,18 @@
             document.getElementById('activityBackBtn').style.display = 'block';
             document.getElementById('saveOverlay').classList.remove('active');
             document.getElementById('retryBtn').classList.remove('active');
+            document.getElementById('dungeon-hud').style.display = isDungeon ? 'block' : 'none';
+
+            if (!isDungeon) inDungeonMode = false;
 
             if (mode === 'pushup') {
-                titleEl.innerText = "Подсчёт отжиманий";
+                titleEl.innerText = isDungeon ? "Бой — отжимания" : "Подсчёт отжиманий";
                 statusEl.innerText = "Займите позицию для отжиманий 🧎";
                 statusEl.style.color = "white";
                 counterEl.style.color = "#00FF00";
                 counterEl.innerText = "0";
             } else {
-                titleEl.innerText = "Планка";
+                titleEl.innerText = isDungeon ? "Бой — планка" : "Планка";
                 statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
                 statusEl.style.color = "white";
                 counterEl.style.color = "#00FF00";
@@ -761,23 +876,21 @@
         }
 
         function exitActivity() {
-            if (cameraObj) {
-                cameraObj.stop();
-                cameraStarted = false;
-            }
+            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
             currentMode = null;
+            inDungeonMode = false;
+            document.getElementById('dungeon-hud').style.display = 'none';
             showScreen('menu');
         }
 
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
-
         applyTelegramViewportHeight();
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА С АВТОМАТИЧЕСКИМИ ПОВТОРНЫМИ ПОПЫТКАМИ =====
+        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
 
         let saveAttempts = 0;
         const MAX_SAVE_ATTEMPTS = 3;
@@ -810,16 +923,14 @@
 
                 if (userId && mode === 'pushup' && pushupCount > 0) {
                     const response = await fetch(`${API_BASE}/api/save_pushups`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId, count: pushupCount }),
                         signal: controller.signal
                     });
                     success = response.ok;
                 } else if (userId && mode === 'plank' && plankSeconds >= 1) {
                     const response = await fetch(`${API_BASE}/api/save_plank`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId, seconds: Math.floor(plankSeconds) }),
                         signal: controller.signal
                     });
@@ -837,6 +948,7 @@
             saveOverlay.classList.remove('active');
 
             if (success) {
+                inDungeonMode = false;
                 currentMode = null;
                 showScreen('menu');
                 return;
@@ -861,10 +973,7 @@
         }
 
         document.getElementById('finishBtn').addEventListener('click', () => {
-            if (cameraObj) {
-                cameraObj.stop();
-                cameraStarted = false;
-            }
+            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
             attemptSave();
         });
 
