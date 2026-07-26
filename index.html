@@ -767,39 +767,69 @@
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        document.getElementById('finishBtn').addEventListener('click', async () => {
+async function attemptSave() {
             const userId = getUserId();
             const mode = currentMode;
 
-            if (cameraObj) {
-                cameraObj.stop();
-                cameraStarted = false;
-            }
+            const finishBtn = document.getElementById('finishBtn');
+            const backBtn = document.getElementById('activityBackBtn');
+            const saveOverlay = document.getElementById('saveOverlay');
+            const retryBtn = document.getElementById('retryBtn');
 
-            if (userId && mode === 'pushup' && pushupCount > 0) {
-                try {
-                    await fetch(`${API_BASE}/api/save_pushups`, {
+            finishBtn.style.display = 'none';
+            backBtn.style.display = 'none';
+            retryBtn.classList.remove('active');
+            saveOverlay.classList.add('active');
+
+            let success = false;
+
+            try {
+                if (userId && mode === 'pushup' && pushupCount > 0) {
+                    const response = await fetch(`${API_BASE}/api/save_pushups`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId, count: pushupCount })
                     });
-                } catch (error) {
-                    console.error("Не удалось сохранить подход:", error);
-                }
-            } else if (userId && mode === 'plank' && plankSeconds >= 1) {
-                try {
-                    await fetch(`${API_BASE}/api/save_plank`, {
+                    success = response.ok;
+                } else if (userId && mode === 'plank' && plankSeconds >= 1) {
+                    const response = await fetch(`${API_BASE}/api/save_plank`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId, seconds: Math.floor(plankSeconds) })
                     });
-                } catch (error) {
-                    console.error("Не удалось сохранить планку:", error);
+                    success = response.ok;
+                } else {
+                    // Нечего сохранять (0 отжиманий/секунд) — просто выходим
+                    success = true;
                 }
+            } catch (error) {
+                console.error("Ошибка сохранения:", error);
+                success = false;
             }
 
-            currentMode = null;
-            showScreen('menu');
+            saveOverlay.classList.remove('active');
+
+            if (success) {
+                currentMode = null;
+                showScreen('menu');
+            } else {
+                // Не удалось сохранить — даём попробовать снова, данные не теряем
+                retryBtn.classList.add('active');
+                document.getElementById('status').innerText = "Не удалось сохранить. Проверьте связь и повторите.";
+                document.getElementById('status').style.color = "#ff5555";
+            }
+        }
+
+        function retrySave() {
+            attemptSave();
+        }
+
+        document.getElementById('finishBtn').addEventListener('click', () => {
+            if (cameraObj) {
+                cameraObj.stop();
+                cameraStarted = false;
+            }
+            attemptSave();
         });
 
         checkUserStatus();
