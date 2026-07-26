@@ -5,15 +5,38 @@
     <title>Pushup Tracker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
+        html, body {
             margin: 0;
+            padding: 0;
             text-align: center;
             background: #111;
             color: white;
             font-family: Arial, sans-serif;
+            height: 100%;
         }
-        .screen { display: none; padding: 20px 10px; }
+
+        body {
+            min-height: var(--tg-viewport-height, 100vh);
+            box-sizing: border-box;
+        }
+
+        .screen {
+            display: none;
+            padding: 20px 10px 40px;
+            min-height: var(--tg-viewport-height, 100vh);
+            box-sizing: border-box;
+        }
         .screen.active { display: block; }
+
+        .screen.center-content.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .screen.center-content.active .menu-button {
+            margin: 12px 0;
+        }
 
         .menu-button {
             display: block;
@@ -149,7 +172,7 @@
 <body>
 
     <!-- ===== ЭКРАН: РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
-    <div id="screen-register" class="screen">
+    <div id="screen-register" class="screen center-content">
         <h1>💪 Pushup Tracker</h1>
         <p>Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
         <input type="text" id="nickname-input" class="nickname-input" maxlength="20" placeholder="Например: TigerPower">
@@ -158,7 +181,7 @@
     </div>
 
     <!-- ===== ЭКРАН: ГЛАВНОЕ МЕНЮ ===== -->
-    <div id="screen-menu" class="screen">
+    <div id="screen-menu" class="screen center-content">
         <h1>💪 Pushup Tracker</h1>
         <button class="menu-button primary" onclick="showScreen('select-mode')">📷 Начать поход</button>
         <button class="menu-button" onclick="showScreen('profile')">👤 Профиль</button>
@@ -167,7 +190,7 @@
     </div>
 
     <!-- ===== ЭКРАН: ВЫБОР РЕЖИМА ===== -->
-    <div id="screen-select-mode" class="screen">
+    <div id="screen-select-mode" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h1>Выбери упражнение</h1>
         <button class="menu-button primary" onclick="startActivity('pushup')">🤸 Отжимания</button>
@@ -251,6 +274,13 @@
     <script>
         const API_BASE = "https://pushup-bot-server.onrender.com";
 
+        // ===== ПОДСТРОЙКА ПОД РЕАЛЬНУЮ ВЫСОТУ ЭКРАНА TELEGRAM =====
+        function applyTelegramViewportHeight() {
+            const tgApp = window.Telegram.WebApp;
+            const height = tgApp.viewportStableHeight || tgApp.viewportHeight || window.innerHeight;
+            document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
+        }
+
         function showScreen(name) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('screen-' + name).classList.add('active');
@@ -332,9 +362,6 @@
 
         // ===== ПРОФИЛЬ =====
 
-        let profileData = null;
-        let activeProfileTab = 'pushup';
-
         function formatSeconds(totalSeconds) {
             const m = Math.floor(totalSeconds / 60);
             const s = totalSeconds % 60;
@@ -354,7 +381,6 @@
             try {
                 const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
                 const data = await response.json();
-                profileData = data;
 
                 document.getElementById('profile-level').innerText = data.level;
                 document.getElementById('profile-points').innerText = data.points + " ⭐";
@@ -379,7 +405,6 @@
         }
 
         function switchProfileTab(tab) {
-            activeProfileTab = tab;
             document.getElementById('profile-tab-pushup').classList.toggle('active', tab === 'pushup');
             document.getElementById('profile-tab-plank').classList.toggle('active', tab === 'plank');
             document.getElementById('profile-pushup-stats').style.display = tab === 'pushup' ? 'block' : 'none';
@@ -709,6 +734,10 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+
+        applyTelegramViewportHeight();
+        tg.onEvent('viewportChanged', applyTelegramViewportHeight);
+        window.addEventListener('resize', applyTelegramViewportHeight);
 
         document.getElementById('finishBtn').addEventListener('click', async () => {
             const userId = getUserId();
