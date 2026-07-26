@@ -131,7 +131,7 @@
         <button class="menu-button primary" onclick="startActivity('plank')">🧘 Планка</button>
     </div>
 
-    <!-- ===== ЭКРАН: КАМЕРА (используется и для отжиманий, и для планки) ===== -->
+    <!-- ===== ЭКРАН: КАМЕРА ===== -->
     <div id="screen-activity" class="screen">
         <button class="back-button" onclick="exitActivity()">← Назад</button>
         <h2 id="activity-title">Подсчёт отжиманий</h2>
@@ -341,7 +341,7 @@
             });
         }
 
-        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ (общие для отжиманий и планки) =====
+        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ =====
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -350,7 +350,7 @@
         const counterEl = document.getElementById('counter');
         const titleEl = document.getElementById('activity-title');
 
-        let currentMode = null; // 'pushup' или 'plank'
+        let currentMode = null;
         let cameraStarted = false;
         let cameraObj = null;
 
@@ -368,26 +368,25 @@
             return angle;
         }
 
-        const LEFT_SHOULDER = 11;
-        const RIGHT_SHOULDER = 12;
-        const LEFT_ELBOW = 13;
-        const RIGHT_ELBOW = 14;
-        const LEFT_WRIST = 15;
-        const RIGHT_WRIST = 16;
+        // Индексы точек MediaPipe
+        const LEFT_SHOULDER = 11, RIGHT_SHOULDER = 12;
+        const LEFT_ELBOW = 13, RIGHT_ELBOW = 14;
+        const LEFT_WRIST = 15, RIGHT_WRIST = 16;
+        const LEFT_HIP = 23, RIGHT_HIP = 24;
+        const LEFT_KNEE = 25, RIGHT_KNEE = 26;
+        const LEFT_ANKLE = 27, RIGHT_ANKLE = 28;
 
-        const POINTS_TO_SHOW = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
+        // ===== ЛОГИКА ОТЖИМАНИЙ (без изменений) =====
 
-        const CONNECTIONS_TO_SHOW = [
-            [LEFT_SHOULDER, LEFT_ELBOW],
-            [LEFT_ELBOW, LEFT_WRIST],
-            [RIGHT_SHOULDER, RIGHT_ELBOW],
-            [RIGHT_ELBOW, RIGHT_WRIST],
+        const PUSHUP_POINTS = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
+        const PUSHUP_CONNECTIONS = [
+            [LEFT_SHOULDER, LEFT_ELBOW], [LEFT_ELBOW, LEFT_WRIST],
+            [RIGHT_SHOULDER, RIGHT_ELBOW], [RIGHT_ELBOW, RIGHT_WRIST],
             [LEFT_SHOULDER, RIGHT_SHOULDER]
         ];
 
-        function checkPosition(landmarks) {
-            const requiredPoints = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
-            return requiredPoints.every(idx => landmarks[idx].visibility > 0.6);
+        function checkPushupPosition(landmarks) {
+            return PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
         }
 
         function countPushups(landmarks) {
@@ -403,6 +402,82 @@
                 stage = "up";
                 pushupCount++;
                 counterEl.innerText = pushupCount;
+            }
+        }
+
+        function drawPushupLandmarks(landmarks) {
+            drawPoints(landmarks, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
+        }
+
+        // ===== ЛОГИКА ПЛАНКИ (боковой ракурс) =====
+
+        function avgVisibility(indices, landmarks) {
+            return indices.reduce((sum, idx) => sum + landmarks[idx].visibility, 0) / indices.length;
+        }
+
+        function getPlankSidePoints(landmarks) {
+            const leftIndices = [LEFT_SHOULDER, LEFT_ELBOW, LEFT_WRIST, LEFT_HIP, LEFT_KNEE, LEFT_ANKLE];
+            const rightIndices = [RIGHT_SHOULDER, RIGHT_ELBOW, RIGHT_WRIST, RIGHT_HIP, RIGHT_KNEE, RIGHT_ANKLE];
+
+            const leftScore = avgVisibility(leftIndices, landmarks);
+            const rightScore = avgVisibility(rightIndices, landmarks);
+
+            if (leftScore >= rightScore) {
+                return { shoulder: LEFT_SHOULDER, elbow: LEFT_ELBOW, wrist: LEFT_WRIST, hip: LEFT_HIP, knee: LEFT_KNEE, ankle: LEFT_ANKLE };
+            } else {
+                return { shoulder: RIGHT_SHOULDER, elbow: RIGHT_ELBOW, wrist: RIGHT_WRIST, hip: RIGHT_HIP, knee: RIGHT_KNEE, ankle: RIGHT_ANKLE };
+            }
+        }
+
+        function checkPlankPosition(landmarks) {
+            const p = getPlankSidePoints(landmarks);
+            const required = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
+
+            const allVisible = required.every(idx => landmarks[idx].visibility > 0.6);
+            if (!allVisible) {
+                return { valid: false, reason: "not_visible", points: p };
+            }
+
+            const bodyAngle = calculateAngle(landmarks[p.shoulder], landmarks[p.hip], landmarks[p.knee]);
+            const legAngle = calculateAngle(landmarks[p.hip], landmarks[p.knee], landmarks[p.ankle]);
+
+            const isStraight = bodyAngle > 150 && legAngle > 150;
+
+            return {
+                valid: isStraight,
+                reason: isStraight ? "ok" : "not_straight",
+                points: p
+            };
+        }
+
+        function drawPlankLandmarks(landmarks, p) {
+            const points = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
+            const connections = [
+                [p.shoulder, p.elbow], [p.elbow, p.wrist],
+                [p.shoulder, p.hip], [p.hip, p.knee], [p.knee, p.ankle]
+            ];
+            drawPoints(landmarks, points, connections);
+        }
+
+        function drawPoints(landmarks, points, connections) {
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 3;
+
+            for (const [startIdx, endIdx] of connections) {
+                const start = landmarks[startIdx];
+                const end = landmarks[endIdx];
+                ctx.beginPath();
+                ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
+                ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = '#FF0000';
+            for (const idx of points) {
+                const point = landmarks[idx];
+                ctx.beginPath();
+                ctx.arc(point.x * canvas.width, point.y * canvas.height, 6, 0, 2 * Math.PI);
+                ctx.fill();
             }
         }
 
@@ -427,27 +502,7 @@
             counterEl.innerText = formatTime(plankSeconds);
         }
 
-        function drawSelectedLandmarks(landmarks) {
-            ctx.strokeStyle = '#00FF00';
-            ctx.lineWidth = 3;
-
-            for (const [startIdx, endIdx] of CONNECTIONS_TO_SHOW) {
-                const start = landmarks[startIdx];
-                const end = landmarks[endIdx];
-                ctx.beginPath();
-                ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
-                ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
-                ctx.stroke();
-            }
-
-            ctx.fillStyle = '#FF0000';
-            for (const idx of POINTS_TO_SHOW) {
-                const point = landmarks[idx];
-                ctx.beginPath();
-                ctx.arc(point.x * canvas.width, point.y * canvas.height, 6, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-        }
+        // ===== ОБРАБОТКА КАДРОВ =====
 
         const pose = new Pose({
             locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
@@ -475,10 +530,10 @@
             ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
             if (results.poseLandmarks) {
-                drawSelectedLandmarks(results.poseLandmarks);
-                inPosition = checkPosition(results.poseLandmarks);
-
                 if (currentMode === 'pushup') {
+                    drawPushupLandmarks(results.poseLandmarks);
+                    inPosition = checkPushupPosition(results.poseLandmarks);
+
                     if (inPosition) {
                         statusEl.innerText = "Позиция ОК, считаем! 💪";
                         statusEl.style.color = "#00FF00";
@@ -488,14 +543,21 @@
                         statusEl.style.color = "white";
                     }
                 } else if (currentMode === 'plank') {
-                    if (inPosition) {
+                    const result = checkPlankPosition(results.poseLandmarks);
+                    drawPlankLandmarks(results.poseLandmarks, result.points);
+
+                    if (result.reason === "not_visible") {
+                        statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
+                        statusEl.style.color = "white";
+                    } else if (result.reason === "not_straight") {
+                        statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
+                        statusEl.style.color = "orange";
+                    } else {
                         statusEl.innerText = "Отлично держите планку! 🔥";
                         statusEl.style.color = "#00FF00";
-                    } else {
-                        statusEl.innerText = "Встаньте в планку лицом к камере ⏸";
-                        statusEl.style.color = "white";
                     }
-                    updatePlankTimer(inPosition);
+
+                    updatePlankTimer(result.valid);
                 }
             } else {
                 inPosition = false;
@@ -535,7 +597,7 @@
                 counterEl.innerText = "0";
             } else {
                 titleEl.innerText = "Планка";
-                statusEl.innerText = "Встаньте в планку лицом к камере ⏸";
+                statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
                 counterEl.style.color = "#00FF00";
                 counterEl.innerText = "00:00";
             }
