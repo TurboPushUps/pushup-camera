@@ -117,19 +117,27 @@
     <!-- ===== ЭКРАН: ГЛАВНОЕ МЕНЮ ===== -->
     <div id="screen-menu" class="screen">
         <h1>💪 Pushup Tracker</h1>
-        <button class="menu-button primary" onclick="showScreen('camera')">📷 Начать поход</button>
+        <button class="menu-button primary" onclick="showScreen('select-mode')">📷 Начать поход</button>
         <button class="menu-button" onclick="showScreen('profile')">👤 Профиль</button>
         <button class="menu-button" onclick="showScreen('leaderboard')">🏆 Таблица лидеров</button>
         <button class="menu-button" onclick="showScreen('achievements')">🎖 Достижения</button>
     </div>
 
-    <!-- ===== ЭКРАН: КАМЕРА / ПОДСЧЁТ ===== -->
-    <div id="screen-camera" class="screen">
+    <!-- ===== ЭКРАН: ВЫБОР РЕЖИМА ===== -->
+    <div id="screen-select-mode" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
-        <h2>Подсчёт отжиманий</h2>
+        <h1>Выбери упражнение</h1>
+        <button class="menu-button primary" onclick="startActivity('pushup')">🤸 Отжимания</button>
+        <button class="menu-button primary" onclick="startActivity('plank')">🧘 Планка</button>
+    </div>
+
+    <!-- ===== ЭКРАН: КАМЕРА (используется и для отжиманий, и для планки) ===== -->
+    <div id="screen-activity" class="screen">
+        <button class="back-button" onclick="exitActivity()">← Назад</button>
+        <h2 id="activity-title">Подсчёт отжиманий</h2>
         <h1 id="counter" style="font-size: 60px; color: #00FF00;">0</h1>
-        <p id="status">Займите позицию для отжиманий 🧎</p>
-        <button id="finishBtn" class="menu-button primary" style="max-width: 220px;">Завершить подход</button>
+        <p id="status">Займите позицию 🧎</p>
+        <button id="finishBtn" class="menu-button primary" style="max-width: 220px;">Завершить</button>
         <div class="container">
             <video id="video" width="480" height="640" autoplay playsinline muted></video>
             <canvas id="canvas" width="480" height="640"></canvas>
@@ -145,6 +153,7 @@
             <div class="stat-row"><span>Звание</span><span id="profile-level">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points">—</span></div>
             <div class="stat-row"><span>Отжиманий всего</span><span id="profile-total">—</span></div>
+            <div class="stat-row"><span>Время в планке</span><span id="profile-plank">—</span></div>
             <div class="stat-row"><span>До след. звания</span><span id="profile-next">—</span></div>
         </div>
     </div>
@@ -172,32 +181,19 @@
     <script>
         const API_BASE = "https://pushup-bot-server.onrender.com";
 
-        let cameraStarted = false;
-
         function showScreen(name) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('screen-' + name).classList.add('active');
 
-            if (name === 'camera' && !cameraStarted) {
-                startCamera();
-                cameraStarted = true;
-            }
-            if (name === 'profile') {
-                loadProfile();
-            }
-            if (name === 'leaderboard') {
-                loadLeaderboard();
-            }
-            if (name === 'achievements') {
-                loadAchievementsMock();
-            }
+            if (name === 'profile') loadProfile();
+            if (name === 'leaderboard') loadLeaderboard();
+            if (name === 'achievements') loadAchievementsMock();
         }
 
         function getUserId() {
             const urlParams = new URLSearchParams(window.location.search);
             const idFromUrl = urlParams.get('user_id');
             if (idFromUrl) return idFromUrl;
-
             const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
             return tgUser ? tgUser.id : null;
         }
@@ -264,7 +260,7 @@
             }
         }
 
-        // ===== РЕАЛЬНЫЕ ДАННЫЕ С СЕРВЕРА =====
+        // ===== ПРОФИЛЬ =====
 
         async function loadProfile() {
             const userId = getUserId();
@@ -283,6 +279,11 @@
                 document.getElementById('profile-level').innerText = data.level;
                 document.getElementById('profile-points').innerText = data.points + " ⭐";
                 document.getElementById('profile-total').innerText = data.total_pushups;
+
+                const plankMin = Math.floor(data.total_plank_seconds / 60);
+                const plankSec = data.total_plank_seconds % 60;
+                document.getElementById('profile-plank').innerText = `${plankMin} мин ${plankSec} сек`;
+
                 document.getElementById('profile-next').innerText =
                     data.points_to_next_level !== null
                         ? `${data.points_to_next_level} очков до «${data.next_level}»`
@@ -308,7 +309,7 @@
                 loading.style.display = 'none';
 
                 if (data.leaderboard.length === 0) {
-                    list.innerHTML = "<p>Пока никто не отжимался 🤷</p>";
+                    list.innerHTML = "<p>Пока никто не тренировался 🤷</p>";
                     return;
                 }
 
@@ -340,23 +341,30 @@
             });
         }
 
-        // ===== ЛОГИКА КАМЕРЫ И ПОДСЧЁТА =====
+        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ (общие для отжиманий и планки) =====
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const statusEl = document.getElementById('status');
+        const counterEl = document.getElementById('counter');
+        const titleEl = document.getElementById('activity-title');
+
+        let currentMode = null; // 'pushup' или 'plank'
+        let cameraStarted = false;
+        let cameraObj = null;
 
         let pushupCount = 0;
         let stage = "up";
         let inPosition = false;
 
+        let plankSeconds = 0;
+        let plankLastTimestamp = null;
+
         function calculateAngle(a, b, c) {
             const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
             let angle = Math.abs(radians * 180.0 / Math.PI);
-            if (angle > 180.0) {
-                angle = 360 - angle;
-            }
+            if (angle > 180.0) angle = 360 - angle;
             return angle;
         }
 
@@ -378,11 +386,7 @@
         ];
 
         function checkPosition(landmarks) {
-            const requiredPoints = [
-                LEFT_SHOULDER, RIGHT_SHOULDER,
-                LEFT_ELBOW, RIGHT_ELBOW,
-                LEFT_WRIST, RIGHT_WRIST
-            ];
+            const requiredPoints = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
             return requiredPoints.every(idx => landmarks[idx].visibility > 0.6);
         }
 
@@ -393,15 +397,34 @@
 
             const angle = calculateAngle(shoulder, elbow, wrist);
 
-            if (angle < 90) {
-                stage = "down";
-            }
+            if (angle < 90) stage = "down";
 
             if (angle > 160 && stage === "down") {
                 stage = "up";
                 pushupCount++;
-                document.getElementById('counter').innerText = pushupCount;
+                counterEl.innerText = pushupCount;
             }
+        }
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = Math.floor(totalSeconds % 60);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updatePlankTimer(isInPosition) {
+            const now = Date.now();
+
+            if (isInPosition) {
+                if (plankLastTimestamp !== null) {
+                    plankSeconds += (now - plankLastTimestamp) / 1000;
+                }
+                plankLastTimestamp = now;
+            } else {
+                plankLastTimestamp = null;
+            }
+
+            counterEl.innerText = formatTime(plankSeconds);
         }
 
         function drawSelectedLandmarks(landmarks) {
@@ -453,29 +476,39 @@
 
             if (results.poseLandmarks) {
                 drawSelectedLandmarks(results.poseLandmarks);
-
                 inPosition = checkPosition(results.poseLandmarks);
 
-                if (inPosition) {
-                    statusEl.innerText = "Позиция ОК, считаем! 💪";
-                    statusEl.style.color = "#00FF00";
-                    countPushups(results.poseLandmarks);
-                } else {
-                    statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                    statusEl.style.color = "white";
+                if (currentMode === 'pushup') {
+                    if (inPosition) {
+                        statusEl.innerText = "Позиция ОК, считаем! 💪";
+                        statusEl.style.color = "#00FF00";
+                        countPushups(results.poseLandmarks);
+                    } else {
+                        statusEl.innerText = "Займите позицию для отжиманий 🧎";
+                        statusEl.style.color = "white";
+                    }
+                } else if (currentMode === 'plank') {
+                    if (inPosition) {
+                        statusEl.innerText = "Отлично держите планку! 🔥";
+                        statusEl.style.color = "#00FF00";
+                    } else {
+                        statusEl.innerText = "Встаньте в планку лицом к камере ⏸";
+                        statusEl.style.color = "white";
+                    }
+                    updatePlankTimer(inPosition);
                 }
             } else {
                 inPosition = false;
                 statusEl.innerText = "Не вижу тело в кадре 👀";
                 statusEl.style.color = "white";
+                if (currentMode === 'plank') updatePlankTimer(false);
             }
 
             ctx.restore();
         }
 
-        let cameraObj = null;
-
-        function startCamera() {
+        function startCameraIfNeeded() {
+            if (cameraStarted) return;
             cameraObj = new Camera(video, {
                 onFrame: async () => {
                     await pose.send({ image: video });
@@ -484,6 +517,36 @@
                 height: 640
             });
             cameraObj.start();
+            cameraStarted = true;
+        }
+
+        function startActivity(mode) {
+            currentMode = mode;
+
+            pushupCount = 0;
+            stage = "up";
+            plankSeconds = 0;
+            plankLastTimestamp = null;
+
+            if (mode === 'pushup') {
+                titleEl.innerText = "Подсчёт отжиманий";
+                statusEl.innerText = "Займите позицию для отжиманий 🧎";
+                counterEl.style.color = "#00FF00";
+                counterEl.innerText = "0";
+            } else {
+                titleEl.innerText = "Планка";
+                statusEl.innerText = "Встаньте в планку лицом к камере ⏸";
+                counterEl.style.color = "#00FF00";
+                counterEl.innerText = "00:00";
+            }
+
+            showScreen('activity');
+            startCameraIfNeeded();
+        }
+
+        function exitActivity() {
+            currentMode = null;
+            showScreen('menu');
         }
 
         const tg = window.Telegram.WebApp;
@@ -492,33 +555,39 @@
 
         document.getElementById('finishBtn').addEventListener('click', async () => {
             const userId = getUserId();
-            const finishedCount = pushupCount;
+            const mode = currentMode;
 
             if (cameraObj) {
                 cameraObj.stop();
+                cameraStarted = false;
             }
 
-            if (userId && finishedCount > 0) {
+            if (userId && mode === 'pushup' && pushupCount > 0) {
                 try {
                     await fetch(`${API_BASE}/api/save_pushups`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId, count: finishedCount })
+                        body: JSON.stringify({ user_id: userId, count: pushupCount })
                     });
                 } catch (error) {
                     console.error("Не удалось сохранить подход:", error);
                 }
+            } else if (userId && mode === 'plank' && plankSeconds >= 1) {
+                try {
+                    await fetch(`${API_BASE}/api/save_plank`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, seconds: Math.floor(plankSeconds) })
+                    });
+                } catch (error) {
+                    console.error("Не удалось сохранить планку:", error);
+                }
             }
 
-            pushupCount = 0;
-            stage = "up";
-            document.getElementById('counter').innerText = "0";
-            cameraStarted = false;
-
+            currentMode = null;
             showScreen('menu');
         });
 
-        // ===== СТАРТ: проверяем, есть ли уже никнейм =====
         checkUserStatus();
     </script>
 </body>
