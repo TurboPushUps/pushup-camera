@@ -101,6 +101,49 @@
             min-height: 20px;
             margin-bottom: 10px;
         }
+
+        .tab-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            max-width: 320px;
+            margin: 15px auto 10px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 10px;
+            font-size: 15px;
+            background: #1c1c1c;
+            color: #888;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .tab-button.active {
+            background: #00FF00;
+            color: #111;
+            font-weight: bold;
+            border: none;
+        }
+        .sub-tab-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            max-width: 320px;
+            margin: 0 auto 15px;
+        }
+        .sub-tab-button {
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        .sub-tab-button.active {
+            border-color: #00FF00;
+            color: #00FF00;
+        }
     </style>
 </head>
 <body>
@@ -148,13 +191,30 @@
     <div id="screen-profile" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>👤 Профиль</h2>
+
         <div id="profile-loading" class="loading">Загрузка...</div>
+
         <div id="profile-content" style="display: none;">
             <div class="stat-row"><span>Звание</span><span id="profile-level">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points">—</span></div>
-            <div class="stat-row"><span>Отжиманий всего</span><span id="profile-total">—</span></div>
-            <div class="stat-row"><span>Время в планке</span><span id="profile-plank">—</span></div>
             <div class="stat-row"><span>До след. звания</span><span id="profile-next">—</span></div>
+
+            <div class="tab-row">
+                <button class="tab-button active" id="profile-tab-pushup" onclick="switchProfileTab('pushup')">🤸 Отжимания</button>
+                <button class="tab-button" id="profile-tab-plank" onclick="switchProfileTab('plank')">🧘 Планка</button>
+            </div>
+
+            <div id="profile-pushup-stats">
+                <div class="stat-row"><span>Сегодня</span><span id="profile-pushup-today">—</span></div>
+                <div class="stat-row"><span>Дней подряд</span><span id="profile-pushup-streak">—</span></div>
+                <div class="stat-row"><span>Всего</span><span id="profile-pushup-total">—</span></div>
+            </div>
+
+            <div id="profile-plank-stats" style="display: none;">
+                <div class="stat-row"><span>Сегодня</span><span id="profile-plank-today">—</span></div>
+                <div class="stat-row"><span>Дней подряд</span><span id="profile-plank-streak">—</span></div>
+                <div class="stat-row"><span>Всего</span><span id="profile-plank-total">—</span></div>
+            </div>
         </div>
     </div>
 
@@ -162,6 +222,16 @@
     <div id="screen-leaderboard" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2>🏆 Таблица лидеров</h2>
+
+        <div class="tab-row">
+            <button class="tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">🤸 Отжимания</button>
+            <button class="tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">🧘 Планка</button>
+        </div>
+        <div class="sub-tab-row">
+            <button class="sub-tab-button active" id="lb-period-today" onclick="switchLeaderboardPeriod('today')">Сегодня</button>
+            <button class="sub-tab-button" id="lb-period-total" onclick="switchLeaderboardPeriod('total')">Всего</button>
+        </div>
+
         <div id="leaderboard-loading" class="loading">Загрузка...</div>
         <div id="leaderboard-list"></div>
     </div>
@@ -262,6 +332,15 @@
 
         // ===== ПРОФИЛЬ =====
 
+        let profileData = null;
+        let activeProfileTab = 'pushup';
+
+        function formatSeconds(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return `${m} мин ${s} сек`;
+        }
+
         async function loadProfile() {
             const userId = getUserId();
             document.getElementById('profile-loading').style.display = 'block';
@@ -275,25 +354,64 @@
             try {
                 const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
                 const data = await response.json();
+                profileData = data;
 
                 document.getElementById('profile-level').innerText = data.level;
                 document.getElementById('profile-points').innerText = data.points + " ⭐";
-                document.getElementById('profile-total').innerText = data.total_pushups;
-
-                const plankMin = Math.floor(data.total_plank_seconds / 60);
-                const plankSec = data.total_plank_seconds % 60;
-                document.getElementById('profile-plank').innerText = `${plankMin} мин ${plankSec} сек`;
-
                 document.getElementById('profile-next').innerText =
                     data.points_to_next_level !== null
                         ? `${data.points_to_next_level} очков до «${data.next_level}»`
                         : "Максимальный уровень! 🎉";
+
+                document.getElementById('profile-pushup-today').innerText = data.pushup.today;
+                document.getElementById('profile-pushup-streak').innerText = data.pushup.streak + " 🔥";
+                document.getElementById('profile-pushup-total').innerText = data.pushup.total;
+
+                document.getElementById('profile-plank-today').innerText = formatSeconds(data.plank.today_seconds);
+                document.getElementById('profile-plank-streak').innerText = data.plank.streak + " 🔥";
+                document.getElementById('profile-plank-total').innerText = formatSeconds(data.plank.total_seconds);
 
                 document.getElementById('profile-loading').style.display = 'none';
                 document.getElementById('profile-content').style.display = 'block';
             } catch (error) {
                 document.getElementById('profile-loading').innerText = "Не удалось загрузить профиль. Попробуйте позже.";
             }
+        }
+
+        function switchProfileTab(tab) {
+            activeProfileTab = tab;
+            document.getElementById('profile-tab-pushup').classList.toggle('active', tab === 'pushup');
+            document.getElementById('profile-tab-plank').classList.toggle('active', tab === 'plank');
+            document.getElementById('profile-pushup-stats').style.display = tab === 'pushup' ? 'block' : 'none';
+            document.getElementById('profile-plank-stats').style.display = tab === 'plank' ? 'block' : 'none';
+        }
+
+        // ===== ТАБЛИЦА ЛИДЕРОВ =====
+
+        let lbActivity = 'pushup';
+        let lbPeriod = 'today';
+
+        function switchLeaderboardActivity(activity) {
+            lbActivity = activity;
+            document.getElementById('lb-activity-pushup').classList.toggle('active', activity === 'pushup');
+            document.getElementById('lb-activity-plank').classList.toggle('active', activity === 'plank');
+            loadLeaderboard();
+        }
+
+        function switchLeaderboardPeriod(period) {
+            lbPeriod = period;
+            document.getElementById('lb-period-today').classList.toggle('active', period === 'today');
+            document.getElementById('lb-period-total').classList.toggle('active', period === 'total');
+            loadLeaderboard();
+        }
+
+        function formatLeaderboardValue(value, activity) {
+            if (activity === 'plank') {
+                const m = Math.floor(value / 60);
+                const s = value % 60;
+                return `${m}м ${s}с`;
+            }
+            return value;
         }
 
         async function loadLeaderboard() {
@@ -303,7 +421,7 @@
             list.innerHTML = "";
 
             try {
-                const response = await fetch(`${API_BASE}/api/leaderboard`);
+                const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`);
                 const data = await response.json();
 
                 loading.style.display = 'none';
@@ -316,7 +434,8 @@
                 data.leaderboard.forEach((user, index) => {
                     const row = document.createElement('div');
                     row.className = 'leader-row';
-                    row.innerHTML = `<span>${index + 1}. ${user.name}</span><span>${user.points} ⭐</span>`;
+                    const displayValue = formatLeaderboardValue(user.value, lbActivity);
+                    row.innerHTML = `<span>${index + 1}. ${user.name}</span><span>${displayValue}</span>`;
                     list.appendChild(row);
                 });
             } catch (error) {
@@ -368,15 +487,12 @@
             return angle;
         }
 
-        // Индексы точек MediaPipe
         const LEFT_SHOULDER = 11, RIGHT_SHOULDER = 12;
         const LEFT_ELBOW = 13, RIGHT_ELBOW = 14;
         const LEFT_WRIST = 15, RIGHT_WRIST = 16;
         const LEFT_HIP = 23, RIGHT_HIP = 24;
         const LEFT_KNEE = 25, RIGHT_KNEE = 26;
         const LEFT_ANKLE = 27, RIGHT_ANKLE = 28;
-
-        // ===== ЛОГИКА ОТЖИМАНИЙ (без изменений) =====
 
         const PUSHUP_POINTS = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
         const PUSHUP_CONNECTIONS = [
@@ -393,11 +509,8 @@
             const shoulder = landmarks[LEFT_SHOULDER];
             const elbow = landmarks[LEFT_ELBOW];
             const wrist = landmarks[LEFT_WRIST];
-
             const angle = calculateAngle(shoulder, elbow, wrist);
-
             if (angle < 90) stage = "down";
-
             if (angle > 160 && stage === "down") {
                 stage = "up";
                 pushupCount++;
@@ -409,8 +522,6 @@
             drawPoints(landmarks, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
         }
 
-        // ===== ЛОГИКА ПЛАНКИ (боковой ракурс) =====
-
         function avgVisibility(indices, landmarks) {
             return indices.reduce((sum, idx) => sum + landmarks[idx].visibility, 0) / indices.length;
         }
@@ -418,7 +529,6 @@
         function getPlankSidePoints(landmarks) {
             const leftIndices = [LEFT_SHOULDER, LEFT_ELBOW, LEFT_WRIST, LEFT_HIP, LEFT_KNEE, LEFT_ANKLE];
             const rightIndices = [RIGHT_SHOULDER, RIGHT_ELBOW, RIGHT_WRIST, RIGHT_HIP, RIGHT_KNEE, RIGHT_ANKLE];
-
             const leftScore = avgVisibility(leftIndices, landmarks);
             const rightScore = avgVisibility(rightIndices, landmarks);
 
@@ -432,22 +542,14 @@
         function checkPlankPosition(landmarks) {
             const p = getPlankSidePoints(landmarks);
             const required = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
-
             const allVisible = required.every(idx => landmarks[idx].visibility > 0.6);
-            if (!allVisible) {
-                return { valid: false, reason: "not_visible", points: p };
-            }
+            if (!allVisible) return { valid: false, reason: "not_visible", points: p };
 
             const bodyAngle = calculateAngle(landmarks[p.shoulder], landmarks[p.hip], landmarks[p.knee]);
             const legAngle = calculateAngle(landmarks[p.hip], landmarks[p.knee], landmarks[p.ankle]);
-
             const isStraight = bodyAngle > 150 && legAngle > 150;
 
-            return {
-                valid: isStraight,
-                reason: isStraight ? "ok" : "not_straight",
-                points: p
-            };
+            return { valid: isStraight, reason: isStraight ? "ok" : "not_straight", points: p };
         }
 
         function drawPlankLandmarks(landmarks, p) {
@@ -462,7 +564,6 @@
         function drawPoints(landmarks, points, connections) {
             ctx.strokeStyle = '#00FF00';
             ctx.lineWidth = 3;
-
             for (const [startIdx, endIdx] of connections) {
                 const start = landmarks[startIdx];
                 const end = landmarks[endIdx];
@@ -471,7 +572,6 @@
                 ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
                 ctx.stroke();
             }
-
             ctx.fillStyle = '#FF0000';
             for (const idx of points) {
                 const point = landmarks[idx];
@@ -489,7 +589,6 @@
 
         function updatePlankTimer(isInPosition) {
             const now = Date.now();
-
             if (isInPosition) {
                 if (plankLastTimestamp !== null) {
                     plankSeconds += (now - plankLastTimestamp) / 1000;
@@ -498,11 +597,8 @@
             } else {
                 plankLastTimestamp = null;
             }
-
             counterEl.innerText = formatTime(plankSeconds);
         }
-
-        // ===== ОБРАБОТКА КАДРОВ =====
 
         const pose = new Pose({
             locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
@@ -584,7 +680,6 @@
 
         function startActivity(mode) {
             currentMode = mode;
-
             pushupCount = 0;
             stage = "up";
             plankSeconds = 0;
