@@ -79,7 +79,6 @@
         }
         .retry-button.active { display: inline-block; }
 
-        /* ===== ПОДЗЕМЕЛЬЯ ===== */
         .dungeon-list-row {
             display: flex; justify-content: space-between; align-items: center; max-width: 380px;
             margin: 8px auto; padding: 14px 18px; background: #1c1c1c; border-radius: 12px; font-size: 16px;
@@ -234,7 +233,7 @@
         <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, подключим позже)</p>
     </div>
 
-    <!-- ===== ОВЕРЛЕИ: пауза между врагами / победа в подземелье ===== -->
+    <!-- ===== ОВЕРЛЕИ ===== -->
     <div id="overlay-enemy-pause" class="overlay-panel">
         <div class="overlay-box">
             <h3>Враг повержен! 💥</h3>
@@ -378,6 +377,7 @@
 
         let lbActivity = 'pushup';
         let lbPeriod = 'today';
+        let leaderboardRequestId = 0;
 
         function switchLeaderboardActivity(activity) {
             lbActivity = activity;
@@ -399,16 +399,29 @@
             }
             return value;
         }
+
         async function loadLeaderboard() {
+            const requestId = ++leaderboardRequestId;
+
             const list = document.getElementById('leaderboard-list');
             const loading = document.getElementById('leaderboard-loading');
             loading.style.display = 'block';
-            list.innerHTML = "";
+
             try {
                 const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`);
                 const data = await response.json();
+
+                // Если за время ожидания запустился более новый запрос — игнорируем этот устаревший ответ
+                if (requestId !== leaderboardRequestId) return;
+
                 loading.style.display = 'none';
-                if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
+                list.innerHTML = "";
+
+                if (data.leaderboard.length === 0) {
+                    list.innerHTML = "<p>Пока никто не тренировался 🤷</p>";
+                    return;
+                }
+
                 data.leaderboard.forEach((user, index) => {
                     const row = document.createElement('div');
                     row.className = 'leader-row';
@@ -417,6 +430,7 @@
                     list.appendChild(row);
                 });
             } catch (error) {
+                if (requestId !== leaderboardRequestId) return;
                 loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже.";
             }
         }
@@ -440,7 +454,7 @@
 
         // ===== ВЫБОР ПОТОКА: ПОДЗЕМЕЛЬЯ / СВОБОДНАЯ =====
 
-        let pendingFlow = null; // 'dungeon' | 'free'
+        let pendingFlow = null;
 
         function chooseFlow(flow) {
             pendingFlow = flow;
