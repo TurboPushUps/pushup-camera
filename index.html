@@ -4,31 +4,47 @@
     <meta charset="UTF-8">
     <title>Pushup Tracker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&display=swap" rel="stylesheet">
     <style>
         html, body {
             margin: 0; padding: 0; text-align: center;
-            background: #111; color: white; font-family: Arial, sans-serif; height: 100%;
+            background: #0d0906; color: #e9d9b8; font-family: 'EB Garamond', serif; height: 100%;
         }
         body { min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
 
-        .screen { display: none; padding: 20px 10px 40px; min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: #e8c88a; letter-spacing: 1px; }
+
+        .screen {
+            display: none; padding: 20px 10px 40px; min-height: var(--tg-viewport-height, 100vh);
+            box-sizing: border-box; background-size: cover; background-position: center;
+        }
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .screen.center-content.active .menu-button { margin: 14px 0; }
 
-        h1 { font-size: 32px; }
-        h2 { font-size: 24px; }
+        #screen-menu { background-image: linear-gradient(rgba(10,7,4,0.75), rgba(10,7,4,0.85)), url('bg-menu.jpg'); }
+        #screen-profile { background-image: linear-gradient(rgba(10,7,4,0.72), rgba(10,7,4,0.85)), url('bg-profile.jpg'); }
+
+        h1 { font-size: 30px; }
+        h2 { font-size: 22px; }
 
         .menu-button {
-            display: block; width: 100%; max-width: 380px; margin: 14px auto; padding: 20px;
-            font-size: 21px; background: #1c1c1c; color: white; border: 1px solid #333; border-radius: 14px;
+            display: block; width: 100%; max-width: 380px; margin: 14px auto; padding: 18px;
+            font-size: 19px; font-family: 'Cinzel', serif;
+            background: linear-gradient(#2a2116, #1a140d);
+            color: #e8c88a; border: 2px solid #a9812f; border-radius: 8px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
         }
-        .menu-button.primary { background: #00FF00; color: #111; font-weight: bold; border: none; }
+        .menu-button.primary {
+            background: linear-gradient(#4a3312, #2e1f0a);
+            color: #ffe8b0; border: 2px solid #d4af37; font-weight: bold;
+        }
         .menu-button.locked { opacity: 0.35; }
         .menu-button.replay { border-color: #00FF00; color: #00FF00; }
 
         .back-button {
-            position: absolute; top: 15px; left: 15px; background: none; border: none; color: #00FF00; font-size: 20px;
+            position: absolute; top: 15px; left: 15px; background: none; border: none; color: #d4af37; font-size: 20px;
         }
 
         .container { width: 560px; max-width: 100%; margin: 0 auto; }
@@ -36,80 +52,72 @@
         canvas { display: block; width: 100%; height: auto; margin: 0 auto; }
         #status { font-size: 20px; margin: 10px; min-height: 26px; }
 
-        .stat-row {
-            display: flex; justify-content: space-between; max-width: 380px; margin: 12px auto;
-            padding: 16px 18px; background: #1c1c1c; border-radius: 12px; font-size: 17px;
+        .stat-row, .leader-row, .achievement-row, .dungeon-list-row {
+            display: flex; justify-content: space-between; align-items: center; max-width: 380px; margin: 10px auto;
+            padding: 14px 18px; background: linear-gradient(#241b10, #150f09);
+            border: 1px solid #7a5c22; border-radius: 8px; font-size: 16px; color: #e9d9b8;
         }
-        .leader-row {
-            display: flex; justify-content: space-between; max-width: 380px; margin: 8px auto;
-            padding: 14px 18px; background: #1c1c1c; border-radius: 12px; font-size: 17px;
-        }
-        .achievement-row {
-            max-width: 380px; margin: 10px auto; padding: 14px 18px; background: #1c1c1c;
-            border-radius: 12px; text-align: left; font-size: 17px;
-        }
+        .achievement-row { text-align: left; }
         .achievement-row.locked { opacity: 0.4; }
-        .loading { opacity: 0.6; font-size: 15px; margin: 12px; }
-
-        .nickname-input {
-            display: block; width: 100%; max-width: 320px; margin: 20px auto; padding: 16px;
-            font-size: 19px; border-radius: 12px; border: 1px solid #333; background: #1c1c1c;
-            color: white; text-align: center; box-sizing: border-box;
-        }
-        .nickname-error { color: #ff5555; font-size: 15px; min-height: 20px; margin-bottom: 10px; }
-
-        .tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 18px auto 12px; }
-        .tab-button {
-            flex: 1; padding: 12px; font-size: 16px; background: #1c1c1c; color: #888;
-            border: 1px solid #333; border-radius: 10px;
-        }
-        .tab-button.active { background: #00FF00; color: #111; font-weight: bold; border: none; }
-        .sub-tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 0 auto 18px; }
-        .sub-tab-button {
-            flex: 1; padding: 10px; font-size: 14px; background: transparent; color: #888;
-            border: 1px solid #333; border-radius: 10px;
-        }
-        .sub-tab-button.active { border-color: #00FF00; color: #00FF00; }
-
-        .save-overlay { display: none; margin: 15px auto; font-size: 17px; color: #00FF00; }
-        .save-overlay.active { display: block; }
-        .retry-button {
-            display: none; margin: 10px auto; padding: 14px 24px; font-size: 16px;
-            background: #ff5555; color: white; border: none; border-radius: 10px;
-        }
-        .retry-button.active { display: inline-block; }
-
-        .dungeon-list-row {
-            display: flex; justify-content: space-between; align-items: center; max-width: 380px;
-            margin: 8px auto; padding: 14px 18px; background: #1c1c1c; border-radius: 12px; font-size: 16px;
-        }
-        .dungeon-list-row.boss { border: 1px solid #ffcc00; }
+        .dungeon-list-row.boss { border: 2px solid #ffcc00; }
         .dungeon-list-row.locked { opacity: 0.35; }
         .dungeon-list-row button {
-            padding: 8px 14px; font-size: 14px; background: #00FF00; color: #111;
-            border: none; border-radius: 8px; font-weight: bold;
+            padding: 8px 14px; font-size: 14px; background: #d4af37; color: #1a140d;
+            border: none; border-radius: 6px; font-weight: bold; font-family: 'Cinzel', serif;
         }
         .dungeon-list-row.locked button { background: #444; color: #888; }
 
-        .dungeon-hud {
-            max-width: 380px; margin: 10px auto; padding: 14px; background: #1c1c1c; border-radius: 12px;
+        .loading { opacity: 0.7; font-size: 15px; margin: 12px; }
+
+        .nickname-input {
+            display: block; width: 100%; max-width: 320px; margin: 20px auto; padding: 16px;
+            font-size: 19px; border-radius: 8px; border: 2px solid #a9812f; background: #1a140d;
+            color: #e9d9b8; text-align: center; box-sizing: border-box;
         }
-        .dungeon-hud-title { font-size: 16px; opacity: 0.8; margin-bottom: 8px; }
-        .hp-bar-bg { width: 100%; height: 22px; background: #333; border-radius: 11px; overflow: hidden; }
-        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3333, #ff8800); transition: width 0.2s; }
-        .hp-bar-text { font-size: 14px; margin-top: 6px; opacity: 0.8; }
+        .nickname-error { color: #ff8888; font-size: 15px; min-height: 20px; margin-bottom: 10px; }
+
+        .tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 18px auto 12px; }
+        .tab-button {
+            flex: 1; padding: 12px; font-size: 15px; font-family: 'Cinzel', serif;
+            background: #1a140d; color: #a08a5f; border: 1px solid #7a5c22; border-radius: 8px;
+        }
+        .tab-button.active { background: #d4af37; color: #1a140d; font-weight: bold; border: none; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 0 auto 18px; }
+        .sub-tab-button {
+            flex: 1; padding: 10px; font-size: 14px; background: transparent; color: #a08a5f;
+            border: 1px solid #7a5c22; border-radius: 8px;
+        }
+        .sub-tab-button.active { border-color: #d4af37; color: #d4af37; }
+
+        .save-overlay { display: none; margin: 15px auto; font-size: 17px; color: #d4af37; }
+        .save-overlay.active { display: block; }
+        .retry-button {
+            display: none; margin: 10px auto; padding: 14px 24px; font-size: 16px;
+            background: #a13a3a; color: white; border: none; border-radius: 8px;
+        }
+        .retry-button.active { display: inline-block; }
+
+        .dungeon-hud {
+            max-width: 380px; margin: 10px auto; padding: 14px; background: #1a140d;
+            border: 1px solid #7a5c22; border-radius: 8px;
+        }
+        .dungeon-hud-title { font-size: 15px; opacity: 0.85; margin-bottom: 8px; font-family: 'Cinzel', serif; }
+        .hp-bar-bg { width: 100%; height: 22px; background: #2a2016; border-radius: 11px; overflow: hidden; border: 1px solid #7a5c22; }
+        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #a13a3a, #d4691c); transition: width 0.2s; }
+        .hp-bar-text { font-size: 14px; margin-top: 6px; opacity: 0.85; }
 
         .overlay-panel {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
+            background: rgba(5,3,1,0.9); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
         }
         .overlay-panel.active { display: flex; }
         .overlay-box {
-            background: #1c1c1c; border-radius: 16px; padding: 30px 20px; max-width: 320px; text-align: center;
+            background: linear-gradient(#241b10, #150f09); border: 2px solid #a9812f;
+            border-radius: 12px; padding: 30px 20px; max-width: 320px; text-align: center;
         }
         .overlay-box h3 { margin-top: 0; }
         .overlay-box .menu-button { max-width: 260px; }
-        .countdown-number { font-size: 48px; color: #00FF00; font-weight: bold; }
+        .countdown-number { font-size: 48px; color: #d4af37; font-weight: bold; font-family: 'Cinzel', serif; }
     </style>
 </head>
 <body>
@@ -130,17 +138,18 @@
         <button class="menu-button" onclick="showScreen('profile')">👤 Профиль</button>
         <button class="menu-button" onclick="showScreen('leaderboard')">🏆 Таблица лидеров</button>
         <button class="menu-button" onclick="showScreen('achievements')">🎖 Достижения</button>
+        <button class="menu-button" onclick="showScreen('settings')">⚙️ Настройки</button>
     </div>
 
-    <!-- ===== ВЫБОР: ПОДЗЕМЕЛЬЯ / СВОБОДНАЯ ТРЕНИРОВКА ===== -->
+    <!-- ===== ВЫБОР: РЕЖИМ ПРИКЛЮЧЕНИЙ / СВОБОДНАЯ ТРЕНИРОВКА ===== -->
     <div id="screen-training-type" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h1>Как хочешь тренироваться?</h1>
-        <button class="menu-button primary" onclick="chooseFlow('dungeon')">⚔️ Подземелья</button>
+        <button class="menu-button primary" onclick="chooseFlow('dungeon')">⚔️ Режим приключений</button>
         <button class="menu-button primary" onclick="chooseFlow('free')">🏋️ Свободная тренировка</button>
     </div>
 
-    <!-- ===== ВЫБОР АКТИВНОСТИ (Отжимания/Планка) ===== -->
+    <!-- ===== ВЫБОР АКТИВНОСТИ ===== -->
     <div id="screen-select-mode" class="screen center-content">
         <button class="back-button" onclick="showScreen('training-type')">← Назад</button>
         <h1>Выбери упражнение</h1>
@@ -148,26 +157,26 @@
         <button class="menu-button primary" onclick="selectActivityForFlow('plank')">🧘 Планка</button>
     </div>
 
-    <!-- ===== ВЫБОР ПОДЗЕМЕЛЬЯ ===== -->
+    <!-- ===== ВЫБОР ПРИКЛЮЧЕНИЯ ===== -->
     <div id="screen-dungeon-select" class="screen">
         <button class="back-button" onclick="showScreen('training-type')">← Назад</button>
-        <h2 id="dungeon-select-title">Подземелья</h2>
+        <h2 id="dungeon-select-title">Режим приключений</h2>
         <div id="dungeon-select-loading" class="loading">Загрузка...</div>
         <div id="dungeon-select-list"></div>
     </div>
 
-    <!-- ===== КАМЕРА (свободная тренировка и подземелья) ===== -->
+    <!-- ===== КАМЕРА ===== -->
     <div id="screen-activity" class="screen">
         <button class="back-button" id="activityBackBtn" onclick="exitActivity()">← Назад</button>
         <h2 id="activity-title">Подсчёт отжиманий</h2>
 
         <div id="dungeon-hud" class="dungeon-hud" style="display:none;">
-            <div class="dungeon-hud-title" id="dungeon-hud-title">Подземелье 1 — Враг 1 из 1</div>
+            <div class="dungeon-hud-title" id="dungeon-hud-title">Приключение 1 — Враг 1 из 1</div>
             <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div></div>
             <div class="hp-bar-text" id="hp-bar-text">HP: 18 / 18</div>
         </div>
 
-        <h1 id="counter" style="font-size: 72px; color: #00FF00;">0</h1>
+        <h1 id="counter" style="font-size: 72px; color: #d4af37;">0</h1>
         <p id="status">Займите позицию 🧎</p>
         <button id="finishBtn" class="menu-button primary" style="max-width: 260px;">Завершить</button>
         <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
@@ -197,14 +206,14 @@
                 <div class="stat-row"><span>Сегодня</span><span id="profile-pushup-today">—</span></div>
                 <div class="stat-row"><span>Дней подряд</span><span id="profile-pushup-streak">—</span></div>
                 <div class="stat-row"><span>Всего</span><span id="profile-pushup-total">—</span></div>
-                <div class="stat-row"><span>Подземелье</span><span id="profile-pushup-dungeon">—</span></div>
+                <div class="stat-row"><span>Приключение</span><span id="profile-pushup-dungeon">—</span></div>
             </div>
 
             <div id="profile-plank-stats" style="display: none;">
                 <div class="stat-row"><span>Сегодня</span><span id="profile-plank-today">—</span></div>
                 <div class="stat-row"><span>Дней подряд</span><span id="profile-plank-streak">—</span></div>
                 <div class="stat-row"><span>Всего</span><span id="profile-plank-total">—</span></div>
-                <div class="stat-row"><span>Подземелье</span><span id="profile-plank-dungeon">—</span></div>
+                <div class="stat-row"><span>Приключение</span><span id="profile-plank-dungeon">—</span></div>
             </div>
         </div>
     </div>
@@ -233,6 +242,17 @@
         <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, подключим позже)</p>
     </div>
 
+    <!-- ===== НАСТРОЙКИ ===== -->
+    <div id="screen-settings" class="screen center-content">
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h1>⚙️ Настройки</h1>
+        <div class="stat-row" style="max-width: 320px;">
+            <span>Звуковые сигналы</span>
+            <span id="settings-sound-status">—</span>
+        </div>
+        <button class="menu-button primary" onclick="toggleSound()">Переключить звук</button>
+    </div>
+
     <!-- ===== ОВЕРЛЕИ ===== -->
     <div id="overlay-enemy-pause" class="overlay-panel">
         <div class="overlay-box">
@@ -244,7 +264,7 @@
 
     <div id="overlay-dungeon-complete" class="overlay-panel">
         <div class="overlay-box">
-            <h3>Подземелье пройдено! 🎉</h3>
+            <h3>Приключение пройдено! 🎉</h3>
             <p id="dungeon-complete-xp">+0 XP</p>
             <button class="menu-button primary" onclick="continueDungeon()">Продолжить в следующее</button>
             <button class="menu-button" onclick="finishDungeonSession()">Закончить поход</button>
@@ -271,6 +291,7 @@
             if (name === 'profile') loadProfile();
             if (name === 'leaderboard') loadLeaderboard();
             if (name === 'achievements') loadAchievementsMock();
+            if (name === 'settings') renderSettingsScreen();
         }
 
         function getUserId() {
@@ -279,6 +300,55 @@
             if (idFromUrl) return idFromUrl;
             const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
             return tgUser ? tgUser.id : null;
+        }
+
+        // ===== ЗВУК =====
+
+        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        let audioCtx = null;
+
+        function getAudioCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playBeep(freq = 880, duration = 150, type = 'sine', volume = 0.2) {
+            if (!soundEnabled) return;
+            try {
+                const ctxA = getAudioCtx();
+                const osc = ctxA.createOscillator();
+                const gain = ctxA.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(ctxA.destination);
+                gain.gain.setValueAtTime(volume, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + duration / 1000);
+                osc.start();
+                osc.stop(ctxA.currentTime + duration / 1000);
+            } catch (e) { console.error("Ошибка звука:", e); }
+        }
+
+        function playMinuteBeep() { playBeep(880, 200); }
+        function playVictorySound() {
+            playBeep(660, 150);
+            setTimeout(() => playBeep(880, 150), 150);
+            setTimeout(() => playBeep(1100, 300), 300);
+        }
+        function playDefeatSound() {
+            playBeep(300, 300, 'sawtooth');
+            setTimeout(() => playBeep(180, 400, 'sawtooth'), 250);
+        }
+
+        function renderSettingsScreen() {
+            document.getElementById('settings-sound-status').innerText = soundEnabled ? 'Включены 🔊' : 'Выключены 🔇';
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('soundEnabled', soundEnabled ? 'true' : 'false');
+            renderSettingsScreen();
         }
 
         // ===== РЕГИСТРАЦИЯ НИКНЕЙМА =====
@@ -402,7 +472,6 @@
 
         async function loadLeaderboard() {
             const requestId = ++leaderboardRequestId;
-
             const list = document.getElementById('leaderboard-list');
             const loading = document.getElementById('leaderboard-loading');
             loading.style.display = 'block';
@@ -410,8 +479,6 @@
             try {
                 const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`);
                 const data = await response.json();
-
-                // Если за время ожидания запустился более новый запрос — игнорируем этот устаревший ответ
                 if (requestId !== leaderboardRequestId) return;
 
                 loading.style.display = 'none';
@@ -452,7 +519,7 @@
             });
         }
 
-        // ===== ВЫБОР ПОТОКА: ПОДЗЕМЕЛЬЯ / СВОБОДНАЯ =====
+        // ===== ВЫБОР ПОТОКА =====
 
         let pendingFlow = null;
 
@@ -469,13 +536,13 @@
             }
         }
 
-        // ===== ВЫБОР ПОДЗЕМЕЛЬЯ =====
+        // ===== ВЫБОР ПРИКЛЮЧЕНИЯ =====
 
         let dungeonSelectActivity = null;
 
         async function openDungeonSelect(activity) {
             dungeonSelectActivity = activity;
-            const title = activity === 'pushup' ? 'Подземелья — Отжимания' : 'Подземелья — Планка';
+            const title = activity === 'pushup' ? 'Режим приключений — Отжимания' : 'Режим приключений — Планка';
             document.getElementById('dungeon-select-title').innerText = title;
             document.getElementById('dungeon-select-loading').style.display = 'block';
             document.getElementById('dungeon-select-list').innerHTML = '';
@@ -487,7 +554,7 @@
                 const data = await response.json();
                 renderDungeonList(data.current_dungeon, data.max_dungeon);
             } catch (error) {
-                document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список подземелий.";
+                document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список приключений.";
             }
         }
 
@@ -501,7 +568,7 @@
                 const isCurrent = (n === currentDungeon);
                 const row = document.createElement('div');
                 row.className = 'dungeon-list-row' + (isBoss ? ' boss' : '');
-                const label = (isBoss ? '👑 ' : '⚔️ ') + 'Подземелье ' + n + (isCurrent ? ' (текущее)' : ' ✅');
+                const label = (isBoss ? '👑 ' : '⚔️ ') + 'Приключение ' + n + (isCurrent ? ' (текущее)' : ' ✅');
                 const btnText = isCurrent ? 'Начать' : 'Перепройти';
                 row.innerHTML = `<span>${label}</span><button onclick="startDungeonActivity('${dungeonSelectActivity}', ${n})">${btnText}</button>`;
                 list.appendChild(row);
@@ -510,14 +577,15 @@
             if (currentDungeon < maxDungeon) {
                 const row = document.createElement('div');
                 row.className = 'dungeon-list-row locked';
-                row.innerHTML = `<span>🔒 Подземелье ${currentDungeon + 1}</span><button disabled>Закрыто</button>`;
+                row.innerHTML = `<span>🔒 Приключение ${currentDungeon + 1}</span><button disabled>Закрыто</button>`;
                 list.appendChild(row);
             }
         }
 
-        // ===== СОСТОЯНИЕ ПОДЗЕМЕЛЬЯ ВО ВРЕМЯ БОЯ =====
+        // ===== СОСТОЯНИЕ ПРИКЛЮЧЕНИЯ ВО ВРЕМЯ БОЯ =====
 
         let inDungeonMode = false;
+        let dungeonJustWon = false;
         let dungeonActivityType = null;
         let dungeonNumber = null;
         let dungeonEnemies = [];
@@ -534,6 +602,7 @@
                 const data = await response.json();
 
                 inDungeonMode = true;
+                dungeonJustWon = false;
                 dungeonActivityType = activity;
                 dungeonNumber = data.requested_dungeon;
                 dungeonEnemies = data.enemies;
@@ -548,14 +617,14 @@
 
                 startActivity(activity, true);
             } catch (error) {
-                alert("Не удалось загрузить подземелье. Попробуйте позже.");
+                alert("Не удалось загрузить приключение. Попробуйте позже.");
             }
         }
 
         function updateDungeonHUD() {
             const bossTag = (dungeonNumber % 5 === 0) ? '👑 БОСС — ' : '';
             document.getElementById('dungeon-hud-title').innerText =
-                `${bossTag}Подземелье ${dungeonNumber} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
+                `${bossTag}Приключение ${dungeonNumber} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
             const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP / dungeonEnemyMaxHP) * 100));
             document.getElementById('hp-bar-fill').style.width = pct + '%';
             document.getElementById('hp-bar-text').innerText =
@@ -612,6 +681,8 @@
 
         async function finishDungeonVictory() {
             dungeonPaused = true;
+            dungeonJustWon = true;
+            playVictorySound();
             if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
 
             const userId = getUserId();
@@ -625,7 +696,7 @@
                 const data = await response.json();
                 xpEarned = data.xp_earned || 0;
             } catch (error) {
-                console.error("Ошибка завершения подземелья:", error);
+                console.error("Ошибка завершения приключения:", error);
             }
 
             document.getElementById('dungeon-complete-xp').innerText = `+${xpEarned} XP ⭐`;
@@ -663,6 +734,7 @@
 
         let plankSeconds = 0;
         let plankLastTimestamp = null;
+        let lastPlankMinuteMarked = 0;
 
         function calculateAngle(a, b, c) {
             const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
@@ -744,7 +816,7 @@
         }
 
         function drawPoints(landmarks, points, connections) {
-            ctx.strokeStyle = '#00FF00';
+            ctx.strokeStyle = '#d4af37';
             ctx.lineWidth = 3;
             for (const [startIdx, endIdx] of connections) {
                 const start = landmarks[startIdx];
@@ -754,7 +826,7 @@
                 ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
                 ctx.stroke();
             }
-            ctx.fillStyle = '#FF0000';
+            ctx.fillStyle = '#a13a3a';
             for (const idx of points) {
                 const point = landmarks[idx];
                 ctx.beginPath();
@@ -776,6 +848,12 @@
                     const delta = (now - plankLastTimestamp) / 1000;
                     plankSeconds += delta;
                     if (inDungeonMode) applyDungeonDamage(delta);
+
+                    const currentMinute = Math.floor(plankSeconds / 60);
+                    if (currentMinute > lastPlankMinuteMarked) {
+                        lastPlankMinuteMarked = currentMinute;
+                        playMinuteBeep();
+                    }
                 }
                 plankLastTimestamp = now;
             } else {
@@ -814,11 +892,11 @@
 
                     if (inPosition) {
                         statusEl.innerText = dungeonPaused ? "Передышка..." : "Позиция ОК, считаем! 💪";
-                        statusEl.style.color = "#00FF00";
+                        statusEl.style.color = "#d4af37";
                         if (!dungeonPaused) countPushups(results.poseLandmarks);
                     } else {
                         statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                        statusEl.style.color = "white";
+                        statusEl.style.color = "#e9d9b8";
                     }
                 } else if (currentMode === 'plank') {
                     const result = checkPlankPosition(results.poseLandmarks);
@@ -826,20 +904,20 @@
 
                     if (result.reason === "not_visible") {
                         statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                        statusEl.style.color = "white";
+                        statusEl.style.color = "#e9d9b8";
                     } else if (result.reason === "not_straight") {
                         statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
                         statusEl.style.color = "orange";
                     } else {
                         statusEl.innerText = "Отлично держите планку! 🔥";
-                        statusEl.style.color = "#00FF00";
+                        statusEl.style.color = "#d4af37";
                     }
                     updatePlankTimer(result.valid && !dungeonPaused);
                 }
             } else {
                 inPosition = false;
                 statusEl.innerText = "Не вижу тело в кадре 👀";
-                statusEl.style.color = "white";
+                statusEl.style.color = "#e9d9b8";
                 if (currentMode === 'plank') updatePlankTimer(false);
             }
 
@@ -857,11 +935,15 @@
         }
 
         function startActivity(mode, isDungeon) {
+            // "Прогреваем" сервер заранее, чтобы к моменту завершения он уже не спал
+            fetch(`${API_BASE}/`).catch(() => {});
+
             currentMode = mode;
             pushupCount = 0;
             stage = "up";
             plankSeconds = 0;
             plankLastTimestamp = null;
+            lastPlankMinuteMarked = 0;
 
             document.getElementById('finishBtn').style.display = 'block';
             document.getElementById('activityBackBtn').style.display = 'block';
@@ -874,14 +956,14 @@
             if (mode === 'pushup') {
                 titleEl.innerText = isDungeon ? "Бой — отжимания" : "Подсчёт отжиманий";
                 statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                statusEl.style.color = "white";
-                counterEl.style.color = "#00FF00";
+                statusEl.style.color = "#e9d9b8";
+                counterEl.style.color = "#d4af37";
                 counterEl.innerText = "0";
             } else {
                 titleEl.innerText = isDungeon ? "Бой — планка" : "Планка";
                 statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                statusEl.style.color = "white";
-                counterEl.style.color = "#00FF00";
+                statusEl.style.color = "#e9d9b8";
+                counterEl.style.color = "#d4af37";
                 counterEl.innerText = "00:00";
             }
 
@@ -890,6 +972,9 @@
         }
 
         function exitActivity() {
+            if (inDungeonMode && !dungeonJustWon) {
+                playDefeatSound();
+            }
             if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
             currentMode = null;
             inDungeonMode = false;
@@ -987,6 +1072,9 @@
         }
 
         document.getElementById('finishBtn').addEventListener('click', () => {
+            if (inDungeonMode && !dungeonJustWon) {
+                playDefeatSound();
+            }
             if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
             attemptSave();
         });
