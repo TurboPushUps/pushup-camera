@@ -118,6 +118,20 @@
         .overlay-box h3 { margin-top: 0; }
         .overlay-box .menu-button { max-width: 260px; }
         .countdown-number { font-size: 48px; color: #d4af37; font-weight: bold; font-family: 'Cinzel', serif; }
+        .art-screen-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .art-screen-image {
+            width: 100%;
+            display: block;
+        }
+        .art-button {
+            position: absolute;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -131,14 +145,16 @@
         <button class="menu-button primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-    <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
-    <div id="screen-menu" class="screen center-content">
-        <h1>💪 Pushup Tracker</h1>
-        <button class="menu-button primary" onclick="showScreen('training-type')">📷 Начать поход</button>
-        <button class="menu-button" onclick="showScreen('profile')">👤 Профиль</button>
-        <button class="menu-button" onclick="showScreen('leaderboard')">🏆 Таблица лидеров</button>
-        <button class="menu-button" onclick="showScreen('achievements')">🎖 Достижения</button>
-        <button class="menu-button" onclick="showScreen('settings')">⚙️ Настройки</button>
+<!-- ===== ГЛАВНОЕ МЕНЮ (картинка с кликабельными зонами поверх нарисованных кнопок) ===== -->
+    <div id="screen-menu" class="screen">
+        <div class="art-screen-wrapper">
+            <img src="menu-art.png" class="art-screen-image" alt="Меню">
+            <div class="art-button" style="top: 36%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('training-type')"></div>
+            <div class="art-button" style="top: 46%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('profile')"></div>
+            <div class="art-button" style="top: 56%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('leaderboard')"></div>
+            <div class="art-button" style="top: 66%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('achievements')"></div>
+        </div>
+        <button class="menu-button" onclick="showScreen('settings')" style="margin-top: 10px;">⚙️ Настройки</button>
     </div>
 
     <!-- ===== ВЫБОР: РЕЖИМ ПРИКЛЮЧЕНИЙ / СВОБОДНАЯ ТРЕНИРОВКА ===== -->
@@ -187,10 +203,14 @@
         </div>
     </div>
 
-    <!-- ===== ПРОФИЛЬ ===== -->
+<!-- ===== ПРОФИЛЬ (картинка с кликабельной зоной для переключения вкладок) ===== -->
     <div id="screen-profile" class="screen">
-        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
-        <h2>👤 Профиль</h2>
+        <div class="art-screen-wrapper" style="margin-bottom: 10px;">
+            <img src="profile-art.png" class="art-screen-image" alt="Профиль">
+            <div class="art-button" style="top: 1%; left: 2%; width: 9%; height: 6%;" onclick="showScreen('menu')"></div>
+            <div class="art-button" style="top: 40%; left: 10%; width: 38%; height: 5%;" onclick="switchProfileTab('pushup')"></div>
+            <div class="art-button" style="top: 40%; left: 50%; width: 38%; height: 5%;" onclick="switchProfileTab('plank')"></div>
+        </div>
         <div id="profile-loading" class="loading">Загрузка...</div>
         <div id="profile-content" style="display: none;">
             <div class="stat-row"><span>Звание</span><span id="profile-level">—</span></div>
