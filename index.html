@@ -1,4 +1,1354 @@
-stringify({ user_id: userId, count: pushupCount }),
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Pushup Tracker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #120a08;
+            --bg-card: #1d120e;
+            --border-main: #4a2a1a;
+            --accent: #ff6b35;
+            --accent-bright: #ff8c52;
+            --gold: #e8b04a;
+            --text-main: #e8d8c8;
+            --text-dim: #a68c78;
+            --danger: #d4453a;
+            --success: #6bbf59;
+        }
+
+        html { font-size: 18px; }
+        html, body {
+            margin: 0; padding: 0; text-align: center;
+            background: radial-gradient(ellipse at top, #22120c 0%, #0d0605 70%);
+            color: var(--text-main); font-family: 'EB Garamond', serif; height: 100%;
+        }
+        body { min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
+
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 1px; margin: 0 0 18px; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .screen {
+            display: none; padding: 22px 16px 60px; min-height: var(--tg-viewport-height, 100vh);
+            box-sizing: border-box; position: relative;
+        }
+        .screen.active { display: block; }
+        .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+        h1 { font-size: 1.9rem; } h2 { font-size: 1.55rem; }
+
+        .btn {
+            display: block; width: 100%; max-width: 460px; margin: 12px auto; padding: 20px;
+            font-size: 1.15rem; font-family: 'Cinzel', serif; cursor: pointer;
+            background: var(--bg-card); color: var(--text-main);
+            border: 1px solid var(--border-main); border-radius: 12px;
+        }
+        .btn-primary {
+            background: linear-gradient(#5a2a12, #3a1a0a);
+            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
+        }
+        .btn small { display: block; font-size: 0.75rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
+
+        .back-button {
+            position: absolute; top: 18px; left: 16px; background: none; border: none;
+            color: var(--accent-bright); font-size: 1.4rem; z-index: 20; cursor: pointer;
+        }
+
+        .card {
+            max-width: 460px; margin: 12px auto; padding: 18px 20px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
+        }
+        .stat-row {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 460px; margin: 10px auto; padding: 16px 20px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 1.1rem;
+        }
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            max-width: 460px; margin: 12px auto;
+        }
+        .stat-box {
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
+            padding: 16px 6px;
+        }
+        .stat-box .value { font-size: 1.6rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .stat-box .label { font-size: 0.75rem; color: var(--text-dim); margin-top: 5px; }
+
+        .section-label {
+            text-align: left; max-width: 460px; margin: 20px auto 8px; padding: 0 6px;
+            font-size: 0.8rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
+        }
+
+        .loading { opacity: 0.7; font-size: 0.9rem; margin: 16px; }
+
+        .nickname-input {
+            display: block; width: 100%; max-width: 360px; margin: 22px auto; padding: 18px;
+            font-size: 1.1rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
+            color: var(--text-main); text-align: center; box-sizing: border-box;
+        }
+        .nickname-error { color: #ff8888; font-size: 0.9rem; min-height: 24px; margin-bottom: 8px; }
+
+        .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 460px; margin: 18px auto 12px; }
+        .tab-button {
+            flex: 1; padding: 13px; font-size: 0.95rem; font-family: 'Cinzel', serif; cursor: pointer;
+            background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
+        }
+        .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 460px; margin: 0 auto 18px; }
+        .sub-tab-button {
+            flex: 1; padding: 10px; font-size: 0.85rem; background: transparent; color: var(--text-dim); cursor: pointer;
+            border: 1px solid var(--border-main); border-radius: 10px;
+        }
+        .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
+
+        .leader-row {
+            display: flex; justify-content: space-between; align-items: center; max-width: 460px; margin: 8px auto;
+            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 1rem;
+        }
+        .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; }
+
+        .achievement-row {
+            max-width: 460px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
+            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 1rem;
+        }
+        .achievement-row.locked { opacity: 0.4; }
+
+        .toggle-switch { position: relative; width: 52px; height: 30px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #3a2418; border-radius: 30px; transition: 0.2s;
+        }
+        .toggle-slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px;
+            background: #8a6a52; border-radius: 50%; transition: 0.2s;
+        }
+        input:checked + .toggle-slider { background: var(--accent); }
+        input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(22px); }
+
+        .settings-row-text { text-align: left; font-size: 1rem; }
+        .settings-row-sub { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
+        .link-row { color: var(--accent-bright); font-size: 0.95rem; }
+
+        .days-selector { display: flex; gap: 6px; max-width: 460px; margin: 10px auto; }
+        .day-chip {
+            flex: 1; padding: 12px 0; background: var(--bg-card); border: 1px solid var(--border-main);
+            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer;
+        }
+        .day-chip.active { border-color: var(--accent); color: var(--accent-bright); }
+
+        /* ===== ВЫБОР ПРИКЛЮЧЕНИЯ — ТРОПА ===== */
+        .path-container { max-width: 460px; margin: 12px auto; }
+        .path-node {
+            display: flex; align-items: center; gap: 14px; padding: 15px 16px; margin-bottom: 4px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
+        }
+        .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(232,176,74,0.25); }
+        .path-node.locked { opacity: 0.35; }
+        .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,107,53,0.3); }
+        .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
+        .path-icon {
+            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.3rem; background: #2a1810; border: 1px solid var(--border-main); flex-shrink: 0;
+        }
+        .path-node.boss .path-icon { border-color: var(--gold); }
+        .path-node.current .path-icon { border-color: var(--accent); }
+        .path-info { flex: 1; text-align: left; }
+        .path-info .title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: 0.78rem; color: var(--text-dim); margin-top: 3px; }
+        .path-node button {
+            padding: 10px 16px; font-size: 0.9rem; background: var(--accent); color: #1a0a04;
+            border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
+        }
+        .path-node.locked button { background: #3a2a1a; color: #7a6a5a; }
+
+        .info-tip {
+            max-width: 460px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,107,53,0.1);
+            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.9rem; text-align: left; display: none;
+        }
+        .info-tip.active { display: block; }
+
+        .free-card {
+            max-width: 460px; margin: 14px auto; padding: 22px; background: var(--bg-card);
+            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 1.15rem;
+            font-family: 'Cinzel', serif; color: var(--text-main);
+        }
+        .free-card:active { border-color: var(--accent); }
+
+        /* ===== ЭКРАН БОЯ — КАМЕРА НА ВЕСЬ ЭКРАН ===== */
+        .camera-fullscreen-wrapper {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: var(--tg-viewport-height, 100vh);
+            background: #000; overflow: hidden; z-index: 1;
+        }
+        .camera-fullscreen-wrapper video { display: none; }
+        .camera-fullscreen-wrapper canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; display: block;
+        }
+
+        .hud-top {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+            padding: 18px 16px 14px; background: linear-gradient(rgba(5,2,1,0.85), rgba(5,2,1,0));
+        }
+        .hud-back-button {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border-main); border-radius: 50%;
+            width: 44px; height: 44px; color: var(--accent-bright); font-size: 1.3rem; cursor: pointer;
+        }
+        .battle-header { max-width: 460px; margin: 10px auto 0; display: none; }
+        .monster-portrait {
+            width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 8px;
+            background: radial-gradient(circle, #3a1810, #180a06);
+            border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; box-shadow: 0 0 20px rgba(255,107,53,0.35);
+        }
+        .monster-name { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text-main); background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 8px; display: inline-block; }
+        .hp-bar-bg {
+            width: 100%; max-width: 460px; height: 26px; margin: 10px auto 0; background: rgba(42,24,16,0.85);
+            border-radius: 13px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+        }
+        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
+        .hp-bar-label {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
+            align-items: center; justify-content: center; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;
+            color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+        #status {
+            font-size: 1.05rem; margin: 12px auto 0; color: var(--text-main); max-width: 460px;
+            background: rgba(0,0,0,0.5); padding: 8px 14px; border-radius: 10px; display: inline-block;
+        }
+
+        .hud-bottom {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+            padding: 14px 16px 24px; background: linear-gradient(rgba(5,2,1,0), rgba(5,2,1,0.9));
+        }
+        .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
+        .rep-circle {
+            width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #4a2a10, #2a1608); border: 2px solid var(--gold);
+            font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: bold; color: var(--gold);
+            box-shadow: 0 0 18px rgba(232,176,74,0.4);
+        }
+        .save-overlay { display: none; margin: 10px auto; font-size: 1rem; color: var(--accent-bright); }
+        .save-overlay.active { display: block; }
+        .retry-button {
+            display: none; margin: 10px auto; padding: 16px 26px; font-size: 1rem;
+            background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
+        }
+        .retry-button.active { display: inline-block; }
+
+        .overlay-panel {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5,2,1,0.92); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
+            padding: 20px; box-sizing: border-box;
+        }
+        .overlay-panel.active { display: flex; }
+        .overlay-box {
+            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 16px;
+            padding: 32px 24px; max-width: 380px; text-align: center; max-height: 85vh; overflow-y: auto;
+        }
+        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); }
+        .overlay-box .btn { max-width: 300px; }
+        .overlay-box p { text-align: left; font-size: 0.95rem; line-height: 1.5; }
+        .countdown-number { font-size: 3rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
+    <div id="screen-register" class="screen center-content">
+        <h1>⚔️ Pushup Tracker</h1>
+        <p>Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
+        <input type="text" id="nickname-input" class="nickname-input" maxlength="20" placeholder="Например: TigerPower">
+        <div id="nickname-error" class="nickname-error"></div>
+        <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
+    </div>
+
+    <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
+    <div id="screen-menu" class="screen center-content">
+        <h1>⚔️ Pushup Tracker</h1>
+        <button class="btn btn-primary" onclick="showScreen('adventure')">🔥 Начать поход<small>Новый день. Новые победы.</small></button>
+        <button class="btn" onclick="showScreen('profile')">🛡️ Профиль<small>Твой путь. Твоя сила.</small></button>
+        <button class="btn" onclick="showScreen('leaderboard')">🏆 Таблица лидеров<small>Сравни силу. Стань лучшим.</small></button>
+        <button class="btn" onclick="showScreen('achievements')">🎖 Достижения<small>Твои награды. Твоя гордость.</small></button>
+        <button class="btn" onclick="showScreen('settings')">⚙️ Настройки</button>
+    </div>
+
+    <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД (вкладки Отжимания / Планка / Свободная) ===== -->
+    <div id="screen-adventure" class="screen">
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h2 style="margin-top:50px;">Начать поход</h2>
+
+        <div class="tab-row">
+            <button class="tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">🤸 Отжимания</button>
+            <button class="tab-button" id="adv-tab-plank" onclick="switchAdventureTab('plank')">🧘 Планка</button>
+            <button class="tab-button" id="adv-tab-free" onclick="switchAdventureTab('free')">🏋️ Свободная</button>
+        </div>
+
+        <div class="info-tip" id="camera-tip">
+            💡 Совет: для отжиманий поставь телефон на пол так, чтобы было видно плечи, локти и запястья. Для планки — ляг боком, чтобы видно было плечо, бедро и колено.
+        </div>
+
+        <div id="dungeon-select-loading" class="loading" style="display:none;">Загрузка...</div>
+        <div class="path-container" id="dungeon-select-list"></div>
+
+        <div id="free-training-content" style="display:none;">
+            <div class="free-card" onclick="startActivity('pushup', false)">🤸 Свободные отжимания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
+            <div class="free-card" onclick="startActivity('plank', false)">🧘 Свободная планка<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
+        </div>
+    </div>
+
+    <!-- ===== КАМЕРА / БОЙ — ПОЛНОЭКРАННАЯ ===== -->
+    <div id="screen-activity" class="screen" style="padding:0;">
+        <div class="camera-fullscreen-wrapper">
+            <video id="video" width="480" height="640" autoplay playsinline muted></video>
+            <canvas id="canvas" width="480" height="640"></canvas>
+        </div>
+
+        <div class="hud-top">
+            <button class="hud-back-button" id="activityBackBtn" onclick="exitActivity()">←</button>
+            <div class="battle-header" id="battle-header">
+                <div class="monster-portrait" id="monster-portrait">👹</div>
+                <div class="monster-name" id="monster-name">Приключение 1 — Враг 1 из 1</div>
+                <div class="hp-bar-bg">
+                    <div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div>
+                    <div class="hp-bar-label" id="hp-bar-text">HP 18 / 18</div>
+                </div>
+            </div>
+            <div style="margin-top:10px;"><span id="status">Займите позицию 🧎</span></div>
+        </div>
+
+        <div class="hud-bottom">
+            <div class="rep-counter-row">
+                <div class="rep-circle" id="counter">0</div>
+            </div>
+            <button id="finishBtn" class="btn btn-primary" style="max-width: 300px;">Завершить</button>
+            <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
+            <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение</button>
+        </div>
+    </div>
+
+    <!-- ===== ПРОФИЛЬ ===== -->
+    <div id="screen-profile" class="screen">
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h2 style="margin-top:50px;">🛡️ Профиль</h2>
+        <div id="profile-loading" class="loading">Загрузка...</div>
+        <div id="profile-content" style="display: none;">
+            <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
+            <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
+            <div class="card" style="text-align:left;">
+                <div id="profile-next" style="font-size:0.9rem; color: var(--text-dim); margin-bottom:10px;">—</div>
+                <div class="hp-bar-bg" style="height:16px; margin:0;">
+                    <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent));"></div>
+                </div>
+            </div>
+
+            <div class="tab-row">
+                <button class="tab-button active" id="profile-tab-pushup" onclick="switchProfileTab('pushup')">🤸 Отжимания</button>
+                <button class="tab-button" id="profile-tab-plank" onclick="switchProfileTab('plank')">🧘 Планка</button>
+            </div>
+
+            <div class="section-label">Дисциплина</div>
+            <div class="stat-grid">
+                <div class="stat-box"><div class="value mono" id="profile-stat-today">—</div><div class="label">Сегодня</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-streak">—</div><div class="label">Дней подряд 🔥</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-total">—</div><div class="label">Всего</div></div>
+            </div>
+            <div class="stat-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-box"><div class="value mono" id="profile-stat-beststreak">—</div><div class="label">Рекорд серии</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-dungeon">—</div><div class="label">Приключение</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
+    <div id="screen-leaderboard" class="screen">
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h2 style="margin-top:50px;">🏆 Таблица лидеров</h2>
+        <div class="tab-row">
+            <button class="tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">🤸 Отжимания</button>
+            <button class="tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">🧘 Планка</button>
+        </div>
+        <div class="sub-tab-row">
+            <button class="sub-tab-button active" id="lb-period-today" onclick="switchLeaderboardPeriod('today')">Сегодня</button>
+            <button class="sub-tab-button" id="lb-period-total" onclick="switchLeaderboardPeriod('total')">Всего</button>
+        </div>
+        <div id="leaderboard-loading" class="loading">Загрузка...</div>
+        <div id="leaderboard-list"></div>
+    </div>
+
+    <!-- ===== ДОСТИЖЕНИЯ ===== -->
+    <div id="screen-achievements" class="screen">
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h2 style="margin-top:50px;">🎖 Достижения</h2>
+        <div id="achievements-list"></div>
+        <p style="opacity: 0.5; font-size: 0.85rem;">(тестовые данные, подключим позже)</p>
+    </div>
+
+    <!-- ===== НАСТРОЙКИ ===== -->
+    <div id="screen-settings" class="screen">
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h1 style="margin-top:50px;">⚙️ Настройки</h1>
+
+        <div class="section-label">Звук и вибрация</div>
+        <div class="stat-row">
+            <span class="settings-row-text">🔊 Звуковые сигналы</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="sound-checkbox" onchange="toggleSound()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="stat-row">
+            <span class="settings-row-text">📳 Вибрация</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="vibration-checkbox" onchange="toggleVibration()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="section-label">Подсказки</div>
+        <div class="stat-row">
+            <span class="settings-row-text">Подсказки про камеру при выборе похода</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="camera-tip-checkbox" onchange="toggleCameraTip()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="stat-row" onclick="showInstructions()" style="cursor:pointer;">
+            <span class="settings-row-text">Инструкции</span>
+            <span class="link-row">Как ставить телефон →</span>
+        </div>
+
+        <div class="section-label">Бой</div>
+        <div class="stat-row">
+            <div style="text-align:left;">
+                <span class="settings-row-text">Штурмовой режим</span>
+                <div class="settings-row-sub">Без паузы между врагами в приключениях</div>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="assault-checkbox" onchange="toggleAssaultMode()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="section-label">Цель</div>
+        <p style="max-width:460px; margin: 0 auto 8px; text-align:left; font-size:0.9rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
+        <div class="days-selector" id="days-selector">
+            <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
+            <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
+            <div class="day-chip" data-days="5" onclick="setWeeklyGoal(5)">5</div>
+            <div class="day-chip" data-days="6" onclick="setWeeklyGoal(6)">6</div>
+            <div class="day-chip" data-days="7" onclick="setWeeklyGoal(7)">7</div>
+        </div>
+
+        <div class="section-label">Данные</div>
+        <button class="btn" style="border-color: var(--danger); color: var(--danger);" onclick="resetProgress()">Сбросить прогресс охотника</button>
+    </div>
+
+    <!-- ===== ОВЕРЛЕИ ===== -->
+    <div id="overlay-enemy-pause" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Враг повержен! 💥</h3>
+            <p style="text-align:center;">Передышка перед следующим врагом</p>
+            <div class="countdown-number" id="pause-countdown">5</div>
+        </div>
+    </div>
+
+    <div id="overlay-dungeon-complete" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Приключение пройдено! 🎉</h3>
+            <p id="dungeon-complete-xp" style="text-align:center; font-size:1.2rem;">+0 XP</p>
+            <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
+            <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
+        </div>
+    </div>
+
+    <div id="overlay-instructions" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Как ставить телефон</h3>
+            <p><strong>Отжимания:</strong> положи телефон на пол экраном к себе так, чтобы в кадре было видно плечи, локти и запястья обеих рук.</p>
+            <p><strong>Планка:</strong> поставь телефон сбоку от себя так, чтобы было видно плечо, бедро, колено и стопу той стороны, что ближе к камере.</p>
+            <p>Освещение должно быть достаточным, а фон — по возможности без лишних людей в кадре.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('overlay-instructions').classList.remove('active')">Понятно</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script>
+        const API_BASE = "https://pushup-bot-server.onrender.com";
+
+        function applyTelegramViewportHeight() {
+            const tgApp = window.Telegram.WebApp;
+            const height = tgApp.viewportStableHeight || tgApp.viewportHeight || window.innerHeight;
+            document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
+        }
+
+        function showScreen(name) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById('screen-' + name).classList.add('active');
+
+            if (name === 'profile') loadProfile();
+            if (name === 'leaderboard') loadLeaderboard();
+            if (name === 'achievements') loadAchievementsMock();
+            if (name === 'settings') renderSettingsScreen();
+            if (name === 'adventure') switchAdventureTab(currentAdventureTab);
+        }
+
+        function getUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idFromUrl = urlParams.get('user_id');
+            if (idFromUrl) return idFromUrl;
+            const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
+            return tgUser ? tgUser.id : null;
+        }
+
+        // ===== ЗВУК И ВИБРАЦИЯ =====
+
+        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        let vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
+        let cameraTipEnabled = localStorage.getItem('cameraTipEnabled') === 'true';
+        let assaultModeEnabled = localStorage.getItem('assaultModeEnabled') === 'true';
+        let weeklyGoal = parseInt(localStorage.getItem('weeklyGoal') || '5');
+
+        let audioCtx = null;
+
+        function getAudioCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playBeep(freq = 880, duration = 150, type = 'sine', volume = 0.2) {
+            if (!soundEnabled) return;
+            try {
+                const ctxA = getAudioCtx();
+                const osc = ctxA.createOscillator();
+                const gain = ctxA.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(ctxA.destination);
+                gain.gain.setValueAtTime(volume, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + duration / 1000);
+                osc.start();
+                osc.stop(ctxA.currentTime + duration / 1000);
+            } catch (e) { console.error("Ошибка звука:", e); }
+        }
+
+        function playRepBeep() { playBeep(700, 70, 'square', 0.12); }
+        function playMinuteBeep() { playBeep(880, 200); }
+        function playVictorySound() {
+            playBeep(660, 150);
+            setTimeout(() => playBeep(880, 150), 150);
+            setTimeout(() => playBeep(1100, 300), 300);
+        }
+        function playDefeatSound() {
+            playBeep(300, 300, 'sawtooth');
+            setTimeout(() => playBeep(180, 400, 'sawtooth'), 250);
+        }
+
+        function vibrate(style) {
+            if (!vibrationEnabled) return;
+            try {
+                const haptic = window.Telegram.WebApp.HapticFeedback;
+                if (!haptic) return;
+                if (style === 'light') haptic.impactOccurred('light');
+                else if (style === 'success') haptic.notificationOccurred('success');
+                else if (style === 'error') haptic.notificationOccurred('error');
+            } catch (e) {}
+        }
+
+        function renderSettingsScreen() {
+            document.getElementById('sound-checkbox').checked = soundEnabled;
+            document.getElementById('vibration-checkbox').checked = vibrationEnabled;
+            document.getElementById('camera-tip-checkbox').checked = cameraTipEnabled;
+            document.getElementById('assault-checkbox').checked = assaultModeEnabled;
+            document.querySelectorAll('.day-chip').forEach(chip => {
+                chip.classList.toggle('active', parseInt(chip.dataset.days) === weeklyGoal);
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = document.getElementById('sound-checkbox').checked;
+            localStorage.setItem('soundEnabled', soundEnabled ? 'true' : 'false');
+        }
+        function toggleVibration() {
+            vibrationEnabled = document.getElementById('vibration-checkbox').checked;
+            localStorage.setItem('vibrationEnabled', vibrationEnabled ? 'true' : 'false');
+        }
+        function toggleCameraTip() {
+            cameraTipEnabled = document.getElementById('camera-tip-checkbox').checked;
+            localStorage.setItem('cameraTipEnabled', cameraTipEnabled ? 'true' : 'false');
+        }
+        function toggleAssaultMode() {
+            assaultModeEnabled = document.getElementById('assault-checkbox').checked;
+            localStorage.setItem('assaultModeEnabled', assaultModeEnabled ? 'true' : 'false');
+        }
+        function setWeeklyGoal(n) {
+            weeklyGoal = n;
+            localStorage.setItem('weeklyGoal', n);
+            renderSettingsScreen();
+        }
+        function showInstructions() {
+            document.getElementById('overlay-instructions').classList.add('active');
+        }
+
+        async function resetProgress() {
+            if (!confirm("Точно сбросить весь прогресс? Это действие необратимо.")) return;
+            const userId = getUserId();
+            if (!userId) return;
+            try {
+                const response = await fetch(`${API_BASE}/api/reset_progress`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert("Прогресс сброшен.");
+                } else {
+                    alert("Не удалось сбросить прогресс. Попробуйте позже.");
+                }
+            } catch (error) {
+                alert("Ошибка соединения. Попробуйте позже.");
+            }
+        }
+
+        // ===== РЕГИСТРАЦИЯ НИКНЕЙМА =====
+
+        async function checkUserStatus() {
+            const userId = getUserId();
+            if (!userId) {
+                document.getElementById('screen-register').classList.add('active');
+                document.getElementById('nickname-error').innerText = "Не удалось определить пользователя";
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`);
+                const data = await response.json();
+                if (data.has_nickname) showScreen('menu');
+                else document.getElementById('screen-register').classList.add('active');
+            } catch (error) {
+                document.getElementById('screen-register').classList.add('active');
+                document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
+            }
+        }
+
+        async function submitNickname() {
+            const userId = getUserId();
+            const input = document.getElementById('nickname-input');
+            const errorEl = document.getElementById('nickname-error');
+            const nickname = input.value.trim();
+            errorEl.innerText = "";
+
+            if (!userId) { errorEl.innerText = "Не удалось определить пользователя"; return; }
+            if (nickname.length < 2 || nickname.length > 20) { errorEl.innerText = "Имя должно быть от 2 до 20 символов"; return; }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/register_nickname`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, nickname: nickname })
+                });
+                const data = await response.json();
+                if (data.success) showScreen('menu');
+                else errorEl.innerText = data.error || "Не удалось сохранить имя";
+            } catch (error) {
+                errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз.";
+            }
+        }
+
+        // ===== ПРОФИЛЬ =====
+
+        let profileDataCache = null;
+        let activeProfileTab = 'pushup';
+
+        const LEVELS_JS = [
+            { threshold: 0, title: "🐣 Новичок" },
+            { threshold: 100, title: "💪 Крепыш" },
+            { threshold: 500, title: "🔥 Силач" },
+            { threshold: 1500, title: "⚡ Терминатор" },
+            { threshold: 5000, title: "👑 Легенда зала" }
+        ];
+
+        function getLevelRange(points) {
+            let current = LEVELS_JS[0];
+            for (const lvl of LEVELS_JS) { if (points >= lvl.threshold) current = lvl; }
+            const idx = LEVELS_JS.indexOf(current);
+            return { current, next: LEVELS_JS[idx + 1] || null };
+        }
+
+        function formatSeconds(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return `${m}м${s}с`;
+        }
+
+        async function loadProfile() {
+            const userId = getUserId();
+            const loadingEl = document.getElementById('profile-loading');
+            const contentEl = document.getElementById('profile-content');
+            loadingEl.style.display = 'block';
+            contentEl.style.display = 'none';
+
+            if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
+                const data = await response.json();
+                profileDataCache = data;
+                loadingEl.style.display = 'none';
+                contentEl.style.display = 'block';
+                renderProfileValues();
+            } catch (error) {
+                loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже.";
+            }
+        }
+
+        function renderProfileValues() {
+            if (!profileDataCache) return;
+            const data = profileDataCache;
+
+            document.getElementById('profile-level').innerText = data.level;
+            document.getElementById('profile-points').innerText = data.points + " ⭐";
+            document.getElementById('profile-next').innerText =
+                data.points_to_next_level !== null
+                    ? `${data.points_to_next_level} очков до «${data.next_level}»`
+                    : "Максимальный уровень!";
+
+            const { current, next } = getLevelRange(data.points);
+            let fraction = 1;
+            if (next) {
+                fraction = (data.points - current.threshold) / (next.threshold - current.threshold);
+                fraction = Math.max(0, Math.min(1, fraction));
+            }
+            document.getElementById('profile-progress-fill').style.width = (fraction * 100) + '%';
+
+            const source = activeProfileTab === 'pushup' ? data.pushup : data.plank;
+            document.getElementById('profile-stat-today').innerText =
+                activeProfileTab === 'pushup' ? source.today : formatSeconds(source.today_seconds);
+            document.getElementById('profile-stat-streak').innerText = source.streak;
+            document.getElementById('profile-stat-total').innerText =
+                activeProfileTab === 'pushup' ? source.total : formatSeconds(source.total_seconds);
+            document.getElementById('profile-stat-beststreak').innerText = source.best_streak;
+            document.getElementById('profile-stat-dungeon').innerText = "№" + source.dungeon;
+        }
+
+        function switchProfileTab(tab) {
+            activeProfileTab = tab;
+            document.getElementById('profile-tab-pushup').classList.toggle('active', tab === 'pushup');
+            document.getElementById('profile-tab-plank').classList.toggle('active', tab === 'plank');
+            renderProfileValues();
+        }
+
+        // ===== ТАБЛИЦА ЛИДЕРОВ =====
+
+        let lbActivity = 'pushup';
+        let lbPeriod = 'today';
+        let leaderboardRequestId = 0;
+
+        function switchLeaderboardActivity(activity) {
+            lbActivity = activity;
+            document.getElementById('lb-activity-pushup').classList.toggle('active', activity === 'pushup');
+            document.getElementById('lb-activity-plank').classList.toggle('active', activity === 'plank');
+            loadLeaderboard();
+        }
+        function switchLeaderboardPeriod(period) {
+            lbPeriod = period;
+            document.getElementById('lb-period-today').classList.toggle('active', period === 'today');
+            document.getElementById('lb-period-total').classList.toggle('active', period === 'total');
+            loadLeaderboard();
+        }
+        function formatLeaderboardValue(value, activity) {
+            if (activity === 'plank') {
+                const m = Math.floor(value / 60);
+                const s = value % 60;
+                return `${m}м ${s}с`;
+            }
+            return value;
+        }
+
+        async function loadLeaderboard() {
+            const requestId = ++leaderboardRequestId;
+            const list = document.getElementById('leaderboard-list');
+            const loading = document.getElementById('leaderboard-loading');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`);
+                const data = await response.json();
+                if (requestId !== leaderboardRequestId) return;
+
+                loading.style.display = 'none';
+                list.innerHTML = "";
+
+                if (data.leaderboard.length === 0) {
+                    list.innerHTML = "<p>Пока никто не тренировался 🤷</p>";
+                    return;
+                }
+
+                data.leaderboard.forEach((user, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'leader-row';
+                    const displayValue = formatLeaderboardValue(user.value, lbActivity);
+                    row.innerHTML = `<span class="rank">${index + 1}</span><span style="flex:1; text-align:left; margin-left:8px;">${user.name}</span><span class="mono">${displayValue}</span>`;
+                    list.appendChild(row);
+                });
+            } catch (error) {
+                if (requestId !== leaderboardRequestId) return;
+                loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже.";
+            }
+        }
+
+        function loadAchievementsMock() {
+            const mockAchievements = [
+                { title: "🥉 Первые 10 отжиманий", unlocked: true },
+                { title: "🥈 100 отжиманий за день", unlocked: false },
+                { title: "🥇 30 дней без пропуска", unlocked: false },
+                { title: "🎯 1000 отжиманий за всё время", unlocked: false }
+            ];
+            const list = document.getElementById('achievements-list');
+            list.innerHTML = "";
+            mockAchievements.forEach(a => {
+                const row = document.createElement('div');
+                row.className = 'achievement-row' + (a.unlocked ? '' : ' locked');
+                row.innerText = a.title + (a.unlocked ? " ✅" : " 🔒");
+                list.appendChild(row);
+            });
+        }
+
+        // ===== ЕДИНЫЙ ЭКРАН ПОХОДА =====
+
+        let currentAdventureTab = 'pushup';
+
+        function switchAdventureTab(tab) {
+            currentAdventureTab = tab;
+            document.getElementById('adv-tab-pushup').classList.toggle('active', tab === 'pushup');
+            document.getElementById('adv-tab-plank').classList.toggle('active', tab === 'plank');
+            document.getElementById('adv-tab-free').classList.toggle('active', tab === 'free');
+
+            document.getElementById('camera-tip').classList.toggle('active', cameraTipEnabled && tab !== 'free');
+
+            if (tab === 'free') {
+                document.getElementById('dungeon-select-list').style.display = 'none';
+                document.getElementById('dungeon-select-loading').style.display = 'none';
+                document.getElementById('free-training-content').style.display = 'block';
+            } else {
+                document.getElementById('free-training-content').style.display = 'none';
+                document.getElementById('dungeon-select-list').style.display = 'block';
+                loadDungeonPath(tab);
+            }
+        }
+
+        async function loadDungeonPath(activity) {
+            document.getElementById('dungeon-select-loading').style.display = 'block';
+            document.getElementById('dungeon-select-list').innerHTML = '';
+
+            const userId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`);
+                const data = await response.json();
+                renderDungeonList(activity, data.current_dungeon, data.max_dungeon);
+            } catch (error) {
+                document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список приключений.";
+            }
+        }
+
+        function renderDungeonList(activity, currentDungeon, maxDungeon) {
+            document.getElementById('dungeon-select-loading').style.display = 'none';
+            const list = document.getElementById('dungeon-select-list');
+            list.innerHTML = '';
+
+            for (let n = 1; n <= currentDungeon; n++) {
+                const isBoss = (n % 5 === 0);
+                const isCurrent = (n === currentDungeon);
+                const isDone = n < currentDungeon;
+
+                if (n > 1) {
+                    const connector = document.createElement('div');
+                    connector.className = 'path-connector';
+                    list.appendChild(connector);
+                }
+
+                const node = document.createElement('div');
+                node.className = 'path-node' + (isBoss ? ' boss' : '') + (isCurrent ? ' current' : '');
+                const icon = isBoss ? '👑' : (isDone ? '✅' : '⚔️');
+                const subtitle = isCurrent ? 'Текущее приключение' : 'Пройдено — можно перепройти';
+                const btnText = isCurrent ? 'Начать' : 'Повторить';
+                node.innerHTML = `
+                    <div class="path-icon">${icon}</div>
+                    <div class="path-info">
+                        <div class="title">Приключение ${n}</div>
+                        <div class="subtitle">${subtitle}</div>
+                    </div>
+                    <button onclick="startDungeonActivity('${activity}', ${n})">${btnText}</button>
+                `;
+                list.appendChild(node);
+            }
+
+            if (currentDungeon < maxDungeon) {
+                const connector = document.createElement('div');
+                connector.className = 'path-connector';
+                list.appendChild(connector);
+
+                const node = document.createElement('div');
+                node.className = 'path-node locked';
+                node.innerHTML = `
+                    <div class="path-icon">🔒</div>
+                    <div class="path-info">
+                        <div class="title">Приключение ${currentDungeon + 1}</div>
+                        <div class="subtitle">Закрыто</div>
+                    </div>
+                    <button disabled>Закрыто</button>
+                `;
+                list.appendChild(node);
+            }
+        }
+
+        // ===== СОСТОЯНИЕ ПРИКЛЮЧЕНИЯ ВО ВРЕМЯ БОЯ =====
+
+        let inDungeonMode = false;
+        let dungeonJustWon = false;
+        let dungeonActivityType = null;
+        let dungeonNumber = null;
+        let dungeonEnemies = [];
+        let dungeonEnemyIndex = 0;
+        let dungeonEnemyRemainingHP = 0;
+        let dungeonEnemyMaxHP = 0;
+        let dungeonIsReplay = false;
+        let dungeonPaused = false;
+
+        async function startDungeonActivity(activity, dungeonN) {
+            const userId = getUserId();
+            try {
+                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`);
+                const data = await response.json();
+
+                inDungeonMode = true;
+                dungeonJustWon = false;
+                dungeonActivityType = activity;
+                dungeonNumber = data.requested_dungeon;
+                dungeonEnemies = data.enemies;
+                dungeonEnemyIndex = 0;
+                dungeonEnemyMaxHP = dungeonEnemies[0];
+                dungeonEnemyRemainingHP = dungeonEnemies[0];
+                dungeonIsReplay = data.is_replay;
+                dungeonPaused = false;
+
+                document.getElementById('battle-header').style.display = 'block';
+                document.getElementById('monster-portrait').innerText = data.is_boss ? '👑' : '👹';
+                updateDungeonHUD();
+
+                startActivity(activity, true);
+            } catch (error) {
+                alert("Не удалось загрузить приключение. Попробуйте позже.");
+            }
+        }
+
+        function updateDungeonHUD() {
+            const bossTag = (dungeonNumber % 5 === 0) ? '👑 БОСС — ' : '';
+            document.getElementById('monster-name').innerText =
+                `${bossTag}Приключение ${dungeonNumber} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
+            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP / dungeonEnemyMaxHP) * 100));
+            document.getElementById('hp-bar-fill').style.width = pct + '%';
+            document.getElementById('hp-bar-text').innerText =
+                `HP ${Math.max(0, Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
+        }
+
+        function applyDungeonDamage(amount) {
+            if (!inDungeonMode || dungeonPaused) return;
+            dungeonEnemyRemainingHP -= amount;
+
+            if (dungeonEnemyRemainingHP <= 0) {
+                const overflow = -dungeonEnemyRemainingHP;
+                handleEnemyDefeated(overflow);
+            } else {
+                updateDungeonHUD();
+            }
+        }
+
+        function handleEnemyDefeated(overflow) {
+            const isLastEnemy = (dungeonEnemyIndex === dungeonEnemies.length - 1);
+
+            if (isLastEnemy) {
+                finishDungeonVictory();
+                return;
+            }
+
+            dungeonEnemyIndex++;
+            dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex];
+            dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
+            updateDungeonHUD();
+
+            if (dungeonActivityType === 'pushup' && !assaultModeEnabled) {
+                startEnemyPause();
+            }
+        }
+
+        function startEnemyPause() {
+            dungeonPaused = true;
+            const overlay = document.getElementById('overlay-enemy-pause');
+            const countdownEl = document.getElementById('pause-countdown');
+            overlay.classList.add('active');
+            let secondsLeft = 5;
+            countdownEl.innerText = secondsLeft;
+            const interval = setInterval(() => {
+                secondsLeft--;
+                countdownEl.innerText = secondsLeft;
+                if (secondsLeft <= 0) {
+                    clearInterval(interval);
+                    overlay.classList.remove('active');
+                    dungeonPaused = false;
+                }
+            }, 1000);
+        }
+
+        async function finishDungeonVictory() {
+            dungeonPaused = true;
+            dungeonJustWon = true;
+            playVictorySound();
+            vibrate('success');
+            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
+
+            // Показываем окно СРАЗУ, с индикатором загрузки — не ждём ответа сервера
+            document.getElementById('dungeon-complete-xp').innerText = "Подсчитываем награду... ⏳";
+            document.getElementById('overlay-dungeon-complete').classList.add('active');
+
+            const userId = getUserId();
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                const response = await fetch(`${API_BASE}/api/dungeon_complete`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, activity: dungeonActivityType, dungeon: dungeonNumber }),
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                const data = await response.json();
+                document.getElementById('dungeon-complete-xp').innerText = `+${data.xp_earned || 0} XP ⭐`;
+            } catch (error) {
+                console.error("Ошибка завершения приключения:", error);
+                document.getElementById('dungeon-complete-xp').innerText = "Награда сохранится немного позже ⏳";
+            }
+        }
+
+        function continueDungeon() {
+            document.getElementById('overlay-dungeon-complete').classList.remove('active');
+            const nextN = dungeonNumber + 1;
+            dungeonPaused = false;
+            startDungeonActivity(dungeonActivityType, nextN);
+        }
+
+        function finishDungeonSession() {
+            document.getElementById('overlay-dungeon-complete').classList.remove('active');
+            attemptSave();
+        }
+
+        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ =====
+
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const statusEl = document.getElementById('status');
+        const counterEl = document.getElementById('counter');
+
+        let currentMode = null;
+        let cameraStarted = false;
+        let cameraObj = null;
+
+        let pushupCount = 0;
+        let stage = "up";
+        let inPosition = false;
+
+        let plankSeconds = 0;
+        let plankLastTimestamp = null;
+        let lastPlankMinuteMarked = 0;
+
+        function calculateAngle(a, b, c) {
+            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
+            let angle = Math.abs(radians * 180.0 / Math.PI);
+            if (angle > 180.0) angle = 360 - angle;
+            return angle;
+        }
+
+        const LEFT_SHOULDER = 11, RIGHT_SHOULDER = 12;
+        const LEFT_ELBOW = 13, RIGHT_ELBOW = 14;
+        const LEFT_WRIST = 15, RIGHT_WRIST = 16;
+        const LEFT_HIP = 23, RIGHT_HIP = 24;
+        const LEFT_KNEE = 25, RIGHT_KNEE = 26;
+        const LEFT_ANKLE = 27, RIGHT_ANKLE = 28;
+
+        const PUSHUP_POINTS = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
+        const PUSHUP_CONNECTIONS = [
+            [LEFT_SHOULDER, LEFT_ELBOW], [LEFT_ELBOW, LEFT_WRIST],
+            [RIGHT_SHOULDER, RIGHT_ELBOW], [RIGHT_ELBOW, RIGHT_WRIST],
+            [LEFT_SHOULDER, RIGHT_SHOULDER]
+        ];
+
+        function checkPushupPosition(landmarks) {
+            return PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
+        }
+
+        function countPushups(landmarks) {
+            const shoulder = landmarks[LEFT_SHOULDER];
+            const elbow = landmarks[LEFT_ELBOW];
+            const wrist = landmarks[LEFT_WRIST];
+            const angle = calculateAngle(shoulder, elbow, wrist);
+            if (angle < 90) stage = "down";
+            if (angle > 160 && stage === "down") {
+                stage = "up";
+                pushupCount++;
+                counterEl.innerText = pushupCount;
+                playRepBeep();
+                vibrate('light');
+                if (inDungeonMode) applyDungeonDamage(1);
+            }
+        }
+
+        function drawPushupLandmarks(landmarks) {
+            drawPoints(landmarks, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
+        }
+
+        function avgVisibility(indices, landmarks) {
+            return indices.reduce((sum, idx) => sum + landmarks[idx].visibility, 0) / indices.length;
+        }
+
+        function getPlankSidePoints(landmarks) {
+            const leftIndices = [LEFT_SHOULDER, LEFT_ELBOW, LEFT_WRIST, LEFT_HIP, LEFT_KNEE, LEFT_ANKLE];
+            const rightIndices = [RIGHT_SHOULDER, RIGHT_ELBOW, RIGHT_WRIST, RIGHT_HIP, RIGHT_KNEE, RIGHT_ANKLE];
+            const leftScore = avgVisibility(leftIndices, landmarks);
+            const rightScore = avgVisibility(rightIndices, landmarks);
+            if (leftScore >= rightScore) {
+                return { shoulder: LEFT_SHOULDER, elbow: LEFT_ELBOW, wrist: LEFT_WRIST, hip: LEFT_HIP, knee: LEFT_KNEE, ankle: LEFT_ANKLE };
+            } else {
+                return { shoulder: RIGHT_SHOULDER, elbow: RIGHT_ELBOW, wrist: RIGHT_WRIST, hip: RIGHT_HIP, knee: RIGHT_KNEE, ankle: RIGHT_ANKLE };
+            }
+        }
+
+        function checkPlankPosition(landmarks) {
+            const p = getPlankSidePoints(landmarks);
+            const required = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
+            const allVisible = required.every(idx => landmarks[idx].visibility > 0.6);
+            if (!allVisible) return { valid: false, reason: "not_visible", points: p };
+            const bodyAngle = calculateAngle(landmarks[p.shoulder], landmarks[p.hip], landmarks[p.knee]);
+            const legAngle = calculateAngle(landmarks[p.hip], landmarks[p.knee], landmarks[p.ankle]);
+            const isStraight = bodyAngle > 150 && legAngle > 150;
+            return { valid: isStraight, reason: isStraight ? "ok" : "not_straight", points: p };
+        }
+
+        function drawPlankLandmarks(landmarks, p) {
+            const points = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
+            const connections = [
+                [p.shoulder, p.elbow], [p.elbow, p.wrist],
+                [p.shoulder, p.hip], [p.hip, p.knee], [p.knee, p.ankle]
+            ];
+            drawPoints(landmarks, points, connections);
+        }
+
+        function drawPoints(landmarks, points, connections) {
+            ctx.strokeStyle = '#ff8c52';
+            ctx.lineWidth = 3;
+            for (const [startIdx, endIdx] of connections) {
+                const start = landmarks[startIdx];
+                const end = landmarks[endIdx];
+                ctx.beginPath();
+                ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
+                ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
+                ctx.stroke();
+            }
+            ctx.fillStyle = '#d4453a';
+            for (const idx of points) {
+                const point = landmarks[idx];
+                ctx.beginPath();
+                ctx.arc(point.x * canvas.width, point.y * canvas.height, 6, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = Math.floor(totalSeconds % 60);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updatePlankTimer(isInPosition) {
+            const now = Date.now();
+            if (isInPosition) {
+                if (plankLastTimestamp !== null) {
+                    const delta = (now - plankLastTimestamp) / 1000;
+                    plankSeconds += delta;
+                    if (inDungeonMode) applyDungeonDamage(delta);
+
+                    const currentMinute = Math.floor(plankSeconds / 60);
+                    if (currentMinute > lastPlankMinuteMarked) {
+                        lastPlankMinuteMarked = currentMinute;
+                        playMinuteBeep();
+                        vibrate('light');
+                    }
+                }
+                plankLastTimestamp = now;
+            } else {
+                plankLastTimestamp = null;
+            }
+            counterEl.innerText = formatTime(plankSeconds);
+        }
+
+        const pose = new Pose({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+        });
+
+        pose.setOptions({
+            modelComplexity: 1, smoothLandmarks: true,
+            minDetectionConfidence: 0.5, minTrackingConfidence: 0.5
+        });
+
+        pose.onResults(onResults);
+
+        function onResults(results) {
+            if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
+                canvas.width = results.image.width;
+                canvas.height = results.image.height;
+            }
+
+            ctx.save();
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+
+            if (results.poseLandmarks) {
+                if (currentMode === 'pushup') {
+                    drawPushupLandmarks(results.poseLandmarks);
+                    inPosition = checkPushupPosition(results.poseLandmarks);
+
+                    if (inPosition) {
+                        statusEl.innerText = dungeonPaused ? "Передышка..." : "Позиция ОК, считаем! 💪";
+                        if (!dungeonPaused) countPushups(results.poseLandmarks);
+                    } else {
+                        statusEl.innerText = "Займите позицию для отжиманий 🧎";
+                    }
+                } else if (currentMode === 'plank') {
+                    const result = checkPlankPosition(results.poseLandmarks);
+                    drawPlankLandmarks(results.poseLandmarks, result.points);
+
+                    if (result.reason === "not_visible") {
+                        statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
+                    } else if (result.reason === "not_straight") {
+                        statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
+                    } else {
+                        statusEl.innerText = "Отлично держите планку! 🔥";
+                    }
+                    updatePlankTimer(result.valid && !dungeonPaused);
+                }
+            } else {
+                inPosition = false;
+                statusEl.innerText = "Не вижу тело в кадре 👀";
+                if (currentMode === 'plank') updatePlankTimer(false);
+            }
+
+            ctx.restore();
+        }
+
+        function startCameraIfNeeded() {
+            if (cameraStarted) return;
+            cameraObj = new Camera(video, {
+                onFrame: async () => { await pose.send({ image: video }); },
+                width: 480, height: 640
+            });
+            cameraObj.start();
+            cameraStarted = true;
+        }
+
+        function startActivity(mode, isDungeon) {
+            fetch(`${API_BASE}/`).catch(() => {});
+
+            currentMode = mode;
+            pushupCount = 0;
+            stage = "up";
+            plankSeconds = 0;
+            plankLastTimestamp = null;
+            lastPlankMinuteMarked = 0;
+
+            document.getElementById('finishBtn').style.display = 'block';
+            document.getElementById('activityBackBtn').style.display = 'block';
+            document.getElementById('saveOverlay').classList.remove('active');
+            document.getElementById('retryBtn').classList.remove('active');
+            document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
+
+            if (!isDungeon) inDungeonMode = false;
+
+            if (mode === 'pushup') {
+                statusEl.innerText = "Займите позицию для отжиманий 🧎";
+                counterEl.innerText = "0";
+            } else {
+                statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
+                counterEl.innerText = "00:00";
+            }
+
+            showScreen('activity');
+            startCameraIfNeeded();
+        }
+
+        function exitActivity() {
+            if (inDungeonMode && !dungeonJustWon) {
+                playDefeatSound();
+                vibrate('error');
+            }
+            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
+            currentMode = null;
+            inDungeonMode = false;
+            document.getElementById('battle-header').style.display = 'none';
+            showScreen('menu');
+        }
+
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        applyTelegramViewportHeight();
+        tg.onEvent('viewportChanged', applyTelegramViewportHeight);
+        window.addEventListener('resize', applyTelegramViewportHeight);
+
+        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
+
+        let saveAttempts = 0;
+        const MAX_SAVE_ATTEMPTS = 3;
+
+        async function attemptSave(isRetry = false) {
+            const userId = getUserId();
+            const mode = currentMode;
+
+            const finishBtn = document.getElementById('finishBtn');
+            const backBtn = document.getElementById('activityBackBtn');
+            const saveOverlay = document.getElementById('saveOverlay');
+            const retryBtn = document.getElementById('retryBtn');
+            const statusEl2 = document.getElementById('status');
+
+            if (!isRetry) saveAttempts = 0;
+
+            finishBtn.style.display = 'none';
+            backBtn.style.display = 'none';
+            retryBtn.classList.remove('active');
+            saveOverlay.classList.add('active');
+            saveOverlay.innerText = saveAttempts > 0
+                ? `Сохраняем результат... (попытка ${saveAttempts + 1}) ⏳`
+                : "Сохраняем результат... ⏳";
+
+            let success = false;
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+                if (userId && mode === 'pushup' && pushupCount > 0) {
+                    const response = await fetch(`${API_BASE}/api/save_pushups`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, count: pushupCount }),
                         signal: controller.signal
                     });
                     success = response.ok;
@@ -31,7 +1381,7 @@ stringify({ user_id: userId, count: pushupCount }),
             saveAttempts++;
 
             if (saveAttempts < MAX_SAVE_ATTEMPTS) {
-                statusEl2.innerText = Не удалось сохранить, пробуем снова...;
+                statusEl2.innerText = `Не удалось сохранить, пробуем снова...`;
                 setTimeout(() => attemptSave(true), 1500);
             } else {
                 retryBtn.classList.add('active');
