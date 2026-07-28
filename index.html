@@ -263,14 +263,13 @@
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
-    <div id="screen-settings" class="screen center-content">
+<div id="screen-settings" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h1>⚙️ Настройки</h1>
-        <div class="stat-row" style="max-width: 320px;">
-            <span>Звуковые сигналы</span>
-            <span id="settings-sound-status">—</span>
-        </div>
-        <button class="menu-button primary" onclick="toggleSound()">Переключить звук</button>
+        <label class="stat-row" style="max-width: 320px; cursor: pointer;">
+            <span>🔊 Звуковые сигналы</span>
+            <input type="checkbox" id="sound-checkbox" onchange="toggleSound()" style="width: 22px; height: 22px; accent-color: #d4af37;">
+        </label>
     </div>
 
     <!-- ===== ОВЕРЛЕИ ===== -->
