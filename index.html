@@ -10,6 +10,7 @@
         html, body {
             margin: 0; padding: 0; text-align: center;
             background: #0d0906; color: #e9d9b8; font-family: 'EB Garamond', serif; height: 100%;
+            overflow-x: hidden;
         }
         body { min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
 
@@ -17,14 +18,11 @@
 
         .screen {
             display: none; padding: 20px 10px 40px; min-height: var(--tg-viewport-height, 100vh);
-            box-sizing: border-box; background-size: cover; background-position: center;
+            box-sizing: border-box;
         }
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .screen.center-content.active .menu-button { margin: 14px 0; }
-
-        #screen-menu { background-image: linear-gradient(rgba(10,7,4,0.75), rgba(10,7,4,0.85)), url('bg-menu.jpg'); }
-        #screen-profile { background-image: linear-gradient(rgba(10,7,4,0.72), rgba(10,7,4,0.85)), url('bg-profile.jpg'); }
 
         h1 { font-size: 30px; }
         h2 { font-size: 22px; }
@@ -101,7 +99,7 @@
             max-width: 380px; margin: 10px auto; padding: 14px; background: #1a140d;
             border: 1px solid #7a5c22; border-radius: 8px;
         }
-        .dungeon-hud-title { font-size: 15px; opacity: 0.85; margin-bottom: 8px; font-family: 'Cinzel', serif; }
+        .dungeon-hud-title { font-size: 15px; opacity: 0.8; margin-bottom: 8px; font-family: 'Cinzel', serif; }
         .hp-bar-bg { width: 100%; height: 22px; background: #2a2016; border-radius: 11px; overflow: hidden; border: 1px solid #7a5c22; }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #a13a3a, #d4691c); transition: width 0.2s; }
         .hp-bar-text { font-size: 14px; margin-top: 6px; opacity: 0.85; }
@@ -118,19 +116,46 @@
         .overlay-box h3 { margin-top: 0; }
         .overlay-box .menu-button { max-width: 260px; }
         .countdown-number { font-size: 48px; color: #d4af37; font-weight: bold; font-family: 'Cinzel', serif; }
+
+        /* ===== ПОЛНОЭКРАННЫЕ ЭКРАНЫ-КАРТИНКИ (МЕНЮ / ПРОФИЛЬ) ===== */
         .art-screen-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: var(--tg-viewport-height, 100vh);
+            overflow: hidden; z-index: 1; background: #000;
         }
         .art-screen-image {
-            width: 100%;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
             display: block;
         }
         .art-button {
-            position: absolute;
-            cursor: pointer;
+            position: absolute; cursor: pointer; z-index: 3;
+        }
+        .art-text-overlay {
+            position: absolute; z-index: 2; font-family: 'Cinzel', serif; color: #ffe8b0;
+            display: flex; align-items: center; justify-content: center; pointer-events: none;
+            text-shadow: 0 0 6px rgba(0,0,0,0.9); font-size: 20px; font-weight: bold; white-space: nowrap;
+        }
+        .tab-highlight {
+            position: absolute; z-index: 2; border: 2px solid #7CFC00; border-radius: 8px;
+            background: rgba(124,252,0,0.15); pointer-events: none;
+        }
+        .progress-track {
+            position: absolute; z-index: 2; background: rgba(0,0,0,0.55);
+            border-radius: 6px; overflow: hidden; pointer-events: none;
+        }
+        .progress-fill {
+            height: 100%; width: 0%; background: linear-gradient(90deg, #a13a3a, #d4af37);
+        }
+        .settings-fab {
+            position: fixed; bottom: 24px; right: 20px; z-index: 5;
+            width: 54px; height: 54px; border-radius: 50%;
+            background: linear-gradient(#4a3312, #2e1f0a); border: 2px solid #d4af37;
+            color: #ffe8b0; font-size: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+        }
+        .profile-loading-overlay {
+            position: absolute; bottom: 20px; left: 0; right: 0; z-index: 4;
+            color: #d4af37; font-size: 14px;
         }
     </style>
 </head>
@@ -145,16 +170,16 @@
         <button class="menu-button primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-<!-- ===== ГЛАВНОЕ МЕНЮ (картинка с кликабельными зонами поверх нарисованных кнопок) ===== -->
+    <!-- ===== ГЛАВНОЕ МЕНЮ (картинка edge-to-edge с кликабельными зонами) ===== -->
     <div id="screen-menu" class="screen">
-        <div class="art-screen-wrapper">
+        <div class="art-screen-wrapper" id="menu-art-wrapper">
             <img src="menu-art.png" class="art-screen-image" alt="Меню">
-            <div class="art-button" style="top: 36%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('training-type')"></div>
-            <div class="art-button" style="top: 46%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('profile')"></div>
-            <div class="art-button" style="top: 56%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('leaderboard')"></div>
-            <div class="art-button" style="top: 66%; left: 19%; width: 62%; height: 7%;" onclick="showScreen('achievements')"></div>
+            <div class="art-button" id="menu-btn-adventure" onclick="showScreen('training-type')"></div>
+            <div class="art-button" id="menu-btn-profile" onclick="showScreen('profile')"></div>
+            <div class="art-button" id="menu-btn-leaderboard" onclick="showScreen('leaderboard')"></div>
+            <div class="art-button" id="menu-btn-achievements" onclick="showScreen('achievements')"></div>
+            <button class="settings-fab" onclick="showScreen('settings')">⚙️</button>
         </div>
-        <button class="menu-button" onclick="showScreen('settings')" style="margin-top: 10px;">⚙️ Настройки</button>
     </div>
 
     <!-- ===== ВЫБОР: РЕЖИМ ПРИКЛЮЧЕНИЙ / СВОБОДНАЯ ТРЕНИРОВКА ===== -->
@@ -203,38 +228,31 @@
         </div>
     </div>
 
-<!-- ===== ПРОФИЛЬ (картинка с кликабельной зоной для переключения вкладок) ===== -->
+    <!-- ===== ПРОФИЛЬ (картинка edge-to-edge с наложенными данными) ===== -->
     <div id="screen-profile" class="screen">
-        <div class="art-screen-wrapper" style="margin-bottom: 10px;">
+        <div class="art-screen-wrapper" id="profile-art-wrapper">
             <img src="profile-art.png" class="art-screen-image" alt="Профиль">
-            <div class="art-button" style="top: 1%; left: 2%; width: 9%; height: 6%;" onclick="showScreen('menu')"></div>
-            <div class="art-button" style="top: 40%; left: 10%; width: 38%; height: 5%;" onclick="switchProfileTab('pushup')"></div>
-            <div class="art-button" style="top: 40%; left: 50%; width: 38%; height: 5%;" onclick="switchProfileTab('plank')"></div>
-        </div>
-        <div id="profile-loading" class="loading">Загрузка...</div>
-        <div id="profile-content" style="display: none;">
-            <div class="stat-row"><span>Звание</span><span id="profile-level">—</span></div>
-            <div class="stat-row"><span>Очки</span><span id="profile-points">—</span></div>
-            <div class="stat-row"><span>До след. звания</span><span id="profile-next">—</span></div>
 
-            <div class="tab-row">
-                <button class="tab-button active" id="profile-tab-pushup" onclick="switchProfileTab('pushup')">🤸 Отжимания</button>
-                <button class="tab-button" id="profile-tab-plank" onclick="switchProfileTab('plank')">🧘 Планка</button>
+            <div class="art-button" id="profile-btn-back" onclick="showScreen('menu')"></div>
+            <div class="art-button" id="profile-btn-tab-pushup" onclick="switchProfileTab('pushup')"></div>
+            <div class="art-button" id="profile-btn-tab-plank" onclick="switchProfileTab('plank')"></div>
+            <div class="tab-highlight" id="profile-tab-highlight"></div>
+
+            <div class="art-text-overlay" id="profile-text-rank"></div>
+            <div class="art-text-overlay" id="profile-text-points"></div>
+            <div class="art-text-overlay" id="profile-text-nextlevel" style="font-size:14px;"></div>
+
+            <div class="progress-track" id="profile-progress-track">
+                <div class="progress-fill" id="profile-progress-fill"></div>
             </div>
 
-            <div id="profile-pushup-stats">
-                <div class="stat-row"><span>Сегодня</span><span id="profile-pushup-today">—</span></div>
-                <div class="stat-row"><span>Дней подряд</span><span id="profile-pushup-streak">—</span></div>
-                <div class="stat-row"><span>Всего</span><span id="profile-pushup-total">—</span></div>
-                <div class="stat-row"><span>Приключение</span><span id="profile-pushup-dungeon">—</span></div>
-            </div>
+            <div class="art-text-overlay" id="profile-stat-today"></div>
+            <div class="art-text-overlay" id="profile-stat-streak"></div>
+            <div class="art-text-overlay" id="profile-stat-total"></div>
+            <div class="art-text-overlay" id="profile-stat-beststreak"></div>
+            <div class="art-text-overlay" id="profile-stat-dungeon"></div>
 
-            <div id="profile-plank-stats" style="display: none;">
-                <div class="stat-row"><span>Сегодня</span><span id="profile-plank-today">—</span></div>
-                <div class="stat-row"><span>Дней подряд</span><span id="profile-plank-streak">—</span></div>
-                <div class="stat-row"><span>Всего</span><span id="profile-plank-total">—</span></div>
-                <div class="stat-row"><span>Приключение</span><span id="profile-plank-dungeon">—</span></div>
-            </div>
+            <div class="profile-loading-overlay loading" id="profile-loading">Загрузка...</div>
         </div>
     </div>
 
@@ -263,7 +281,7 @@
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
-<div id="screen-settings" class="screen center-content">
+    <div id="screen-settings" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h1>⚙️ Настройки</h1>
         <label class="stat-row" style="max-width: 320px; cursor: pointer;">
@@ -303,6 +321,87 @@
             document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
         }
 
+        // ===== ПОЗИЦИОНИРОВАНИЕ КЛИКАБЕЛЬНЫХ/ТЕКСТОВЫХ ЗОН ПОВЕРХ КАРТИНОК =====
+        // Координаты заданы в пикселях исходного изображения (1024x1536).
+        // Т.к. картинка показывается через object-fit:cover, при любом размере экрана
+        // мы пересчитываем реальное положение зоны через масштаб "cover".
+
+        const ART_W = 1024, ART_H = 1536;
+
+        const MENU_OVERLAYS = [
+            { id: 'menu-btn-adventure', x: 195, y: 553, w: 635, h: 108 },
+            { id: 'menu-btn-profile', x: 195, y: 706, w: 635, h: 108 },
+            { id: 'menu-btn-leaderboard', x: 195, y: 860, w: 635, h: 108 },
+            { id: 'menu-btn-achievements', x: 195, y: 1014, w: 635, h: 108 },
+        ];
+
+        const PROFILE_TAB_PUSHUP = { x: 102, y: 614, w: 389, h: 77 };
+        const PROFILE_TAB_PLANK = { x: 512, y: 614, w: 389, h: 77 };
+
+        const PROFILE_OVERLAYS = [
+            { id: 'profile-btn-back', x: 20, y: 15, w: 90, h: 90 },
+            { id: 'profile-btn-tab-pushup', ...PROFILE_TAB_PUSHUP },
+            { id: 'profile-btn-tab-plank', ...PROFILE_TAB_PLANK },
+            { id: 'profile-text-rank', x: 345, y: 205, w: 340, h: 55 },
+            { id: 'profile-text-points', x: 345, y: 300, w: 200, h: 65 },
+            { id: 'profile-text-nextlevel', x: 345, y: 435, w: 440, h: 40 },
+            { id: 'profile-progress-track', x: 350, y: 483, w: 430, h: 34 },
+            { id: 'profile-stat-today', x: 680, y: 645, w: 100, h: 45 },
+            { id: 'profile-stat-streak', x: 680, y: 725, w: 100, h: 45 },
+            { id: 'profile-stat-total', x: 680, y: 805, w: 100, h: 45 },
+            { id: 'profile-stat-beststreak', x: 680, y: 885, w: 100, h: 45 },
+            { id: 'profile-stat-dungeon', x: 680, y: 965, w: 100, h: 45 },
+        ];
+
+        function computeArtPosition(containerEl, x, y, w, h) {
+            const rect = containerEl.getBoundingClientRect();
+            const scale = Math.max(rect.width / ART_W, rect.height / ART_H);
+            const dispW = ART_W * scale, dispH = ART_H * scale;
+            const offsetX = (dispW - rect.width) / 2;
+            const offsetY = (dispH - rect.height) / 2;
+            return {
+                left: x * scale - offsetX,
+                top: y * scale - offsetY,
+                width: w * scale,
+                height: h * scale
+            };
+        }
+
+        function applyOverlayPositions(containerId, overlays) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            overlays.forEach(cfg => {
+                const el = document.getElementById(cfg.id);
+                if (!el) return;
+                const pos = computeArtPosition(container, cfg.x, cfg.y, cfg.w, cfg.h);
+                el.style.left = pos.left + 'px';
+                el.style.top = pos.top + 'px';
+                el.style.width = pos.width + 'px';
+                el.style.height = pos.height + 'px';
+            });
+        }
+
+        function refreshMenuOverlays() {
+            applyOverlayPositions('menu-art-wrapper', MENU_OVERLAYS);
+        }
+
+        function refreshProfileOverlays() {
+            applyOverlayPositions('profile-art-wrapper', PROFILE_OVERLAYS);
+            const tabBox = activeProfileTab === 'pushup' ? PROFILE_TAB_PUSHUP : PROFILE_TAB_PLANK;
+            const container = document.getElementById('profile-art-wrapper');
+            const pos = computeArtPosition(container, tabBox.x, tabBox.y, tabBox.w, tabBox.h);
+            const hl = document.getElementById('profile-tab-highlight');
+            hl.style.left = pos.left + 'px';
+            hl.style.top = pos.top + 'px';
+            hl.style.width = pos.width + 'px';
+            hl.style.height = pos.height + 'px';
+        }
+
+        function refreshActiveArtOverlays() {
+            if (document.getElementById('screen-menu').classList.contains('active')) refreshMenuOverlays();
+            if (document.getElementById('screen-profile').classList.contains('active')) refreshProfileOverlays();
+        }
+
         function showScreen(name) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('screen-' + name).classList.add('active');
@@ -311,6 +410,11 @@
             if (name === 'leaderboard') loadLeaderboard();
             if (name === 'achievements') loadAchievementsMock();
             if (name === 'settings') renderSettingsScreen();
+
+            requestAnimationFrame(() => {
+                if (name === 'menu') refreshMenuOverlays();
+                if (name === 'profile') refreshProfileOverlays();
+            });
         }
 
         function getUserId() {
@@ -360,7 +464,7 @@
             setTimeout(() => playBeep(180, 400, 'sawtooth'), 250);
         }
 
-function renderSettingsScreen() {
+        function renderSettingsScreen() {
             document.getElementById('sound-checkbox').checked = soundEnabled;
         }
 
@@ -414,51 +518,86 @@ function renderSettingsScreen() {
 
         // ===== ПРОФИЛЬ =====
 
+        let profileDataCache = null;
+        let activeProfileTab = 'pushup';
+
+        const LEVELS_JS = [
+            { threshold: 0, title: "🐣 Новичок" },
+            { threshold: 100, title: "💪 Крепыш" },
+            { threshold: 500, title: "🔥 Силач" },
+            { threshold: 1500, title: "⚡ Терминатор" },
+            { threshold: 5000, title: "👑 Легенда зала" }
+        ];
+
+        function getLevelRange(points) {
+            let current = LEVELS_JS[0];
+            for (const lvl of LEVELS_JS) {
+                if (points >= lvl.threshold) current = lvl;
+            }
+            const idx = LEVELS_JS.indexOf(current);
+            const next = LEVELS_JS[idx + 1] || null;
+            return { current, next };
+        }
+
         function formatSeconds(totalSeconds) {
             const m = Math.floor(totalSeconds / 60);
             const s = totalSeconds % 60;
-            return `${m} мин ${s} сек`;
+            return `${m}м ${s}с`;
         }
 
         async function loadProfile() {
             const userId = getUserId();
-            document.getElementById('profile-loading').style.display = 'block';
-            document.getElementById('profile-content').style.display = 'none';
-            if (!userId) { document.getElementById('profile-loading').innerText = "Не удалось определить пользователя"; return; }
+            const loadingEl = document.getElementById('profile-loading');
+            loadingEl.style.display = 'block';
+
+            if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
 
             try {
                 const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
                 const data = await response.json();
-
-                document.getElementById('profile-level').innerText = data.level;
-                document.getElementById('profile-points').innerText = data.points + " ⭐";
-                document.getElementById('profile-next').innerText =
-                    data.points_to_next_level !== null
-                        ? `${data.points_to_next_level} очков до «${data.next_level}»`
-                        : "Максимальный уровень! 🎉";
-
-                document.getElementById('profile-pushup-today').innerText = data.pushup.today;
-                document.getElementById('profile-pushup-streak').innerText = data.pushup.streak + " 🔥";
-                document.getElementById('profile-pushup-total').innerText = data.pushup.total;
-                document.getElementById('profile-pushup-dungeon').innerText = "№" + data.pushup.dungeon;
-
-                document.getElementById('profile-plank-today').innerText = formatSeconds(data.plank.today_seconds);
-                document.getElementById('profile-plank-streak').innerText = data.plank.streak + " 🔥";
-                document.getElementById('profile-plank-total').innerText = formatSeconds(data.plank.total_seconds);
-                document.getElementById('profile-plank-dungeon').innerText = "№" + data.plank.dungeon;
-
-                document.getElementById('profile-loading').style.display = 'none';
-                document.getElementById('profile-content').style.display = 'block';
+                profileDataCache = data;
+                loadingEl.style.display = 'none';
+                renderProfileOverlayValues();
             } catch (error) {
-                document.getElementById('profile-loading').innerText = "Не удалось загрузить профиль. Попробуйте позже.";
+                loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже.";
             }
         }
 
+        function renderProfileOverlayValues() {
+            if (!profileDataCache) return;
+            const data = profileDataCache;
+
+            document.getElementById('profile-text-rank').innerText = data.level;
+            document.getElementById('profile-text-points').innerText = data.points + " ⭐";
+            document.getElementById('profile-text-nextlevel').innerText =
+                data.points_to_next_level !== null
+                    ? `${data.points_to_next_level} до «${data.next_level}»`
+                    : "Максимальный уровень!";
+
+            const { current, next } = getLevelRange(data.points);
+            let fraction = 1;
+            if (next) {
+                fraction = (data.points - current.threshold) / (next.threshold - current.threshold);
+                fraction = Math.max(0, Math.min(1, fraction));
+            }
+            document.getElementById('profile-progress-fill').style.width = (fraction * 100) + '%';
+
+            const source = activeProfileTab === 'pushup' ? data.pushup : data.plank;
+            const todayText = activeProfileTab === 'pushup' ? source.today : formatSeconds(source.today_seconds);
+            const totalText = activeProfileTab === 'pushup' ? source.total : formatSeconds(source.total_seconds);
+
+            document.getElementById('profile-stat-today').innerText = todayText;
+            document.getElementById('profile-stat-streak').innerText = source.streak;
+            document.getElementById('profile-stat-total').innerText = totalText;
+            document.getElementById('profile-stat-beststreak').innerText = source.best_streak;
+            document.getElementById('profile-stat-dungeon').innerText = "№" + source.dungeon;
+
+            refreshProfileOverlays();
+        }
+
         function switchProfileTab(tab) {
-            document.getElementById('profile-tab-pushup').classList.toggle('active', tab === 'pushup');
-            document.getElementById('profile-tab-plank').classList.toggle('active', tab === 'plank');
-            document.getElementById('profile-pushup-stats').style.display = tab === 'pushup' ? 'block' : 'none';
-            document.getElementById('profile-plank-stats').style.display = tab === 'plank' ? 'block' : 'none';
+            activeProfileTab = tab;
+            renderProfileOverlayValues();
         }
 
         // ===== ТАБЛИЦА ЛИДЕРОВ =====
@@ -953,7 +1092,6 @@ function renderSettingsScreen() {
         }
 
         function startActivity(mode, isDungeon) {
-            // "Прогреваем" сервер заранее, чтобы к моменту завершения он уже не спал
             fetch(`${API_BASE}/`).catch(() => {});
 
             currentMode = mode;
@@ -1004,8 +1142,8 @@ function renderSettingsScreen() {
         tg.ready();
         tg.expand();
         applyTelegramViewportHeight();
-        tg.onEvent('viewportChanged', applyTelegramViewportHeight);
-        window.addEventListener('resize', applyTelegramViewportHeight);
+        tg.onEvent('viewportChanged', () => { applyTelegramViewportHeight(); refreshActiveArtOverlays(); });
+        window.addEventListener('resize', () => { applyTelegramViewportHeight(); refreshActiveArtOverlays(); });
 
         // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
 
