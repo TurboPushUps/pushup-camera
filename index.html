@@ -360,14 +360,13 @@
             setTimeout(() => playBeep(180, 400, 'sawtooth'), 250);
         }
 
-        function renderSettingsScreen() {
-            document.getElementById('settings-sound-status').innerText = soundEnabled ? 'Включены 🔊' : 'Выключены 🔇';
+function renderSettingsScreen() {
+            document.getElementById('sound-checkbox').checked = soundEnabled;
         }
 
         function toggleSound() {
-            soundEnabled = !soundEnabled;
+            soundEnabled = document.getElementById('sound-checkbox').checked;
             localStorage.setItem('soundEnabled', soundEnabled ? 'true' : 'false');
-            renderSettingsScreen();
         }
 
         // ===== РЕГИСТРАЦИЯ НИКНЕЙМА =====
