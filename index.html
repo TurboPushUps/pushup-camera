@@ -5,261 +5,330 @@
     <title>Pushup Tracker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-main: #120a08;
+            --bg-card: #1d120e;
+            --bg-card-alt: #241610;
+            --border-main: #4a2a1a;
+            --accent: #ff6b35;
+            --accent-bright: #ff8c52;
+            --gold: #e8b04a;
+            --text-main: #e8d8c8;
+            --text-dim: #a68c78;
+            --danger: #d4453a;
+            --success: #6bbf59;
+        }
+
         html, body {
             margin: 0; padding: 0; text-align: center;
-            background: #0d0906; color: #e9d9b8; font-family: 'EB Garamond', serif; height: 100%;
-            overflow-x: hidden;
+            background: radial-gradient(ellipse at top, #22120c 0%, #0d0605 70%);
+            color: var(--text-main); font-family: 'EB Garamond', serif; height: 100%;
         }
         body { min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
 
-        h1, h2, h3 { font-family: 'Cinzel', serif; color: #e8c88a; letter-spacing: 1px; }
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 1px; margin: 0 0 16px; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
 
         .screen {
-            display: none; padding: 20px 10px 40px; min-height: var(--tg-viewport-height, 100vh);
-            box-sizing: border-box;
+            display: none; padding: 20px 14px 50px; min-height: var(--tg-viewport-height, 100vh);
+            box-sizing: border-box; position: relative;
         }
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .screen.center-content.active .menu-button { margin: 14px 0; }
 
-        h1 { font-size: 30px; }
-        h2 { font-size: 22px; }
+        h1 { font-size: 26px; } h2 { font-size: 21px; }
 
-        .menu-button {
-            display: block; width: 100%; max-width: 380px; margin: 14px auto; padding: 18px;
-            font-size: 19px; font-family: 'Cinzel', serif;
-            background: linear-gradient(#2a2116, #1a140d);
-            color: #e8c88a; border: 2px solid #a9812f; border-radius: 8px;
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+        .btn {
+            display: block; width: 100%; max-width: 400px; margin: 10px auto; padding: 16px;
+            font-size: 17px; font-family: 'Cinzel', serif; cursor: pointer;
+            background: var(--bg-card); color: var(--text-main);
+            border: 1px solid var(--border-main); border-radius: 10px;
         }
-        .menu-button.primary {
-            background: linear-gradient(#4a3312, #2e1f0a);
-            color: #ffe8b0; border: 2px solid #d4af37; font-weight: bold;
+        .btn-primary {
+            background: linear-gradient(#5a2a12, #3a1a0a);
+            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
         }
-        .menu-button.locked { opacity: 0.35; }
-        .menu-button.replay { border-color: #00FF00; color: #00FF00; }
+        .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+        .btn small { display: block; font-size: 12px; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 4px; font-weight: normal; }
 
         .back-button {
-            position: absolute; top: 15px; left: 15px; background: none; border: none; color: #d4af37; font-size: 20px;
+            position: absolute; top: 16px; left: 14px; background: none; border: none;
+            color: var(--accent-bright); font-size: 20px; z-index: 5; cursor: pointer;
         }
 
-        .container { width: 560px; max-width: 100%; margin: 0 auto; }
-        video { display: none; }
-        canvas { display: block; width: 100%; height: auto; margin: 0 auto; }
-        #status { font-size: 20px; margin: 10px; min-height: 26px; }
-
-        .stat-row, .leader-row, .achievement-row, .dungeon-list-row {
-            display: flex; justify-content: space-between; align-items: center; max-width: 380px; margin: 10px auto;
-            padding: 14px 18px; background: linear-gradient(#241b10, #150f09);
-            border: 1px solid #7a5c22; border-radius: 8px; font-size: 16px; color: #e9d9b8;
+        .card {
+            max-width: 400px; margin: 10px auto; padding: 16px 18px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px;
         }
-        .achievement-row { text-align: left; }
-        .achievement-row.locked { opacity: 0.4; }
-        .dungeon-list-row.boss { border: 2px solid #ffcc00; }
-        .dungeon-list-row.locked { opacity: 0.35; }
-        .dungeon-list-row button {
-            padding: 8px 14px; font-size: 14px; background: #d4af37; color: #1a140d;
-            border: none; border-radius: 6px; font-weight: bold; font-family: 'Cinzel', serif;
+        .stat-row {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 400px; margin: 8px auto; padding: 14px 18px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px; font-size: 16px;
         }
-        .dungeon-list-row.locked button { background: #444; color: #888; }
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            max-width: 400px; margin: 10px auto;
+        }
+        .stat-box {
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px;
+            padding: 14px 8px;
+        }
+        .stat-box .value { font-size: 26px; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .stat-box .label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
 
-        .loading { opacity: 0.7; font-size: 15px; margin: 12px; }
+        .section-label {
+            text-align: left; max-width: 400px; margin: 18px auto 8px; padding: 0 6px;
+            font-size: 13px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
+        }
+
+        .loading { opacity: 0.7; font-size: 14px; margin: 14px; }
 
         .nickname-input {
             display: block; width: 100%; max-width: 320px; margin: 20px auto; padding: 16px;
-            font-size: 19px; border-radius: 8px; border: 2px solid #a9812f; background: #1a140d;
-            color: #e9d9b8; text-align: center; box-sizing: border-box;
+            font-size: 18px; border-radius: 10px; border: 1px solid var(--border-main); background: var(--bg-card);
+            color: var(--text-main); text-align: center; box-sizing: border-box;
         }
-        .nickname-error { color: #ff8888; font-size: 15px; min-height: 20px; margin-bottom: 10px; }
+        .nickname-error { color: #ff8888; font-size: 14px; min-height: 20px; margin-bottom: 8px; }
 
-        .tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 18px auto 12px; }
+        .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 400px; margin: 16px auto 10px; }
         .tab-button {
-            flex: 1; padding: 12px; font-size: 15px; font-family: 'Cinzel', serif;
-            background: #1a140d; color: #a08a5f; border: 1px solid #7a5c22; border-radius: 8px;
+            flex: 1; padding: 11px; font-size: 15px; font-family: 'Cinzel', serif; cursor: pointer;
+            background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 8px;
         }
-        .tab-button.active { background: #d4af37; color: #1a140d; font-weight: bold; border: none; }
-        .sub-tab-row { display: flex; justify-content: center; gap: 10px; max-width: 380px; margin: 0 auto 18px; }
+        .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 400px; margin: 0 auto 16px; }
         .sub-tab-button {
-            flex: 1; padding: 10px; font-size: 14px; background: transparent; color: #a08a5f;
-            border: 1px solid #7a5c22; border-radius: 8px;
+            flex: 1; padding: 9px; font-size: 13px; background: transparent; color: var(--text-dim); cursor: pointer;
+            border: 1px solid var(--border-main); border-radius: 8px;
         }
-        .sub-tab-button.active { border-color: #d4af37; color: #d4af37; }
+        .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
-        .save-overlay { display: none; margin: 15px auto; font-size: 17px; color: #d4af37; }
+        .leader-row {
+            display: flex; justify-content: space-between; align-items: center; max-width: 400px; margin: 6px auto;
+            padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px; font-size: 16px;
+        }
+        .leader-row .rank { color: var(--text-dim); width: 26px; text-align: left; }
+
+        .achievement-row {
+            max-width: 400px; margin: 8px auto; padding: 12px 16px; background: var(--bg-card);
+            border: 1px solid var(--border-main); border-radius: 10px; text-align: left; font-size: 15px;
+        }
+        .achievement-row.locked { opacity: 0.4; }
+
+        .toggle-switch { position: relative; width: 46px; height: 26px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #3a2418; border-radius: 26px; transition: 0.2s;
+        }
+        .toggle-slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background: #8a6a52; border-radius: 50%; transition: 0.2s;
+        }
+        input:checked + .toggle-slider { background: var(--accent); }
+        input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
+
+        /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ТРОПА ===== */
+        .path-container { max-width: 400px; margin: 10px auto; position: relative; }
+        .path-node {
+            display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 4px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px;
+            position: relative;
+        }
+        .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(232,176,74,0.25); }
+        .path-node.locked { opacity: 0.35; }
+        .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,107,53,0.3); }
+        .path-connector { width: 2px; height: 14px; background: var(--border-main); margin: 0 auto; }
+        .path-icon {
+            width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 20px; background: #2a1810; border: 1px solid var(--border-main); flex-shrink: 0;
+        }
+        .path-node.boss .path-icon { border-color: var(--gold); }
+        .path-node.current .path-icon { border-color: var(--accent); }
+        .path-info { flex: 1; text-align: left; }
+        .path-info .title { font-family: 'Cinzel', serif; font-size: 15px; color: var(--text-main); }
+        .path-info .subtitle { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+        .path-node button {
+            padding: 8px 14px; font-size: 13px; background: var(--accent); color: #1a0a04;
+            border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
+        }
+        .path-node.locked button { background: #3a2a1a; color: #7a6a5a; }
+
+        /* ===== ЭКРАН БОЯ ===== */
+        .battle-header { max-width: 420px; margin: 0 auto 6px; }
+        .monster-portrait {
+            width: 108px; height: 108px; border-radius: 50%; margin: 0 auto 8px;
+            background: radial-gradient(circle, #3a1810, #180a06);
+            border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
+            font-size: 52px; box-shadow: 0 0 20px rgba(255,107,53,0.35);
+        }
+        .monster-name { font-family: 'Cinzel', serif; font-size: 15px; color: var(--text-dim); }
+        .hp-bar-bg {
+            width: 100%; max-width: 420px; height: 24px; margin: 10px auto; background: #2a1810;
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+        }
+        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
+        .hp-bar-label {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
+            align-items: center; justify-content: center; font-size: 13px; font-family: 'JetBrains Mono', monospace;
+            color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .container { width: 480px; max-width: 100%; margin: 10px auto; }
+        video { display: none; }
+        canvas { display: block; width: 100%; height: auto; margin: 0 auto; border-radius: 12px; border: 1px solid var(--border-main); }
+        #status { font-size: 17px; margin: 8px; min-height: 24px; color: var(--text-dim); }
+
+        .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 24px; margin: 14px 0; }
+        .rep-circle {
+            width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #4a2a10, #2a1608); border: 2px solid var(--gold);
+            font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: bold; color: var(--gold);
+            box-shadow: 0 0 18px rgba(232,176,74,0.3);
+        }
+        .side-circle {
+            width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: var(--bg-card); border: 1px solid var(--border-main); font-size: 20px; cursor: pointer; color: var(--text-main);
+        }
+
+        .save-overlay { display: none; margin: 12px auto; font-size: 16px; color: var(--accent-bright); }
         .save-overlay.active { display: block; }
         .retry-button {
-            display: none; margin: 10px auto; padding: 14px 24px; font-size: 16px;
-            background: #a13a3a; color: white; border: none; border-radius: 8px;
+            display: none; margin: 10px auto; padding: 14px 24px; font-size: 15px;
+            background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer;
         }
         .retry-button.active { display: inline-block; }
 
-        .dungeon-hud {
-            max-width: 380px; margin: 10px auto; padding: 14px; background: #1a140d;
-            border: 1px solid #7a5c22; border-radius: 8px;
-        }
-        .dungeon-hud-title { font-size: 15px; opacity: 0.8; margin-bottom: 8px; font-family: 'Cinzel', serif; }
-        .hp-bar-bg { width: 100%; height: 22px; background: #2a2016; border-radius: 11px; overflow: hidden; border: 1px solid #7a5c22; }
-        .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #a13a3a, #d4691c); transition: width 0.2s; }
-        .hp-bar-text { font-size: 14px; margin-top: 6px; opacity: 0.85; }
-
         .overlay-panel {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5,3,1,0.9); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
+            background: rgba(5,2,1,0.92); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
         }
         .overlay-panel.active { display: flex; }
         .overlay-box {
-            background: linear-gradient(#241b10, #150f09); border: 2px solid #a9812f;
-            border-radius: 12px; padding: 30px 20px; max-width: 320px; text-align: center;
+            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 14px;
+            padding: 30px 22px; max-width: 320px; text-align: center;
         }
-        .overlay-box h3 { margin-top: 0; }
-        .overlay-box .menu-button { max-width: 260px; }
-        .countdown-number { font-size: 48px; color: #d4af37; font-weight: bold; font-family: 'Cinzel', serif; }
-
-        /* ===== ПОЛНОЭКРАННЫЕ ЭКРАНЫ-КАРТИНКИ (МЕНЮ / ПРОФИЛЬ) ===== */
-        .art-screen-wrapper {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: var(--tg-viewport-height, 100vh);
-            overflow: hidden; z-index: 1; background: #000;
-        }
-        .art-screen-image {
-            width: 100%; height: 100%;
-            object-fit: cover; object-position: center;
-            display: block;
-        }
-        .art-button {
-            position: absolute; cursor: pointer; z-index: 3;
-        }
-        .art-text-overlay {
-            position: absolute; z-index: 2; font-family: 'Cinzel', serif; color: #ffe8b0;
-            display: flex; align-items: center; justify-content: center; pointer-events: none;
-            text-shadow: 0 0 6px rgba(0,0,0,0.9); font-size: 20px; font-weight: bold; white-space: nowrap;
-        }
-        .tab-highlight {
-            position: absolute; z-index: 2; border: 2px solid #7CFC00; border-radius: 8px;
-            background: rgba(124,252,0,0.15); pointer-events: none;
-        }
-        .progress-track {
-            position: absolute; z-index: 2; background: rgba(0,0,0,0.55);
-            border-radius: 6px; overflow: hidden; pointer-events: none;
-        }
-        .progress-fill {
-            height: 100%; width: 0%; background: linear-gradient(90deg, #a13a3a, #d4af37);
-        }
-        .settings-fab {
-            position: fixed; bottom: 24px; right: 20px; z-index: 5;
-            width: 54px; height: 54px; border-radius: 50%;
-            background: linear-gradient(#4a3312, #2e1f0a); border: 2px solid #d4af37;
-            color: #ffe8b0; font-size: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.6);
-        }
-        .profile-loading-overlay {
-            position: absolute; bottom: 20px; left: 0; right: 0; z-index: 4;
-            color: #d4af37; font-size: 14px;
-        }
+        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); }
+        .overlay-box .btn { max-width: 260px; }
+        .countdown-number { font-size: 48px; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
 <body>
 
     <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
     <div id="screen-register" class="screen center-content">
-        <h1>💪 Pushup Tracker</h1>
+        <h1>⚔️ Pushup Tracker</h1>
         <p>Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
         <input type="text" id="nickname-input" class="nickname-input" maxlength="20" placeholder="Например: TigerPower">
         <div id="nickname-error" class="nickname-error"></div>
-        <button class="menu-button primary" onclick="submitNickname()">Продолжить</button>
+        <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-    <!-- ===== ГЛАВНОЕ МЕНЮ (картинка edge-to-edge с кликабельными зонами) ===== -->
-    <div id="screen-menu" class="screen">
-        <div class="art-screen-wrapper" id="menu-art-wrapper">
-            <img src="menu-art.png" class="art-screen-image" alt="Меню">
-            <div class="art-button" id="menu-btn-adventure" onclick="showScreen('training-type')"></div>
-            <div class="art-button" id="menu-btn-profile" onclick="showScreen('profile')"></div>
-            <div class="art-button" id="menu-btn-leaderboard" onclick="showScreen('leaderboard')"></div>
-            <div class="art-button" id="menu-btn-achievements" onclick="showScreen('achievements')"></div>
-            <button class="settings-fab" onclick="showScreen('settings')">⚙️</button>
-        </div>
+    <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
+    <div id="screen-menu" class="screen center-content">
+        <h1>⚔️ Pushup Tracker</h1>
+        <button class="btn btn-primary" onclick="showScreen('training-type')">🔥 Начать поход<small>Новый день. Новые победы.</small></button>
+        <button class="btn" onclick="showScreen('profile')">🛡️ Профиль<small>Твой путь. Твоя сила.</small></button>
+        <button class="btn" onclick="showScreen('leaderboard')">🏆 Таблица лидеров<small>Сравни силу. Стань лучшим.</small></button>
+        <button class="btn" onclick="showScreen('achievements')">🎖 Достижения<small>Твои награды. Твоя гордость.</small></button>
+        <button class="btn" onclick="showScreen('settings')">⚙️ Настройки</button>
     </div>
 
-    <!-- ===== ВЫБОР: РЕЖИМ ПРИКЛЮЧЕНИЙ / СВОБОДНАЯ ТРЕНИРОВКА ===== -->
+    <!-- ===== ВЫБОР: РЕЖИМ ПРИКЛЮЧЕНИЙ / СВОБОДНАЯ ===== -->
     <div id="screen-training-type" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h1>Как хочешь тренироваться?</h1>
-        <button class="menu-button primary" onclick="chooseFlow('dungeon')">⚔️ Режим приключений</button>
-        <button class="menu-button primary" onclick="chooseFlow('free')">🏋️ Свободная тренировка</button>
+        <button class="btn btn-primary" onclick="chooseFlow('dungeon')">⚔️ Режим приключений</button>
+        <button class="btn btn-primary" onclick="chooseFlow('free')">🏋️ Свободная тренировка</button>
     </div>
 
     <!-- ===== ВЫБОР АКТИВНОСТИ ===== -->
     <div id="screen-select-mode" class="screen center-content">
         <button class="back-button" onclick="showScreen('training-type')">← Назад</button>
         <h1>Выбери упражнение</h1>
-        <button class="menu-button primary" onclick="selectActivityForFlow('pushup')">🤸 Отжимания</button>
-        <button class="menu-button primary" onclick="selectActivityForFlow('plank')">🧘 Планка</button>
+        <button class="btn btn-primary" onclick="selectActivityForFlow('pushup')">🤸 Отжимания</button>
+        <button class="btn btn-primary" onclick="selectActivityForFlow('plank')">🧘 Планка</button>
     </div>
 
-    <!-- ===== ВЫБОР ПРИКЛЮЧЕНИЯ ===== -->
+    <!-- ===== ВЫБОР ПРИКЛЮЧЕНИЯ (тропа) ===== -->
     <div id="screen-dungeon-select" class="screen">
         <button class="back-button" onclick="showScreen('training-type')">← Назад</button>
-        <h2 id="dungeon-select-title">Режим приключений</h2>
+        <h2 id="dungeon-select-title" style="margin-top:50px;">Режим приключений</h2>
         <div id="dungeon-select-loading" class="loading">Загрузка...</div>
-        <div id="dungeon-select-list"></div>
+        <div class="path-container" id="dungeon-select-list"></div>
     </div>
 
-    <!-- ===== КАМЕРА ===== -->
+    <!-- ===== КАМЕРА / БОЙ ===== -->
     <div id="screen-activity" class="screen">
         <button class="back-button" id="activityBackBtn" onclick="exitActivity()">← Назад</button>
-        <h2 id="activity-title">Подсчёт отжиманий</h2>
 
-        <div id="dungeon-hud" class="dungeon-hud" style="display:none;">
-            <div class="dungeon-hud-title" id="dungeon-hud-title">Приключение 1 — Враг 1 из 1</div>
-            <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div></div>
-            <div class="hp-bar-text" id="hp-bar-text">HP: 18 / 18</div>
+        <div class="battle-header" id="battle-header" style="display:none; margin-top:46px;">
+            <div class="monster-portrait" id="monster-portrait">👹</div>
+            <div class="monster-name" id="monster-name">Приключение 1 — Враг 1 из 1</div>
+            <div class="hp-bar-bg">
+                <div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div>
+                <div class="hp-bar-label" id="hp-bar-text">HP 18 / 18</div>
+            </div>
         </div>
 
-        <h1 id="counter" style="font-size: 72px; color: #d4af37;">0</h1>
+        <h2 id="activity-title" style="margin-top:50px;">Подсчёт отжиманий</h2>
         <p id="status">Займите позицию 🧎</p>
-        <button id="finishBtn" class="menu-button primary" style="max-width: 260px;">Завершить</button>
-        <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
-        <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение</button>
+
         <div class="container">
             <video id="video" width="480" height="640" autoplay playsinline muted></video>
             <canvas id="canvas" width="480" height="640"></canvas>
         </div>
+
+        <div class="rep-counter-row">
+            <div class="side-circle" onclick="exitActivity()">🚪</div>
+            <div class="rep-circle" id="counter">0</div>
+            <div class="side-circle" style="visibility:hidden;">+</div>
+        </div>
+
+        <button id="finishBtn" class="btn btn-primary" style="max-width: 260px;">Завершить</button>
+        <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
+        <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение</button>
     </div>
 
-    <!-- ===== ПРОФИЛЬ (картинка edge-to-edge с наложенными данными) ===== -->
+    <!-- ===== ПРОФИЛЬ ===== -->
     <div id="screen-profile" class="screen">
-        <div class="art-screen-wrapper" id="profile-art-wrapper">
-            <img src="profile-art.png" class="art-screen-image" alt="Профиль">
-
-            <div class="art-button" id="profile-btn-back" onclick="showScreen('menu')"></div>
-            <div class="art-button" id="profile-btn-tab-pushup" onclick="switchProfileTab('pushup')"></div>
-            <div class="art-button" id="profile-btn-tab-plank" onclick="switchProfileTab('plank')"></div>
-            <div class="tab-highlight" id="profile-tab-highlight"></div>
-
-            <div class="art-text-overlay" id="profile-text-rank"></div>
-            <div class="art-text-overlay" id="profile-text-points"></div>
-            <div class="art-text-overlay" id="profile-text-nextlevel" style="font-size:14px;"></div>
-
-            <div class="progress-track" id="profile-progress-track">
-                <div class="progress-fill" id="profile-progress-fill"></div>
+        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <h2 style="margin-top:50px;">🛡️ Профиль</h2>
+        <div id="profile-loading" class="loading">Загрузка...</div>
+        <div id="profile-content" style="display: none;">
+            <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
+            <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
+            <div class="card" style="text-align:left;">
+                <div id="profile-next" style="font-size:14px; color: var(--text-dim); margin-bottom:8px;">—</div>
+                <div class="hp-bar-bg" style="height:14px; margin:0;">
+                    <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent));"></div>
+                </div>
             </div>
 
-            <div class="art-text-overlay" id="profile-stat-today"></div>
-            <div class="art-text-overlay" id="profile-stat-streak"></div>
-            <div class="art-text-overlay" id="profile-stat-total"></div>
-            <div class="art-text-overlay" id="profile-stat-beststreak"></div>
-            <div class="art-text-overlay" id="profile-stat-dungeon"></div>
+            <div class="tab-row">
+                <button class="tab-button active" id="profile-tab-pushup" onclick="switchProfileTab('pushup')">🤸 Отжимания</button>
+                <button class="tab-button" id="profile-tab-plank" onclick="switchProfileTab('plank')">🧘 Планка</button>
+            </div>
 
-            <div class="profile-loading-overlay loading" id="profile-loading">Загрузка...</div>
+            <div class="section-label">Дисциплина</div>
+            <div class="stat-grid">
+                <div class="stat-box"><div class="value mono" id="profile-stat-today">—</div><div class="label">Сегодня</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-streak">—</div><div class="label">Дней подряд 🔥</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-total">—</div><div class="label">Всего</div></div>
+            </div>
+            <div class="stat-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-box"><div class="value mono" id="profile-stat-beststreak">—</div><div class="label">Рекорд серии</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-dungeon">—</div><div class="label">Приключение</div></div>
+            </div>
         </div>
     </div>
 
     <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
-        <h2>🏆 Таблица лидеров</h2>
+        <h2 style="margin-top:50px;">🏆 Таблица лидеров</h2>
         <div class="tab-row">
             <button class="tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">🤸 Отжимания</button>
             <button class="tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">🧘 Планка</button>
@@ -275,19 +344,22 @@
     <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <div id="screen-achievements" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
-        <h2>🎖 Достижения</h2>
+        <h2 style="margin-top:50px;">🎖 Достижения</h2>
         <div id="achievements-list"></div>
-        <p style="opacity: 0.5; font-size: 14px;">(тестовые данные, подключим позже)</p>
+        <p style="opacity: 0.5; font-size: 13px;">(тестовые данные, подключим позже)</p>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
     <div id="screen-settings" class="screen center-content">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h1>⚙️ Настройки</h1>
-        <label class="stat-row" style="max-width: 320px; cursor: pointer;">
+        <div class="stat-row" style="max-width: 320px;">
             <span>🔊 Звуковые сигналы</span>
-            <input type="checkbox" id="sound-checkbox" onchange="toggleSound()" style="width: 22px; height: 22px; accent-color: #d4af37;">
-        </label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="sound-checkbox" onchange="toggleSound()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
     </div>
 
     <!-- ===== ОВЕРЛЕИ ===== -->
@@ -303,8 +375,8 @@
         <div class="overlay-box">
             <h3>Приключение пройдено! 🎉</h3>
             <p id="dungeon-complete-xp">+0 XP</p>
-            <button class="menu-button primary" onclick="continueDungeon()">Продолжить в следующее</button>
-            <button class="menu-button" onclick="finishDungeonSession()">Закончить поход</button>
+            <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
+            <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
         </div>
     </div>
 
@@ -321,87 +393,6 @@
             document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
         }
 
-        // ===== ПОЗИЦИОНИРОВАНИЕ КЛИКАБЕЛЬНЫХ/ТЕКСТОВЫХ ЗОН ПОВЕРХ КАРТИНОК =====
-        // Координаты заданы в пикселях исходного изображения (1024x1536).
-        // Т.к. картинка показывается через object-fit:cover, при любом размере экрана
-        // мы пересчитываем реальное положение зоны через масштаб "cover".
-
-        const ART_W = 1024, ART_H = 1536;
-
-        const MENU_OVERLAYS = [
-            { id: 'menu-btn-adventure', x: 195, y: 553, w: 635, h: 108 },
-            { id: 'menu-btn-profile', x: 195, y: 706, w: 635, h: 108 },
-            { id: 'menu-btn-leaderboard', x: 195, y: 860, w: 635, h: 108 },
-            { id: 'menu-btn-achievements', x: 195, y: 1014, w: 635, h: 108 },
-        ];
-
-        const PROFILE_TAB_PUSHUP = { x: 102, y: 614, w: 389, h: 77 };
-        const PROFILE_TAB_PLANK = { x: 512, y: 614, w: 389, h: 77 };
-
-        const PROFILE_OVERLAYS = [
-            { id: 'profile-btn-back', x: 20, y: 15, w: 90, h: 90 },
-            { id: 'profile-btn-tab-pushup', ...PROFILE_TAB_PUSHUP },
-            { id: 'profile-btn-tab-plank', ...PROFILE_TAB_PLANK },
-            { id: 'profile-text-rank', x: 345, y: 205, w: 340, h: 55 },
-            { id: 'profile-text-points', x: 345, y: 300, w: 200, h: 65 },
-            { id: 'profile-text-nextlevel', x: 345, y: 435, w: 440, h: 40 },
-            { id: 'profile-progress-track', x: 350, y: 483, w: 430, h: 34 },
-            { id: 'profile-stat-today', x: 680, y: 645, w: 100, h: 45 },
-            { id: 'profile-stat-streak', x: 680, y: 725, w: 100, h: 45 },
-            { id: 'profile-stat-total', x: 680, y: 805, w: 100, h: 45 },
-            { id: 'profile-stat-beststreak', x: 680, y: 885, w: 100, h: 45 },
-            { id: 'profile-stat-dungeon', x: 680, y: 965, w: 100, h: 45 },
-        ];
-
-        function computeArtPosition(containerEl, x, y, w, h) {
-            const rect = containerEl.getBoundingClientRect();
-            const scale = Math.max(rect.width / ART_W, rect.height / ART_H);
-            const dispW = ART_W * scale, dispH = ART_H * scale;
-            const offsetX = (dispW - rect.width) / 2;
-            const offsetY = (dispH - rect.height) / 2;
-            return {
-                left: x * scale - offsetX,
-                top: y * scale - offsetY,
-                width: w * scale,
-                height: h * scale
-            };
-        }
-
-        function applyOverlayPositions(containerId, overlays) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            overlays.forEach(cfg => {
-                const el = document.getElementById(cfg.id);
-                if (!el) return;
-                const pos = computeArtPosition(container, cfg.x, cfg.y, cfg.w, cfg.h);
-                el.style.left = pos.left + 'px';
-                el.style.top = pos.top + 'px';
-                el.style.width = pos.width + 'px';
-                el.style.height = pos.height + 'px';
-            });
-        }
-
-        function refreshMenuOverlays() {
-            applyOverlayPositions('menu-art-wrapper', MENU_OVERLAYS);
-        }
-
-        function refreshProfileOverlays() {
-            applyOverlayPositions('profile-art-wrapper', PROFILE_OVERLAYS);
-            const tabBox = activeProfileTab === 'pushup' ? PROFILE_TAB_PUSHUP : PROFILE_TAB_PLANK;
-            const container = document.getElementById('profile-art-wrapper');
-            const pos = computeArtPosition(container, tabBox.x, tabBox.y, tabBox.w, tabBox.h);
-            const hl = document.getElementById('profile-tab-highlight');
-            hl.style.left = pos.left + 'px';
-            hl.style.top = pos.top + 'px';
-            hl.style.width = pos.width + 'px';
-            hl.style.height = pos.height + 'px';
-        }
-
-        function refreshActiveArtOverlays() {
-            if (document.getElementById('screen-menu').classList.contains('active')) refreshMenuOverlays();
-            if (document.getElementById('screen-profile').classList.contains('active')) refreshProfileOverlays();
-        }
-
         function showScreen(name) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('screen-' + name).classList.add('active');
@@ -410,11 +401,6 @@
             if (name === 'leaderboard') loadLeaderboard();
             if (name === 'achievements') loadAchievementsMock();
             if (name === 'settings') renderSettingsScreen();
-
-            requestAnimationFrame(() => {
-                if (name === 'menu') refreshMenuOverlays();
-                if (name === 'profile') refreshProfileOverlays();
-            });
         }
 
         function getUserId() {
@@ -531,24 +517,23 @@
 
         function getLevelRange(points) {
             let current = LEVELS_JS[0];
-            for (const lvl of LEVELS_JS) {
-                if (points >= lvl.threshold) current = lvl;
-            }
+            for (const lvl of LEVELS_JS) { if (points >= lvl.threshold) current = lvl; }
             const idx = LEVELS_JS.indexOf(current);
-            const next = LEVELS_JS[idx + 1] || null;
-            return { current, next };
+            return { current, next: LEVELS_JS[idx + 1] || null };
         }
 
         function formatSeconds(totalSeconds) {
             const m = Math.floor(totalSeconds / 60);
             const s = totalSeconds % 60;
-            return `${m}м ${s}с`;
+            return `${m}м${s}с`;
         }
 
         async function loadProfile() {
             const userId = getUserId();
             const loadingEl = document.getElementById('profile-loading');
+            const contentEl = document.getElementById('profile-content');
             loadingEl.style.display = 'block';
+            contentEl.style.display = 'none';
 
             if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
 
@@ -557,21 +542,22 @@
                 const data = await response.json();
                 profileDataCache = data;
                 loadingEl.style.display = 'none';
-                renderProfileOverlayValues();
+                contentEl.style.display = 'block';
+                renderProfileValues();
             } catch (error) {
                 loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже.";
             }
         }
 
-        function renderProfileOverlayValues() {
+        function renderProfileValues() {
             if (!profileDataCache) return;
             const data = profileDataCache;
 
-            document.getElementById('profile-text-rank').innerText = data.level;
-            document.getElementById('profile-text-points').innerText = data.points + " ⭐";
-            document.getElementById('profile-text-nextlevel').innerText =
+            document.getElementById('profile-level').innerText = data.level;
+            document.getElementById('profile-points').innerText = data.points + " ⭐";
+            document.getElementById('profile-next').innerText =
                 data.points_to_next_level !== null
-                    ? `${data.points_to_next_level} до «${data.next_level}»`
+                    ? `${data.points_to_next_level} очков до «${data.next_level}»`
                     : "Максимальный уровень!";
 
             const { current, next } = getLevelRange(data.points);
@@ -583,21 +569,20 @@
             document.getElementById('profile-progress-fill').style.width = (fraction * 100) + '%';
 
             const source = activeProfileTab === 'pushup' ? data.pushup : data.plank;
-            const todayText = activeProfileTab === 'pushup' ? source.today : formatSeconds(source.today_seconds);
-            const totalText = activeProfileTab === 'pushup' ? source.total : formatSeconds(source.total_seconds);
-
-            document.getElementById('profile-stat-today').innerText = todayText;
+            document.getElementById('profile-stat-today').innerText =
+                activeProfileTab === 'pushup' ? source.today : formatSeconds(source.today_seconds);
             document.getElementById('profile-stat-streak').innerText = source.streak;
-            document.getElementById('profile-stat-total').innerText = totalText;
+            document.getElementById('profile-stat-total').innerText =
+                activeProfileTab === 'pushup' ? source.total : formatSeconds(source.total_seconds);
             document.getElementById('profile-stat-beststreak').innerText = source.best_streak;
             document.getElementById('profile-stat-dungeon').innerText = "№" + source.dungeon;
-
-            refreshProfileOverlays();
         }
 
         function switchProfileTab(tab) {
             activeProfileTab = tab;
-            renderProfileOverlayValues();
+            document.getElementById('profile-tab-pushup').classList.toggle('active', tab === 'pushup');
+            document.getElementById('profile-tab-plank').classList.toggle('active', tab === 'plank');
+            renderProfileValues();
         }
 
         // ===== ТАБЛИЦА ЛИДЕРОВ =====
@@ -650,7 +635,7 @@
                     const row = document.createElement('div');
                     row.className = 'leader-row';
                     const displayValue = formatLeaderboardValue(user.value, lbActivity);
-                    row.innerHTML = `<span>${index + 1}. ${user.name}</span><span>${displayValue}</span>`;
+                    row.innerHTML = `<span class="rank">${index + 1}</span><span style="flex:1; text-align:left; margin-left:8px;">${user.name}</span><span class="mono">${displayValue}</span>`;
                     list.appendChild(row);
                 });
             } catch (error) {
@@ -693,13 +678,13 @@
             }
         }
 
-        // ===== ВЫБОР ПРИКЛЮЧЕНИЯ =====
+        // ===== ВЫБОР ПРИКЛЮЧЕНИЯ (тропа) =====
 
         let dungeonSelectActivity = null;
 
         async function openDungeonSelect(activity) {
             dungeonSelectActivity = activity;
-            const title = activity === 'pushup' ? 'Режим приключений — Отжимания' : 'Режим приключений — Планка';
+            const title = activity === 'pushup' ? 'Тропа отжиманий' : 'Тропа планки';
             document.getElementById('dungeon-select-title').innerText = title;
             document.getElementById('dungeon-select-loading').style.display = 'block';
             document.getElementById('dungeon-select-list').innerHTML = '';
@@ -723,19 +708,46 @@
             for (let n = 1; n <= currentDungeon; n++) {
                 const isBoss = (n % 5 === 0);
                 const isCurrent = (n === currentDungeon);
-                const row = document.createElement('div');
-                row.className = 'dungeon-list-row' + (isBoss ? ' boss' : '');
-                const label = (isBoss ? '👑 ' : '⚔️ ') + 'Приключение ' + n + (isCurrent ? ' (текущее)' : ' ✅');
-                const btnText = isCurrent ? 'Начать' : 'Перепройти';
-                row.innerHTML = `<span>${label}</span><button onclick="startDungeonActivity('${dungeonSelectActivity}', ${n})">${btnText}</button>`;
-                list.appendChild(row);
+                const isDone = n < currentDungeon;
+
+                if (n > 1) {
+                    const connector = document.createElement('div');
+                    connector.className = 'path-connector';
+                    list.appendChild(connector);
+                }
+
+                const node = document.createElement('div');
+                node.className = 'path-node' + (isBoss ? ' boss' : '') + (isCurrent ? ' current' : '');
+                const icon = isBoss ? '👑' : (isDone ? '✅' : '⚔️');
+                const subtitle = isCurrent ? 'Текущее приключение' : 'Пройдено — можно перепройти';
+                const btnText = isCurrent ? 'Начать' : 'Повторить';
+                node.innerHTML = `
+                    <div class="path-icon">${icon}</div>
+                    <div class="path-info">
+                        <div class="title">Приключение ${n}</div>
+                        <div class="subtitle">${subtitle}</div>
+                    </div>
+                    <button onclick="startDungeonActivity('${dungeonSelectActivity}', ${n})">${btnText}</button>
+                `;
+                list.appendChild(node);
             }
 
             if (currentDungeon < maxDungeon) {
-                const row = document.createElement('div');
-                row.className = 'dungeon-list-row locked';
-                row.innerHTML = `<span>🔒 Приключение ${currentDungeon + 1}</span><button disabled>Закрыто</button>`;
-                list.appendChild(row);
+                const connector = document.createElement('div');
+                connector.className = 'path-connector';
+                list.appendChild(connector);
+
+                const node = document.createElement('div');
+                node.className = 'path-node locked';
+                node.innerHTML = `
+                    <div class="path-icon">🔒</div>
+                    <div class="path-info">
+                        <div class="title">Приключение ${currentDungeon + 1}</div>
+                        <div class="subtitle">Закрыто</div>
+                    </div>
+                    <button disabled>Закрыто</button>
+                `;
+                list.appendChild(node);
             }
         }
 
@@ -769,7 +781,8 @@
                 dungeonIsReplay = data.is_replay;
                 dungeonPaused = false;
 
-                document.getElementById('dungeon-hud').style.display = 'block';
+                document.getElementById('battle-header').style.display = 'block';
+                document.getElementById('monster-portrait').innerText = data.is_boss ? '👑' : '👹';
                 updateDungeonHUD();
 
                 startActivity(activity, true);
@@ -780,12 +793,12 @@
 
         function updateDungeonHUD() {
             const bossTag = (dungeonNumber % 5 === 0) ? '👑 БОСС — ' : '';
-            document.getElementById('dungeon-hud-title').innerText =
+            document.getElementById('monster-name').innerText =
                 `${bossTag}Приключение ${dungeonNumber} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
             const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP / dungeonEnemyMaxHP) * 100));
             document.getElementById('hp-bar-fill').style.width = pct + '%';
             document.getElementById('hp-bar-text').innerText =
-                `HP: ${Math.max(0, Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
+                `HP ${Math.max(0, Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
         }
 
         function applyDungeonDamage(amount) {
@@ -872,7 +885,7 @@
             attemptSave();
         }
 
-        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ =====
+        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ (логика точек не менялась) =====
 
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -973,7 +986,7 @@
         }
 
         function drawPoints(landmarks, points, connections) {
-            ctx.strokeStyle = '#d4af37';
+            ctx.strokeStyle = '#ff8c52';
             ctx.lineWidth = 3;
             for (const [startIdx, endIdx] of connections) {
                 const start = landmarks[startIdx];
@@ -983,7 +996,7 @@
                 ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
                 ctx.stroke();
             }
-            ctx.fillStyle = '#a13a3a';
+            ctx.fillStyle = '#d4453a';
             for (const idx of points) {
                 const point = landmarks[idx];
                 ctx.beginPath();
@@ -1049,11 +1062,11 @@
 
                     if (inPosition) {
                         statusEl.innerText = dungeonPaused ? "Передышка..." : "Позиция ОК, считаем! 💪";
-                        statusEl.style.color = "#d4af37";
+                        statusEl.style.color = "var(--accent-bright)";
                         if (!dungeonPaused) countPushups(results.poseLandmarks);
                     } else {
                         statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                        statusEl.style.color = "#e9d9b8";
+                        statusEl.style.color = "var(--text-dim)";
                     }
                 } else if (currentMode === 'plank') {
                     const result = checkPlankPosition(results.poseLandmarks);
@@ -1061,20 +1074,20 @@
 
                     if (result.reason === "not_visible") {
                         statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                        statusEl.style.color = "#e9d9b8";
+                        statusEl.style.color = "var(--text-dim)";
                     } else if (result.reason === "not_straight") {
                         statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
                         statusEl.style.color = "orange";
                     } else {
                         statusEl.innerText = "Отлично держите планку! 🔥";
-                        statusEl.style.color = "#d4af37";
+                        statusEl.style.color = "var(--accent-bright)";
                     }
                     updatePlankTimer(result.valid && !dungeonPaused);
                 }
             } else {
                 inPosition = false;
                 statusEl.innerText = "Не вижу тело в кадре 👀";
-                statusEl.style.color = "#e9d9b8";
+                statusEl.style.color = "var(--text-dim)";
                 if (currentMode === 'plank') updatePlankTimer(false);
             }
 
@@ -1105,21 +1118,17 @@
             document.getElementById('activityBackBtn').style.display = 'block';
             document.getElementById('saveOverlay').classList.remove('active');
             document.getElementById('retryBtn').classList.remove('active');
-            document.getElementById('dungeon-hud').style.display = isDungeon ? 'block' : 'none';
+            document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
 
             if (!isDungeon) inDungeonMode = false;
 
             if (mode === 'pushup') {
                 titleEl.innerText = isDungeon ? "Бой — отжимания" : "Подсчёт отжиманий";
                 statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                statusEl.style.color = "#e9d9b8";
-                counterEl.style.color = "#d4af37";
                 counterEl.innerText = "0";
             } else {
                 titleEl.innerText = isDungeon ? "Бой — планка" : "Планка";
                 statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                statusEl.style.color = "#e9d9b8";
-                counterEl.style.color = "#d4af37";
                 counterEl.innerText = "00:00";
             }
 
@@ -1134,7 +1143,7 @@
             if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
             currentMode = null;
             inDungeonMode = false;
-            document.getElementById('dungeon-hud').style.display = 'none';
+            document.getElementById('battle-header').style.display = 'none';
             showScreen('menu');
         }
 
@@ -1142,8 +1151,8 @@
         tg.ready();
         tg.expand();
         applyTelegramViewportHeight();
-        tg.onEvent('viewportChanged', () => { applyTelegramViewportHeight(); refreshActiveArtOverlays(); });
-        window.addEventListener('resize', () => { applyTelegramViewportHeight(); refreshActiveArtOverlays(); });
+        tg.onEvent('viewportChanged', applyTelegramViewportHeight);
+        window.addEventListener('resize', applyTelegramViewportHeight);
 
         // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
 
@@ -1218,7 +1227,7 @@
             } else {
                 retryBtn.classList.add('active');
                 statusEl2.innerText = "Не удалось сохранить после нескольких попыток. Проверьте связь.";
-                statusEl2.style.color = "#ff5555";
+                statusEl2.style.color = "var(--danger)";
             }
         }
 
