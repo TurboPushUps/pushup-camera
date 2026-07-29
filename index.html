@@ -20,19 +20,20 @@
             --success: #6bbf59;
         }
 
-        html { font-size: 18px; }
+        html { font-size: 21px; }
         html, body {
             margin: 0; padding: 0; text-align: center;
             background: radial-gradient(ellipse at top, #22120c 0%, #0d0605 70%);
             color: var(--text-main); font-family: 'EB Garamond', serif; height: 100%;
         }
-        body { min-height: var(--tg-viewport-height, 100vh); box-sizing: border-box; }
+        body { min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; }
+        body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: var(--tg-viewport-height, 100dvh); }
 
         h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 1px; margin: 0 0 18px; }
         .mono { font-family: 'JetBrains Mono', monospace; }
 
         .screen {
-            display: none; padding: 22px 16px 60px; min-height: var(--tg-viewport-height, 100vh);
+            display: none; padding: 22px 16px 60px; min-height: var(--tg-viewport-height, 100dvh);
             box-sizing: border-box; position: relative;
         }
         .screen.active { display: block; }
@@ -41,7 +42,7 @@
         h1 { font-size: 1.9rem; } h2 { font-size: 1.55rem; }
 
         .btn {
-            display: block; width: 100%; max-width: 460px; margin: 12px auto; padding: 20px;
+            display: block; width: 100%; max-width: 480px; margin: 12px auto; padding: 20px;
             font-size: 1.15rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-main);
             border: 1px solid var(--border-main); border-radius: 12px;
@@ -50,7 +51,7 @@
             background: linear-gradient(#5a2a12, #3a1a0a);
             color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
         }
-        .btn small { display: block; font-size: 0.75rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
+        .btn small { display: block; font-size: 0.7rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
 
         .back-button {
             position: absolute; top: 18px; left: 16px; background: none; border: none;
@@ -58,92 +59,92 @@
         }
 
         .card {
-            max-width: 460px; margin: 12px auto; padding: 18px 20px;
+            max-width: 480px; margin: 12px auto; padding: 18px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
         }
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
-            max-width: 460px; margin: 10px auto; padding: 16px 20px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 1.1rem;
+            max-width: 480px; margin: 10px auto; padding: 16px 20px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 1.05rem;
         }
         .stat-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-            max-width: 460px; margin: 12px auto;
+            max-width: 480px; margin: 12px auto;
         }
         .stat-box {
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
             padding: 16px 6px;
         }
-        .stat-box .value { font-size: 1.6rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-        .stat-box .label { font-size: 0.75rem; color: var(--text-dim); margin-top: 5px; }
+        .stat-box .value { font-size: 1.5rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .stat-box .label { font-size: 0.7rem; color: var(--text-dim); margin-top: 5px; }
 
         .section-label {
-            text-align: left; max-width: 460px; margin: 20px auto 8px; padding: 0 6px;
-            font-size: 0.8rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
+            text-align: left; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
+            font-size: 0.78rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
         }
 
         .loading { opacity: 0.7; font-size: 0.9rem; margin: 16px; }
 
         .nickname-input {
-            display: block; width: 100%; max-width: 360px; margin: 22px auto; padding: 18px;
-            font-size: 1.1rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
+            display: block; width: 100%; max-width: 380px; margin: 22px auto; padding: 18px;
+            font-size: 1.05rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
             color: var(--text-main); text-align: center; box-sizing: border-box;
         }
-        .nickname-error { color: #ff8888; font-size: 0.9rem; min-height: 24px; margin-bottom: 8px; }
+        .nickname-error { color: #ff8888; font-size: 0.85rem; min-height: 24px; margin-bottom: 8px; }
 
-        .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 460px; margin: 18px auto 12px; }
+        .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 18px auto 12px; }
         .tab-button {
-            flex: 1; padding: 13px; font-size: 0.95rem; font-family: 'Cinzel', serif; cursor: pointer;
+            flex: 1; padding: 14px 6px; font-size: 0.9rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
         }
         .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
-        .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 460px; margin: 0 auto 18px; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 0 auto 18px; }
         .sub-tab-button {
-            flex: 1; padding: 10px; font-size: 0.85rem; background: transparent; color: var(--text-dim); cursor: pointer;
+            flex: 1; padding: 10px; font-size: 0.8rem; background: transparent; color: var(--text-dim); cursor: pointer;
             border: 1px solid var(--border-main); border-radius: 10px;
         }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
         .leader-row {
-            display: flex; justify-content: space-between; align-items: center; max-width: 460px; margin: 8px auto;
-            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 1rem;
+            display: flex; justify-content: space-between; align-items: center; max-width: 480px; margin: 8px auto;
+            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.95rem;
         }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; }
 
         .achievement-row {
-            max-width: 460px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 1rem;
+            max-width: 480px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
+            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.95rem;
         }
         .achievement-row.locked { opacity: 0.4; }
 
-        .toggle-switch { position: relative; width: 52px; height: 30px; flex-shrink: 0; }
+        .toggle-switch { position: relative; width: 54px; height: 32px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #3a2418; border-radius: 30px; transition: 0.2s;
+            background: #3a2418; border-radius: 32px; transition: 0.2s;
         }
         .toggle-slider:before {
-            position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px;
+            position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px;
             background: #8a6a52; border-radius: 50%; transition: 0.2s;
         }
         input:checked + .toggle-slider { background: var(--accent); }
         input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(22px); }
 
-        .settings-row-text { text-align: left; font-size: 1rem; }
-        .settings-row-sub { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
-        .link-row { color: var(--accent-bright); font-size: 0.95rem; }
+        .settings-row-text { text-align: left; font-size: 0.95rem; }
+        .settings-row-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+        .link-row { color: var(--accent-bright); font-size: 0.9rem; }
 
-        .days-selector { display: flex; gap: 6px; max-width: 460px; margin: 10px auto; }
+        .days-selector { display: flex; gap: 6px; max-width: 480px; margin: 10px auto; }
         .day-chip {
-            flex: 1; padding: 12px 0; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer;
+            flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
+            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 1rem;
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent-bright); }
 
-        /* ===== ВЫБОР ПРИКЛЮЧЕНИЯ — ТРОПА ===== */
-        .path-container { max-width: 460px; margin: 12px auto; }
+        /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
+        .path-container { max-width: 480px; margin: 12px auto; }
         .path-node {
-            display: flex; align-items: center; gap: 14px; padding: 15px 16px; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 14px; padding: 16px; margin-bottom: 4px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
         }
         .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(232,176,74,0.25); }
@@ -151,29 +152,31 @@
         .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,107,53,0.3); }
         .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
         .path-icon {
-            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.3rem; background: #2a1810; border: 1px solid var(--border-main); flex-shrink: 0;
+            width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.5rem; background: #2a1810; border: 1px solid var(--border-main);
+            flex-shrink: 0; overflow: hidden;
         }
+        .path-icon img { width: 100%; height: 100%; object-fit: cover; }
         .path-node.boss .path-icon { border-color: var(--gold); }
         .path-node.current .path-icon { border-color: var(--accent); }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--text-main); }
-        .path-info .subtitle { font-size: 0.78rem; color: var(--text-dim); margin-top: 3px; }
+        .path-info .title { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; }
         .path-node button {
-            padding: 10px 16px; font-size: 0.9rem; background: var(--accent); color: #1a0a04;
+            padding: 10px 14px; font-size: 0.82rem; background: var(--accent); color: #1a0a04;
             border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
         }
         .path-node.locked button { background: #3a2a1a; color: #7a6a5a; }
 
         .info-tip {
-            max-width: 460px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,107,53,0.1);
-            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.9rem; text-align: left; display: none;
+            max-width: 480px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,107,53,0.1);
+            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.85rem; text-align: left; display: none;
         }
         .info-tip.active { display: block; }
 
         .free-card {
-            max-width: 460px; margin: 14px auto; padding: 22px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 1.15rem;
+            max-width: 480px; margin: 14px auto; padding: 22px; background: var(--bg-card);
+            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 1.05rem;
             font-family: 'Cinzel', serif; color: var(--text-main);
         }
         .free-card:active { border-color: var(--accent); }
@@ -181,7 +184,7 @@
         /* ===== ЭКРАН БОЯ — КАМЕРА НА ВЕСЬ ЭКРАН ===== */
         .camera-fullscreen-wrapper {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: var(--tg-viewport-height, 100vh);
+            width: 100%; height: var(--tg-viewport-height, 100dvh);
             background: #000; overflow: hidden; z-index: 1;
         }
         .camera-fullscreen-wrapper video { display: none; }
@@ -192,50 +195,47 @@
 
         .hud-top {
             position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-            padding: 18px 16px 14px; background: linear-gradient(rgba(5,2,1,0.85), rgba(5,2,1,0));
+            padding: 20px 16px 16px; background: linear-gradient(rgba(5,2,1,0.85), rgba(5,2,1,0));
         }
-        .hud-back-button {
-            background: rgba(0,0,0,0.5); border: 1px solid var(--border-main); border-radius: 50%;
-            width: 44px; height: 44px; color: var(--accent-bright); font-size: 1.3rem; cursor: pointer;
-        }
-        .battle-header { max-width: 460px; margin: 10px auto 0; display: none; }
+        .battle-header { max-width: 480px; margin: 0 auto; }
         .monster-portrait {
-            width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 8px;
+            width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 8px;
             background: radial-gradient(circle, #3a1810, #180a06);
             border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; box-shadow: 0 0 20px rgba(255,107,53,0.35);
+            font-size: 3.2rem; box-shadow: 0 0 20px rgba(255,107,53,0.35); overflow: hidden;
         }
-        .monster-name { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--text-main); background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 8px; display: inline-block; }
+        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; }
+        .monster-name { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--text-main); background: rgba(0,0,0,0.55); padding: 6px 12px; border-radius: 8px; display: inline-block; }
         .hp-bar-bg {
-            width: 100%; max-width: 460px; height: 26px; margin: 10px auto 0; background: rgba(42,24,16,0.85);
-            border-radius: 13px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+            width: 100%; max-width: 480px; height: 28px; margin: 10px auto 0; background: rgba(42,24,16,0.85);
+            border-radius: 14px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
         }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;
+            align-items: center; justify-content: center; font-size: 0.9rem; font-family: 'JetBrains Mono', monospace;
             color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
         #status {
-            font-size: 1.05rem; margin: 12px auto 0; color: var(--text-main); max-width: 460px;
-            background: rgba(0,0,0,0.5); padding: 8px 14px; border-radius: 10px; display: inline-block;
+            font-size: 1rem; margin: 12px auto 0; color: var(--text-main); max-width: 480px;
+            background: rgba(0,0,0,0.55); padding: 9px 16px; border-radius: 10px; display: inline-block;
         }
 
         .hud-bottom {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-            padding: 14px 16px 24px; background: linear-gradient(rgba(5,2,1,0), rgba(5,2,1,0.9));
+            padding: 14px 16px 26px; background: linear-gradient(rgba(5,2,1,0), rgba(5,2,1,0.92));
         }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
         .rep-circle {
-            width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle, #4a2a10, #2a1608); border: 2px solid var(--gold);
-            font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: bold; color: var(--gold);
+            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: bold; color: var(--gold);
             box-shadow: 0 0 18px rgba(232,176,74,0.4);
         }
-        .save-overlay { display: none; margin: 10px auto; font-size: 1rem; color: var(--accent-bright); }
+        .save-overlay { display: none; margin: 10px auto; font-size: 0.95rem; color: var(--accent-bright); }
         .save-overlay.active { display: block; }
         .retry-button {
-            display: none; margin: 10px auto; padding: 16px 26px; font-size: 1rem;
+            display: none; margin: 10px auto; padding: 16px 26px; font-size: 0.95rem;
             background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
         }
         .retry-button.active { display: inline-block; }
@@ -248,12 +248,12 @@
         .overlay-panel.active { display: flex; }
         .overlay-box {
             background: var(--bg-card); border: 1px solid var(--accent); border-radius: 16px;
-            padding: 32px 24px; max-width: 380px; text-align: center; max-height: 85vh; overflow-y: auto;
+            padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto;
         }
-        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); }
-        .overlay-box .btn { max-width: 300px; }
-        .overlay-box p { text-align: left; font-size: 0.95rem; line-height: 1.5; }
-        .countdown-number { font-size: 3rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); font-size: 1.3rem; }
+        .overlay-box .btn { max-width: 320px; }
+        .overlay-box p { text-align: left; font-size: 0.9rem; line-height: 1.5; }
+        .countdown-number { font-size: 3.2rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
 <body>
@@ -277,7 +277,7 @@
         <button class="btn" onclick="showScreen('settings')">⚙️ Настройки</button>
     </div>
 
-    <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД (вкладки Отжимания / Планка / Свободная) ===== -->
+    <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД ===== -->
     <div id="screen-adventure" class="screen">
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2 style="margin-top:50px;">Начать поход</h2>
@@ -309,7 +309,6 @@
         </div>
 
         <div class="hud-top">
-            <button class="hud-back-button" id="activityBackBtn" onclick="exitActivity()">←</button>
             <div class="battle-header" id="battle-header">
                 <div class="monster-portrait" id="monster-portrait">👹</div>
                 <div class="monster-name" id="monster-name">Приключение 1 — Враг 1 из 1</div>
@@ -325,7 +324,7 @@
             <div class="rep-counter-row">
                 <div class="rep-circle" id="counter">0</div>
             </div>
-            <button id="finishBtn" class="btn btn-primary" style="max-width: 300px;">Завершить</button>
+            <button id="finishBtn" class="btn btn-primary" style="max-width: 320px;">Завершить</button>
             <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
             <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение</button>
         </div>
@@ -340,7 +339,7 @@
             <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
             <div class="card" style="text-align:left;">
-                <div id="profile-next" style="font-size:0.9rem; color: var(--text-dim); margin-bottom:10px;">—</div>
+                <div id="profile-next" style="font-size:0.85rem; color: var(--text-dim); margin-bottom:10px;">—</div>
                 <div class="hp-bar-bg" style="height:16px; margin:0;">
                     <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent));"></div>
                 </div>
@@ -359,7 +358,7 @@
             </div>
             <div class="stat-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="stat-box"><div class="value mono" id="profile-stat-beststreak">—</div><div class="label">Рекорд серии</div></div>
-                <div class="stat-box"><div class="value mono" id="profile-stat-dungeon">—</div><div class="label">Приключение</div></div>
+                <div class="stat-box"><div class="value mono" id="profile-stat-dungeon">—</div><div class="label">Уровень</div></div>
             </div>
         </div>
     </div>
@@ -385,7 +384,7 @@
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2 style="margin-top:50px;">🎖 Достижения</h2>
         <div id="achievements-list"></div>
-        <p style="opacity: 0.5; font-size: 0.85rem;">(тестовые данные, подключим позже)</p>
+        <p style="opacity: 0.5; font-size: 0.8rem;">(тестовые данные, подключим позже)</p>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
@@ -435,7 +434,7 @@
         </div>
 
         <div class="section-label">Цель</div>
-        <p style="max-width:460px; margin: 0 auto 8px; text-align:left; font-size:0.9rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
+        <p style="max-width:480px; margin: 0 auto 8px; text-align:left; font-size:0.85rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
         <div class="days-selector" id="days-selector">
             <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
             <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
@@ -459,7 +458,7 @@
 
     <div id="overlay-dungeon-complete" class="overlay-panel">
         <div class="overlay-box">
-            <h3>Приключение пройдено! 🎉</h3>
+            <h3>Уровень пройден! 🎉</h3>
             <p id="dungeon-complete-xp" style="text-align:center; font-size:1.2rem;">+0 XP</p>
             <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
             <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
@@ -490,6 +489,7 @@
         }
 
         function showScreen(name) {
+            document.body.classList.toggle('no-scroll', name === 'activity');
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('screen-' + name).classList.add('active');
 
@@ -629,7 +629,7 @@
                 return;
             }
             try {
-                const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`);
+                const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`, { cache: 'no-store' });
                 const data = await response.json();
                 if (data.has_nickname) showScreen('menu');
                 else document.getElementById('screen-register').classList.add('active');
@@ -698,7 +698,7 @@
             if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
 
             try {
-                const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`);
+                const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`, { cache: 'no-store' });
                 const data = await response.json();
                 profileDataCache = data;
                 loadingEl.style.display = 'none';
@@ -779,7 +779,7 @@
             loading.style.display = 'block';
 
             try {
-                const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`);
+                const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, { cache: 'no-store' });
                 const data = await response.json();
                 if (requestId !== leaderboardRequestId) return;
 
@@ -821,6 +821,33 @@
             });
         }
 
+        // ===== ЗОНЫ ПОДЗЕМЕЛИЙ (визуал + группировка) =====
+
+        const ZONES = [
+            { name: "Пещера летучих мышей", start: 1, end: 4, image: "Rat.png", isBoss: false },
+            { name: "Пещера летучих мышей (Босс)", start: 5, end: 5, image: "Rat_Boss.png", isBoss: true },
+            { name: "Подземелье скелетов", start: 6, end: 9, image: "Skelet.png", isBoss: false },
+            { name: "Подземелье скелетов (Босс)", start: 10, end: 10, image: "Skelet_Boss.png", isBoss: true },
+            { name: "Логово тролля", start: 11, end: 14, image: "Troll.png", isBoss: false },
+            { name: "Логово тролля (Босс)", start: 15, end: 15, image: "Troll_Boss.png", isBoss: true },
+            { name: "Лес призраков", start: 16, end: 19, image: "Ghost.png", isBoss: false },
+            { name: "Лес призраков (Босс)", start: 20, end: 20, image: "Ghost_Boss.png", isBoss: true },
+            { name: "Забытые руины", start: 21, end: 24, emoji: "🏚️", isBoss: false },
+            { name: "Забытые руины (Босс)", start: 25, end: 25, emoji: "👺", isBoss: true },
+            { name: "Ледяная бездна", start: 26, end: 29, emoji: "🧊", isBoss: false },
+            { name: "Ледяная бездна (Босс)", start: 30, end: 30, emoji: "❄️", isBoss: true },
+            { name: "Огненные врата", start: 31, end: 34, emoji: "🔥", isBoss: false },
+            { name: "Огненные врата (Босс)", start: 35, end: 35, emoji: "😈", isBoss: true },
+        ];
+
+        function getZoneForDungeon(n) {
+            return ZONES.find(z => n >= z.start && n <= z.end) || ZONES[ZONES.length - 1];
+        }
+
+        function monsterVisualHtml(zone) {
+            return zone.image ? `<img src="${zone.image}" alt="${zone.name}">` : zone.emoji;
+        }
+
         // ===== ЕДИНЫЙ ЭКРАН ПОХОДА =====
 
         let currentAdventureTab = 'pushup';
@@ -850,62 +877,63 @@
 
             const userId = getUserId();
             try {
-                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`);
+                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, { cache: 'no-store' });
                 const data = await response.json();
-                renderDungeonList(activity, data.current_dungeon, data.max_dungeon);
+                renderZoneList(activity, data.current_dungeon, data.max_dungeon);
             } catch (error) {
                 document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список приключений.";
             }
         }
 
-        function renderDungeonList(activity, currentDungeon, maxDungeon) {
+        function renderZoneList(activity, currentDungeon, maxDungeon) {
             document.getElementById('dungeon-select-loading').style.display = 'none';
             const list = document.getElementById('dungeon-select-list');
             list.innerHTML = '';
 
-            for (let n = 1; n <= currentDungeon; n++) {
-                const isBoss = (n % 5 === 0);
-                const isCurrent = (n === currentDungeon);
-                const isDone = n < currentDungeon;
+            let addedConnector = false;
 
-                if (n > 1) {
+            for (const zone of ZONES) {
+                let status, subtitle, btnText, targetLevel;
+
+                if (zone.end < currentDungeon) {
+                    status = 'done';
+                    subtitle = 'Пройдено — можно перепройти';
+                    btnText = 'Повторить';
+                    targetLevel = zone.start;
+                } else if (zone.start <= currentDungeon && currentDungeon <= zone.end) {
+                    status = 'current';
+                    subtitle = 'Текущий этап';
+                    btnText = 'Начать';
+                    targetLevel = currentDungeon;
+                } else {
+                    status = 'locked';
+                    subtitle = 'Закрыто';
+                    btnText = 'Закрыто';
+                    targetLevel = zone.start;
+                }
+
+                if (addedConnector === false && list.children.length > 0) {}
+                if (list.children.length > 0) {
                     const connector = document.createElement('div');
                     connector.className = 'path-connector';
                     list.appendChild(connector);
                 }
 
                 const node = document.createElement('div');
-                node.className = 'path-node' + (isBoss ? ' boss' : '') + (isCurrent ? ' current' : '');
-                const icon = isBoss ? '👑' : (isDone ? '✅' : '⚔️');
-                const subtitle = isCurrent ? 'Текущее приключение' : 'Пройдено — можно перепройти';
-                const btnText = isCurrent ? 'Начать' : 'Повторить';
+                node.className = 'path-node' + (zone.isBoss ? ' boss' : '') + (status === 'current' ? ' current' : '') + (status === 'locked' ? ' locked' : '');
                 node.innerHTML = `
-                    <div class="path-icon">${icon}</div>
+                    <div class="path-icon">${monsterVisualHtml(zone)}</div>
                     <div class="path-info">
-                        <div class="title">Приключение ${n}</div>
+                        <div class="title">${zone.name}</div>
                         <div class="subtitle">${subtitle}</div>
                     </div>
-                    <button onclick="startDungeonActivity('${activity}', ${n})">${btnText}</button>
+                    ${status === 'locked'
+                        ? `<button disabled>Закрыто</button>`
+                        : `<button onclick="startDungeonActivity('${activity}', ${targetLevel})">${btnText}</button>`}
                 `;
                 list.appendChild(node);
-            }
 
-            if (currentDungeon < maxDungeon) {
-                const connector = document.createElement('div');
-                connector.className = 'path-connector';
-                list.appendChild(connector);
-
-                const node = document.createElement('div');
-                node.className = 'path-node locked';
-                node.innerHTML = `
-                    <div class="path-icon">🔒</div>
-                    <div class="path-info">
-                        <div class="title">Приключение ${currentDungeon + 1}</div>
-                        <div class="subtitle">Закрыто</div>
-                    </div>
-                    <button disabled>Закрыто</button>
-                `;
-                list.appendChild(node);
+                if (status === 'locked') break; // показываем только первое закрытое, дальше не раскрываем
             }
         }
 
@@ -925,7 +953,7 @@
         async function startDungeonActivity(activity, dungeonN) {
             const userId = getUserId();
             try {
-                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`);
+                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, { cache: 'no-store' });
                 const data = await response.json();
 
                 inDungeonMode = true;
@@ -940,7 +968,7 @@
                 dungeonPaused = false;
 
                 document.getElementById('battle-header').style.display = 'block';
-                document.getElementById('monster-portrait').innerText = data.is_boss ? '👑' : '👹';
+                updateMonsterPortrait();
                 updateDungeonHUD();
 
                 startActivity(activity, true);
@@ -949,10 +977,15 @@
             }
         }
 
+        function updateMonsterPortrait() {
+            const zone = getZoneForDungeon(dungeonNumber);
+            document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone);
+        }
+
         function updateDungeonHUD() {
-            const bossTag = (dungeonNumber % 5 === 0) ? '👑 БОСС — ' : '';
+            const zone = getZoneForDungeon(dungeonNumber);
             document.getElementById('monster-name').innerText =
-                `${bossTag}Приключение ${dungeonNumber} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
+                `${zone.name} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
             const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP / dungeonEnemyMaxHP) * 100));
             document.getElementById('hp-bar-fill').style.width = pct + '%';
             document.getElementById('hp-bar-text').innerText =
@@ -1012,9 +1045,9 @@
             dungeonJustWon = true;
             playVictorySound();
             vibrate('success');
-            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
+            // Камеру НЕ останавливаем — только приостанавливаем подсчёт (dungeonPaused),
+            // чтобы не было зависаний при повторном включении камеры.
 
-            // Показываем окно СРАЗУ, с индикатором загрузки — не ждём ответа сервера
             document.getElementById('dungeon-complete-xp').innerText = "Подсчитываем награду... ⏳";
             document.getElementById('overlay-dungeon-complete').classList.add('active');
 
@@ -1267,6 +1300,7 @@
 
         function startActivity(mode, isDungeon) {
             fetch(`${API_BASE}/`).catch(() => {});
+            applyTelegramViewportHeight();
 
             currentMode = mode;
             pushupCount = 0;
@@ -1276,7 +1310,6 @@
             lastPlankMinuteMarked = 0;
 
             document.getElementById('finishBtn').style.display = 'block';
-            document.getElementById('activityBackBtn').style.display = 'block';
             document.getElementById('saveOverlay').classList.remove('active');
             document.getElementById('retryBtn').classList.remove('active');
             document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
@@ -1293,18 +1326,8 @@
 
             showScreen('activity');
             startCameraIfNeeded();
-        }
 
-        function exitActivity() {
-            if (inDungeonMode && !dungeonJustWon) {
-                playDefeatSound();
-                vibrate('error');
-            }
-            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
-            currentMode = null;
-            inDungeonMode = false;
-            document.getElementById('battle-header').style.display = 'none';
-            showScreen('menu');
+            setTimeout(applyTelegramViewportHeight, 150);
         }
 
         const tg = window.Telegram.WebApp;
@@ -1314,7 +1337,7 @@
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
+        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА (единственный способ выйти из камеры) =====
 
         let saveAttempts = 0;
         const MAX_SAVE_ATTEMPTS = 3;
@@ -1324,7 +1347,6 @@
             const mode = currentMode;
 
             const finishBtn = document.getElementById('finishBtn');
-            const backBtn = document.getElementById('activityBackBtn');
             const saveOverlay = document.getElementById('saveOverlay');
             const retryBtn = document.getElementById('retryBtn');
             const statusEl2 = document.getElementById('status');
@@ -1332,7 +1354,6 @@
             if (!isRetry) saveAttempts = 0;
 
             finishBtn.style.display = 'none';
-            backBtn.style.display = 'none';
             retryBtn.classList.remove('active');
             saveOverlay.classList.add('active');
             saveOverlay.innerText = saveAttempts > 0
@@ -1372,6 +1393,7 @@
             saveOverlay.classList.remove('active');
 
             if (success) {
+                if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
                 inDungeonMode = false;
                 currentMode = null;
                 showScreen('menu');
@@ -1399,7 +1421,6 @@
                 playDefeatSound();
                 vibrate('error');
             }
-            if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
             attemptSave();
         });
 
