@@ -8,22 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #120a08;
-            --bg-card: #1d120e;
-            --border-main: #4a2a1a;
-            --accent: #ff6b35;
-            --accent-bright: #ff8c52;
-            --gold: #e8b04a;
-            --text-main: #e8d8c8;
-            --text-dim: #a68c78;
-            --danger: #d4453a;
-            --success: #6bbf59;
+            --bg-main: #1a100c;
+            --bg-card: #2b1c14;
+            --border-main: #6b4028;
+            --accent: #ff7a45;
+            --accent-bright: #ffa066;
+            --gold: #f0c064;
+            --text-main: #f5e6d3;
+            --text-dim: #c2a488;
+            --danger: #e0564a;
+            --success: #7bcf69;
         }
 
-        html { font-size: 21px; height: 100%; }
+        html { font-size: 27px; height: 100%; }
         html, body {
             margin: 0; padding: 0; text-align: center;
-            background: radial-gradient(ellipse at top, #22120c 0%, #0d0605 70%);
+            background: radial-gradient(ellipse at top, #3a2318 0%, #180d08 70%);
             color: var(--text-main); font-family: 'EB Garamond', serif;
         }
         body {
@@ -46,23 +46,23 @@
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-        h1 { font-size: 1.9rem; } h2 { font-size: 1.55rem; }
+        h1 { font-size: 1.85rem; } h2 { font-size: 1.5rem; }
 
         .btn {
-            display: block; width: 100%; max-width: 480px; margin: 12px auto; padding: 20px;
-            font-size: 1.15rem; font-family: 'Cinzel', serif; cursor: pointer;
+            display: block; width: 100%; max-width: 480px; margin: 12px auto; padding: 22px;
+            font-size: 1.1rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-main);
             border: 1px solid var(--border-main); border-radius: 12px;
         }
         .btn-primary {
-            background: linear-gradient(#5a2a12, #3a1a0a);
+            background: linear-gradient(#6a3618, #46230d);
             color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
         }
-        .btn small { display: block; font-size: 0.7rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
+        .btn small { display: block; font-size: 0.62rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
 
         .back-button {
             position: absolute; top: 18px; left: 16px; background: none; border: none;
-            color: var(--accent-bright); font-size: 1.4rem; z-index: 20; cursor: pointer;
+            color: var(--accent-bright); font-size: 1.3rem; z-index: 20; cursor: pointer;
         }
 
         .card {
@@ -72,7 +72,7 @@
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
             max-width: 480px; margin: 10px auto; padding: 16px 20px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 1.05rem;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.95rem;
         }
         .stat-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
@@ -80,71 +80,71 @@
         }
         .stat-box {
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
-            padding: 16px 6px;
+            padding: 14px 4px;
         }
-        .stat-box .value { font-size: 1.5rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-        .stat-box .label { font-size: 0.7rem; color: var(--text-dim); margin-top: 5px; }
+        .stat-box .value { font-size: 1.3rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .stat-box .label { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; }
 
         .section-label {
             text-align: left; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
-            font-size: 0.78rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
+            font-size: 0.68rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
         }
 
-        .loading { opacity: 0.7; font-size: 0.9rem; margin: 16px; }
+        .loading { opacity: 0.7; font-size: 0.8rem; margin: 16px; }
 
         .nickname-input {
             display: block; width: 100%; max-width: 380px; margin: 22px auto; padding: 18px;
-            font-size: 1.05rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
+            font-size: 0.95rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
             color: var(--text-main); text-align: center; box-sizing: border-box;
         }
-        .nickname-error { color: #ff8888; font-size: 0.85rem; min-height: 24px; margin-bottom: 8px; }
+        .nickname-error { color: #ff9999; font-size: 0.75rem; min-height: 24px; margin-bottom: 8px; }
 
         .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 18px auto 12px; }
         .tab-button {
-            flex: 1; padding: 14px 6px; font-size: 0.9rem; font-family: 'Cinzel', serif; cursor: pointer;
+            flex: 1; padding: 14px 4px; font-size: 0.78rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
         }
         .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
         .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 0 auto 18px; }
         .sub-tab-button {
-            flex: 1; padding: 10px; font-size: 0.8rem; background: transparent; color: var(--text-dim); cursor: pointer;
+            flex: 1; padding: 10px; font-size: 0.7rem; background: transparent; color: var(--text-dim); cursor: pointer;
             border: 1px solid var(--border-main); border-radius: 10px;
         }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
         .leader-row {
             display: flex; justify-content: space-between; align-items: center; max-width: 480px; margin: 8px auto;
-            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.95rem;
+            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
         }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; }
 
         .achievement-row {
             max-width: 480px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.95rem;
+            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.85rem;
         }
         .achievement-row.locked { opacity: 0.4; }
 
-        .toggle-switch { position: relative; width: 54px; height: 32px; flex-shrink: 0; }
+        .toggle-switch { position: relative; width: 50px; height: 30px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #3a2418; border-radius: 32px; transition: 0.2s;
+            background: #4a3020; border-radius: 32px; transition: 0.2s;
         }
         .toggle-slider:before {
-            position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px;
-            background: #8a6a52; border-radius: 50%; transition: 0.2s;
+            position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px;
+            background: #a88968; border-radius: 50%; transition: 0.2s;
         }
         input:checked + .toggle-slider { background: var(--accent); }
-        input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(22px); }
+        input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
 
-        .settings-row-text { text-align: left; font-size: 0.95rem; }
-        .settings-row-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
-        .link-row { color: var(--accent-bright); font-size: 0.9rem; }
+        .settings-row-text { text-align: left; font-size: 0.85rem; }
+        .settings-row-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 4px; }
+        .link-row { color: var(--accent-bright); font-size: 0.8rem; }
 
         .days-selector { display: flex; gap: 6px; max-width: 480px; margin: 10px auto; }
         .day-chip {
             flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 1rem;
+            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 0.9rem;
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent-bright); }
 
@@ -154,36 +154,36 @@
             display: flex; align-items: center; gap: 14px; padding: 16px; margin-bottom: 4px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
         }
-        .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(232,176,74,0.25); }
+        .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(240,192,100,0.25); }
         .path-node.locked { opacity: 0.35; }
-        .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,107,53,0.3); }
+        .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,122,69,0.3); }
         .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
         .path-icon {
-            width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.5rem; background: #2a1810; border: 1px solid var(--border-main);
+            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.3rem; background: #3a2418; border: 1px solid var(--border-main);
             flex-shrink: 0; overflow: hidden;
         }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
         .path-node.boss .path-icon { border-color: var(--gold); }
         .path-node.current .path-icon { border-color: var(--accent); }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--text-main); }
-        .path-info .subtitle { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; }
+        .path-info .title { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: 0.62rem; color: var(--text-dim); margin-top: 3px; }
         .path-node button {
-            padding: 10px 14px; font-size: 0.82rem; background: var(--accent); color: #1a0a04;
+            padding: 10px 14px; font-size: 0.72rem; background: var(--accent); color: #1a0a04;
             border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
         }
-        .path-node.locked button { background: #3a2a1a; color: #7a6a5a; }
+        .path-node.locked button { background: #4a3020; color: #8a7060; }
 
         .info-tip {
-            max-width: 480px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,107,53,0.1);
-            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.85rem; text-align: left; display: none;
+            max-width: 480px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,122,69,0.12);
+            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.75rem; text-align: left; display: none;
         }
         .info-tip.active { display: block; }
 
         .free-card {
             max-width: 480px; margin: 14px auto; padding: 22px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 1.05rem;
+            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 0.95rem;
             font-family: 'Cinzel', serif; color: var(--text-main);
         }
         .free-card:active { border-color: var(--accent); }
@@ -200,60 +200,73 @@
             object-fit: cover; display: block;
         }
         #skeletonCanvas {
-            z-index: 15; /* выше HUD (z-index:10), точки всегда видны поверх интерфейса */
+            z-index: 15;
             pointer-events: none;
         }
 
         .hud-top {
             position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-            padding: 20px 16px 16px; background: linear-gradient(rgba(5,2,1,0.85), rgba(5,2,1,0));
+            padding: 20px 16px 16px; background: linear-gradient(rgba(12,7,4,0.88), rgba(12,7,4,0));
         }
         .battle-header { max-width: 480px; margin: 0 auto; }
         .monster-portrait {
-            width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 8px;
-            background: radial-gradient(circle, #3a1810, #180a06);
+            width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 8px;
+            background: radial-gradient(circle, #4a2810, #200f06);
             border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 3.2rem; box-shadow: 0 0 20px rgba(255,107,53,0.35); overflow: hidden;
+            font-size: 2.9rem; box-shadow: 0 0 20px rgba(255,122,69,0.35); overflow: hidden;
         }
         .monster-portrait img { width: 100%; height: 100%; object-fit: cover; }
-        .monster-name { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--text-main); background: rgba(0,0,0,0.55); padding: 6px 12px; border-radius: 8px; display: inline-block; }
+        .monster-name { font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--text-main); background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; display: inline-block; }
         .hp-bar-bg {
-            width: 100%; max-width: 480px; height: 28px; margin: 10px auto 0; background: rgba(42,24,16,0.85);
-            border-radius: 14px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+            width: 100%; max-width: 480px; height: 26px; margin: 10px auto 0; background: rgba(58,36,24,0.9);
+            border-radius: 13px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
         }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: 0.9rem; font-family: 'JetBrains Mono', monospace;
+            align-items: center; justify-content: center; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;
             color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
         #status {
-            font-size: 1rem; margin: 12px auto 0; color: var(--text-main); max-width: 480px;
-            background: rgba(0,0,0,0.55); padding: 9px 16px; border-radius: 10px; display: inline-block;
+            font-size: 0.85rem; margin: 12px auto 0; color: var(--text-main); max-width: 480px;
+            background: rgba(0,0,0,0.6); padding: 9px 16px; border-radius: 10px; display: inline-block;
         }
 
         .hud-bottom {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-            padding: 14px 16px 26px; background: linear-gradient(rgba(5,2,1,0), rgba(5,2,1,0.92));
+            padding: 14px 16px 26px; background: linear-gradient(rgba(12,7,4,0), rgba(12,7,4,0.94));
         }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
         .rep-circle {
-            width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, #4a2a10, #2a1608); border: 2px solid var(--gold);
-            font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: bold; color: var(--gold);
-            box-shadow: 0 0 18px rgba(232,176,74,0.4);
+            width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #5a3212, #2a1608); border: 2px solid var(--gold);
+            font-family: 'JetBrains Mono', monospace; font-size: 1.9rem; font-weight: bold; color: var(--gold);
+            box-shadow: 0 0 18px rgba(240,192,100,0.4);
         }
-        .save-overlay { display: none; margin: 10px auto; font-size: 0.95rem; color: var(--accent-bright); }
-        .save-overlay.active { display: block; }
+
+        /* ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== */
+        .saving-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000;
+            background: rgba(10,6,3,0.96); align-items: center; justify-content: center; flex-direction: column;
+        }
+        .saving-overlay.active { display: flex; }
+        .saving-spinner {
+            width: 56px; height: 56px; border: 4px solid var(--border-main); border-top-color: var(--accent);
+            border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .saving-text { font-size: 1rem; color: var(--text-main); max-width: 320px; }
+        .saving-subtext { font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; }
+
         .retry-button {
-            display: none; margin: 10px auto; padding: 16px 26px; font-size: 0.95rem;
+            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: 0.85rem;
             background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
         }
         .retry-button.active { display: inline-block; }
 
         .overlay-panel {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(5,2,1,0.92); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
+            background: rgba(10,6,3,0.94); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
             padding: 20px; box-sizing: border-box;
         }
         .overlay-panel.active { display: flex; }
@@ -261,10 +274,10 @@
             background: var(--bg-card); border: 1px solid var(--accent); border-radius: 16px;
             padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto;
         }
-        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); font-size: 1.3rem; }
+        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); font-size: 1.15rem; }
         .overlay-box .btn { max-width: 320px; }
-        .overlay-box p { text-align: left; font-size: 0.9rem; line-height: 1.5; }
-        .countdown-number { font-size: 3.2rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .overlay-box p { text-align: left; font-size: 0.78rem; line-height: 1.5; }
+        .countdown-number { font-size: 2.8rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
 <body>
@@ -337,8 +350,6 @@
                 <div class="rep-circle" id="counter">0</div>
             </div>
             <button id="finishBtn" class="btn btn-primary" style="max-width: 320px;">Завершить</button>
-            <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
-            <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение сейчас</button>
         </div>
     </div>
 
@@ -351,8 +362,8 @@
             <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
             <div class="card" style="text-align:left;">
-                <div id="profile-next" style="font-size:0.85rem; color: var(--text-dim); margin-bottom:10px;">—</div>
-                <div class="hp-bar-bg" style="height:16px; margin:0;">
+                <div id="profile-next" style="font-size:0.75rem; color: var(--text-dim); margin-bottom:10px;">—</div>
+                <div class="hp-bar-bg" style="height:14px; margin:0;">
                     <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent));"></div>
                 </div>
             </div>
@@ -396,7 +407,7 @@
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2 style="margin-top:50px;">🎖 Достижения</h2>
         <div id="achievements-list"></div>
-        <p style="opacity: 0.5; font-size: 0.8rem;">(тестовые данные, подключим позже)</p>
+        <p style="opacity: 0.5; font-size: 0.7rem;">(тестовые данные, подключим позже)</p>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
@@ -446,7 +457,7 @@
         </div>
 
         <div class="section-label">Цель</div>
-        <p style="max-width:480px; margin: 0 auto 8px; text-align:left; font-size:0.85rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
+        <p style="max-width:480px; margin: 0 auto 8px; text-align:left; font-size:0.75rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
         <div class="days-selector" id="days-selector">
             <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
             <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
@@ -471,7 +482,7 @@
     <div id="overlay-dungeon-complete" class="overlay-panel">
         <div class="overlay-box">
             <h3>Уровень пройден! 🎉</h3>
-            <p id="dungeon-complete-xp" style="text-align:center; font-size:1.2rem;">+0 XP</p>
+            <p id="dungeon-complete-xp" style="text-align:center; font-size:1.05rem;">+0 XP</p>
             <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
             <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
         </div>
@@ -487,6 +498,14 @@
         </div>
     </div>
 
+    <!-- ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== -->
+    <div id="saving-overlay" class="saving-overlay">
+        <div class="saving-spinner"></div>
+        <div class="saving-text" id="saving-text">Сохраняем результат...</div>
+        <div class="saving-subtext" id="saving-subtext"></div>
+        <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сейчас</button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
@@ -494,10 +513,23 @@
     <script>
         const API_BASE = "https://pushup-bot-server.onrender.com";
 
-        function applyTelegramViewportHeight() {
+        function getViewportPx() {
             const tgApp = window.Telegram.WebApp;
-            const height = tgApp.viewportStableHeight || tgApp.viewportHeight || window.innerHeight;
+            return tgApp.viewportStableHeight || tgApp.viewportHeight || window.innerHeight;
+        }
+
+        function applyTelegramViewportHeight() {
+            const height = getViewportPx();
             document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
+        }
+
+        // Принудительно выставляем ТОЧНУЮ высоту в пикселях для текущего экрана —
+        // так центрирование через flexbox работает надёжно, без зависимости от CSS-таймингов.
+        function enforceScreenHeight(screenId) {
+            const el = document.getElementById('screen-' + screenId);
+            if (!el) return;
+            const h = getViewportPx();
+            el.style.minHeight = h + 'px';
         }
 
         function showScreen(name) {
@@ -512,7 +544,9 @@
             if (name === 'settings') renderSettingsScreen();
             if (name === 'adventure') switchAdventureTab(currentAdventureTab);
 
-            requestAnimationFrame(applyTelegramViewportHeight);
+            enforceScreenHeight(name);
+            requestAnimationFrame(() => enforceScreenHeight(name));
+            setTimeout(() => enforceScreenHeight(name), 200);
         }
 
         function getUserId() {
@@ -905,7 +939,6 @@
             const list = document.getElementById('dungeon-select-list');
             list.innerHTML = '';
 
-            // Показываем ВСЕ зоны целиком: пройденные, текущую и все будущие (закрытые)
             ZONES.forEach((zone, idx) => {
                 let status, subtitle, btnText;
 
@@ -1208,9 +1241,8 @@
             drawPoints(landmarks, points, connections);
         }
 
-        // Точки скелета теперь рисуются на ОТДЕЛЬНОМ прозрачном канвасе поверх всего интерфейса
         function drawPoints(landmarks, points, connections) {
-            skeletonCtx.strokeStyle = '#ff8c52';
+            skeletonCtx.strokeStyle = '#ffa066';
             skeletonCtx.lineWidth = 3;
             for (const [startIdx, endIdx] of connections) {
                 const start = landmarks[startIdx];
@@ -1220,7 +1252,7 @@
                 skeletonCtx.lineTo(end.x * skeletonCanvas.width, end.y * skeletonCanvas.height);
                 skeletonCtx.stroke();
             }
-            skeletonCtx.fillStyle = '#d4453a';
+            skeletonCtx.fillStyle = '#e0564a';
             for (const idx of points) {
                 const point = landmarks[idx];
                 skeletonCtx.beginPath();
@@ -1343,8 +1375,6 @@
             lastPlankMinuteMarked = 0;
 
             document.getElementById('finishBtn').style.display = 'block';
-            document.getElementById('saveOverlay').classList.remove('active');
-            document.getElementById('retryBtn').classList.remove('active');
             document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
 
             if (!isDungeon) inDungeonMode = false;
@@ -1371,27 +1401,31 @@
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА — БЕСКОНЕЧНЫЕ ПОВТОРНЫЕ ПОПЫТКИ =====
+        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА — ЯВНЫЙ ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ, БЕСКОНЕЧНЫЕ ПОПЫТКИ =====
 
         let saveAttempts = 0;
+
+        function showSavingOverlay(text, subtext) {
+            document.getElementById('saving-text').innerText = text;
+            document.getElementById('saving-subtext').innerText = subtext || '';
+            document.getElementById('saving-overlay').classList.add('active');
+        }
+
+        function hideSavingOverlay() {
+            document.getElementById('saving-overlay').classList.remove('active');
+            document.getElementById('retryBtn').classList.remove('active');
+        }
 
         async function attemptSave(isRetry = false) {
             const userId = getUserId();
             const mode = currentMode;
 
-            const finishBtn = document.getElementById('finishBtn');
-            const saveOverlay = document.getElementById('saveOverlay');
-            const retryBtn = document.getElementById('retryBtn');
-            const statusEl2 = document.getElementById('status');
-
             if (!isRetry) saveAttempts = 0;
 
-            finishBtn.style.display = 'none';
-            retryBtn.classList.remove('active');
-            saveOverlay.classList.add('active');
-            saveOverlay.innerText = saveAttempts > 0
-                ? `Сохраняем результат... (попытка ${saveAttempts + 1}) ⏳`
-                : "Сохраняем результат... ⏳";
+            showSavingOverlay(
+                saveAttempts > 0 ? `Сохраняем результат... (попытка ${saveAttempts + 1})` : "Сохраняем результат...",
+                "Не закрывайте приложение"
+            );
 
             let success = false;
 
@@ -1423,20 +1457,21 @@
                 success = false;
             }
 
-            saveOverlay.classList.remove('active');
-
             if (success) {
                 if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
                 inDungeonMode = false;
                 currentMode = null;
+                hideSavingOverlay();
                 showScreen('menu');
                 return;
             }
 
-            // Бесконечные повторные попытки — прогресс никогда не должен потеряться
             saveAttempts++;
-            retryBtn.classList.add('active');
-            statusEl2.innerText = `Не удалось сохранить, пробуем снова (попытка ${saveAttempts})...`;
+            document.getElementById('retryBtn').classList.add('active');
+            showSavingOverlay(
+                `Не удалось сохранить, пробуем снова...`,
+                `Попытка ${saveAttempts}`
+            );
             setTimeout(() => attemptSave(true), 2000);
         }
 
