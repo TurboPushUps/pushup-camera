@@ -20,20 +20,27 @@
             --success: #6bbf59;
         }
 
-        html { font-size: 21px; }
+        html { font-size: 21px; height: 100%; }
         html, body {
             margin: 0; padding: 0; text-align: center;
             background: radial-gradient(ellipse at top, #22120c 0%, #0d0605 70%);
-            color: var(--text-main); font-family: 'EB Garamond', serif; height: 100%;
+            color: var(--text-main); font-family: 'EB Garamond', serif;
         }
-        body { min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; }
+        body {
+            height: 100dvh;
+            min-height: var(--tg-viewport-height, 100dvh);
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
         body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: var(--tg-viewport-height, 100dvh); }
 
         h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 1px; margin: 0 0 18px; }
         .mono { font-family: 'JetBrains Mono', monospace; }
 
         .screen {
-            display: none; padding: 22px 16px 60px; min-height: var(--tg-viewport-height, 100dvh);
+            display: none; padding: 22px 16px 60px;
+            min-height: 100dvh;
+            min-height: var(--tg-viewport-height, 100dvh);
             box-sizing: border-box; position: relative;
         }
         .screen.active { display: block; }
@@ -184,13 +191,17 @@
         /* ===== ЭКРАН БОЯ — КАМЕРА НА ВЕСЬ ЭКРАН ===== */
         .camera-fullscreen-wrapper {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100%; height: var(--tg-viewport-height, 100dvh);
+            width: 100vw; height: 100dvh;
             background: #000; overflow: hidden; z-index: 1;
         }
         .camera-fullscreen-wrapper video { display: none; }
         .camera-fullscreen-wrapper canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; display: block;
+        }
+        #skeletonCanvas {
+            z-index: 15; /* выше HUD (z-index:10), точки всегда видны поверх интерфейса */
+            pointer-events: none;
         }
 
         .hud-top {
@@ -306,6 +317,7 @@
         <div class="camera-fullscreen-wrapper">
             <video id="video" width="480" height="640" autoplay playsinline muted></video>
             <canvas id="canvas" width="480" height="640"></canvas>
+            <canvas id="skeletonCanvas" width="480" height="640"></canvas>
         </div>
 
         <div class="hud-top">
@@ -326,7 +338,7 @@
             </div>
             <button id="finishBtn" class="btn btn-primary" style="max-width: 320px;">Завершить</button>
             <p id="saveOverlay" class="save-overlay">Сохраняем результат... ⏳</p>
-            <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение</button>
+            <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сохранение сейчас</button>
         </div>
     </div>
 
@@ -489,6 +501,7 @@
         }
 
         function showScreen(name) {
+            applyTelegramViewportHeight();
             document.body.classList.toggle('no-scroll', name === 'activity');
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.getElementById('screen-' + name).classList.add('active');
@@ -498,6 +511,8 @@
             if (name === 'achievements') loadAchievementsMock();
             if (name === 'settings') renderSettingsScreen();
             if (name === 'adventure') switchAdventureTab(currentAdventureTab);
+
+            requestAnimationFrame(applyTelegramViewportHeight);
         }
 
         function getUserId() {
@@ -821,27 +836,27 @@
             });
         }
 
-        // ===== ЗОНЫ ПОДЗЕМЕЛИЙ (визуал + группировка) =====
+        // ===== ЗОНЫ ПОДЗЕМЕЛИЙ =====
 
         const ZONES = [
-            { name: "Пещера летучих мышей", start: 1, end: 4, image: "Rat.png", isBoss: false },
-            { name: "Пещера летучих мышей (Босс)", start: 5, end: 5, image: "Rat_Boss.png", isBoss: true },
-            { name: "Подземелье скелетов", start: 6, end: 9, image: "Skelet.png", isBoss: false },
-            { name: "Подземелье скелетов (Босс)", start: 10, end: 10, image: "Skelet_Boss.png", isBoss: true },
-            { name: "Логово тролля", start: 11, end: 14, image: "Troll.png", isBoss: false },
-            { name: "Логово тролля (Босс)", start: 15, end: 15, image: "Troll_Boss.png", isBoss: true },
-            { name: "Лес призраков", start: 16, end: 19, image: "Ghost.png", isBoss: false },
-            { name: "Лес призраков (Босс)", start: 20, end: 20, image: "Ghost_Boss.png", isBoss: true },
-            { name: "Забытые руины", start: 21, end: 24, emoji: "🏚️", isBoss: false },
-            { name: "Забытые руины (Босс)", start: 25, end: 25, emoji: "👺", isBoss: true },
-            { name: "Ледяная бездна", start: 26, end: 29, emoji: "🧊", isBoss: false },
-            { name: "Ледяная бездна (Босс)", start: 30, end: 30, emoji: "❄️", isBoss: true },
-            { name: "Огненные врата", start: 31, end: 34, emoji: "🔥", isBoss: false },
-            { name: "Огненные врата (Босс)", start: 35, end: 35, emoji: "😈", isBoss: true },
+            { n: 1, name: "Пещера летучих мышей", image: "Rat.png", isBoss: false },
+            { n: 2, name: "Пещера летучих мышей (Босс)", image: "Rat_Boss.png", isBoss: true },
+            { n: 3, name: "Подземелье скелетов", image: "Skelet.png", isBoss: false },
+            { n: 4, name: "Подземелье скелетов (Босс)", image: "Skelet_Boss.png", isBoss: true },
+            { n: 5, name: "Логово тролля", image: "Troll.png", isBoss: false },
+            { n: 6, name: "Логово тролля (Босс)", image: "Troll_Boss.png", isBoss: true },
+            { n: 7, name: "Лес призраков", image: "Ghost.png", isBoss: false },
+            { n: 8, name: "Лес призраков (Босс)", image: "Ghost_Boss.png", isBoss: true },
+            { n: 9, name: "Забытые руины", emoji: "🏚️", isBoss: false },
+            { n: 10, name: "Забытые руины (Босс)", emoji: "👺", isBoss: true },
+            { n: 11, name: "Ледяная бездна", emoji: "🧊", isBoss: false },
+            { n: 12, name: "Ледяная бездна (Босс)", emoji: "❄️", isBoss: true },
+            { n: 13, name: "Огненные врата", emoji: "🔥", isBoss: false },
+            { n: 14, name: "Огненные врата (Босс)", emoji: "😈", isBoss: true },
         ];
 
         function getZoneForDungeon(n) {
-            return ZONES.find(z => n >= z.start && n <= z.end) || ZONES[ZONES.length - 1];
+            return ZONES.find(z => z.n === n) || ZONES[ZONES.length - 1];
         }
 
         function monsterVisualHtml(zone) {
@@ -890,30 +905,25 @@
             const list = document.getElementById('dungeon-select-list');
             list.innerHTML = '';
 
-            let addedConnector = false;
+            // Показываем ВСЕ зоны целиком: пройденные, текущую и все будущие (закрытые)
+            ZONES.forEach((zone, idx) => {
+                let status, subtitle, btnText;
 
-            for (const zone of ZONES) {
-                let status, subtitle, btnText, targetLevel;
-
-                if (zone.end < currentDungeon) {
+                if (zone.n < currentDungeon) {
                     status = 'done';
                     subtitle = 'Пройдено — можно перепройти';
                     btnText = 'Повторить';
-                    targetLevel = zone.start;
-                } else if (zone.start <= currentDungeon && currentDungeon <= zone.end) {
+                } else if (zone.n === currentDungeon) {
                     status = 'current';
                     subtitle = 'Текущий этап';
                     btnText = 'Начать';
-                    targetLevel = currentDungeon;
                 } else {
                     status = 'locked';
                     subtitle = 'Закрыто';
                     btnText = 'Закрыто';
-                    targetLevel = zone.start;
                 }
 
-                if (addedConnector === false && list.children.length > 0) {}
-                if (list.children.length > 0) {
+                if (idx > 0) {
                     const connector = document.createElement('div');
                     connector.className = 'path-connector';
                     list.appendChild(connector);
@@ -922,19 +932,17 @@
                 const node = document.createElement('div');
                 node.className = 'path-node' + (zone.isBoss ? ' boss' : '') + (status === 'current' ? ' current' : '') + (status === 'locked' ? ' locked' : '');
                 node.innerHTML = `
-                    <div class="path-icon">${monsterVisualHtml(zone)}</div>
+                    <div class="path-icon">${status === 'locked' ? '🔒' : monsterVisualHtml(zone)}</div>
                     <div class="path-info">
                         <div class="title">${zone.name}</div>
                         <div class="subtitle">${subtitle}</div>
                     </div>
                     ${status === 'locked'
                         ? `<button disabled>Закрыто</button>`
-                        : `<button onclick="startDungeonActivity('${activity}', ${targetLevel})">${btnText}</button>`}
+                        : `<button onclick="startDungeonActivity('${activity}', ${zone.n})">${btnText}</button>`}
                 `;
                 list.appendChild(node);
-
-                if (status === 'locked') break; // показываем только первое закрытое, дальше не раскрываем
-            }
+            });
         }
 
         // ===== СОСТОЯНИЕ ПРИКЛЮЧЕНИЯ ВО ВРЕМЯ БОЯ =====
@@ -1045,29 +1053,43 @@
             dungeonJustWon = true;
             playVictorySound();
             vibrate('success');
-            // Камеру НЕ останавливаем — только приостанавливаем подсчёт (dungeonPaused),
-            // чтобы не было зависаний при повторном включении камеры.
 
             document.getElementById('dungeon-complete-xp').innerText = "Подсчитываем награду... ⏳";
             document.getElementById('overlay-dungeon-complete').classList.add('active');
 
+            await saveDungeonCompletionWithRetry();
+        }
+
+        async function saveDungeonCompletionWithRetry() {
             const userId = getUserId();
+            const activity = dungeonActivityType;
+            const dungeonN = dungeonNumber;
+            let attempt = 0;
 
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
+            while (true) {
+                attempt++;
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-                const response = await fetch(`${API_BASE}/api/dungeon_complete`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, activity: dungeonActivityType, dungeon: dungeonNumber }),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                const data = await response.json();
-                document.getElementById('dungeon-complete-xp').innerText = `+${data.xp_earned || 0} XP ⭐`;
-            } catch (error) {
-                console.error("Ошибка завершения приключения:", error);
-                document.getElementById('dungeon-complete-xp').innerText = "Награда сохранится немного позже ⏳";
+                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, activity: activity, dungeon: dungeonN }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) throw new Error("Сервер ответил ошибкой");
+
+                    const data = await response.json();
+                    document.getElementById('dungeon-complete-xp').innerText = `+${data.xp_earned || 0} XP ⭐`;
+                    return;
+                } catch (error) {
+                    console.error(`Попытка ${attempt} завершения подземелья не удалась:`, error);
+                    document.getElementById('dungeon-complete-xp').innerText =
+                        `Сохраняем награду... (попытка ${attempt}) ⏳`;
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
             }
         }
 
@@ -1088,6 +1110,8 @@
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const skeletonCanvas = document.getElementById('skeletonCanvas');
+        const skeletonCtx = skeletonCanvas.getContext('2d');
         const statusEl = document.getElementById('status');
         const counterEl = document.getElementById('counter');
 
@@ -1184,23 +1208,24 @@
             drawPoints(landmarks, points, connections);
         }
 
+        // Точки скелета теперь рисуются на ОТДЕЛЬНОМ прозрачном канвасе поверх всего интерфейса
         function drawPoints(landmarks, points, connections) {
-            ctx.strokeStyle = '#ff8c52';
-            ctx.lineWidth = 3;
+            skeletonCtx.strokeStyle = '#ff8c52';
+            skeletonCtx.lineWidth = 3;
             for (const [startIdx, endIdx] of connections) {
                 const start = landmarks[startIdx];
                 const end = landmarks[endIdx];
-                ctx.beginPath();
-                ctx.moveTo(start.x * canvas.width, start.y * canvas.height);
-                ctx.lineTo(end.x * canvas.width, end.y * canvas.height);
-                ctx.stroke();
+                skeletonCtx.beginPath();
+                skeletonCtx.moveTo(start.x * skeletonCanvas.width, start.y * skeletonCanvas.height);
+                skeletonCtx.lineTo(end.x * skeletonCanvas.width, end.y * skeletonCanvas.height);
+                skeletonCtx.stroke();
             }
-            ctx.fillStyle = '#d4453a';
+            skeletonCtx.fillStyle = '#d4453a';
             for (const idx of points) {
                 const point = landmarks[idx];
-                ctx.beginPath();
-                ctx.arc(point.x * canvas.width, point.y * canvas.height, 6, 0, 2 * Math.PI);
-                ctx.fill();
+                skeletonCtx.beginPath();
+                skeletonCtx.arc(point.x * skeletonCanvas.width, point.y * skeletonCanvas.height, 6, 0, 2 * Math.PI);
+                skeletonCtx.fill();
             }
         }
 
@@ -1247,6 +1272,8 @@
             if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
                 canvas.width = results.image.width;
                 canvas.height = results.image.height;
+                skeletonCanvas.width = results.image.width;
+                skeletonCanvas.height = results.image.height;
             }
 
             ctx.save();
@@ -1254,6 +1281,12 @@
             ctx.scale(-1, 1);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            skeletonCtx.save();
+            skeletonCtx.clearRect(0, 0, skeletonCanvas.width, skeletonCanvas.height);
+            skeletonCtx.translate(skeletonCanvas.width, 0);
+            skeletonCtx.scale(-1, 1);
 
             if (results.poseLandmarks) {
                 if (currentMode === 'pushup') {
@@ -1285,7 +1318,7 @@
                 if (currentMode === 'plank') updatePlankTimer(false);
             }
 
-            ctx.restore();
+            skeletonCtx.restore();
         }
 
         function startCameraIfNeeded() {
@@ -1328,6 +1361,7 @@
             startCameraIfNeeded();
 
             setTimeout(applyTelegramViewportHeight, 150);
+            setTimeout(applyTelegramViewportHeight, 500);
         }
 
         const tg = window.Telegram.WebApp;
@@ -1337,10 +1371,9 @@
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА (единственный способ выйти из камеры) =====
+        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА — БЕСКОНЕЧНЫЕ ПОВТОРНЫЕ ПОПЫТКИ =====
 
         let saveAttempts = 0;
-        const MAX_SAVE_ATTEMPTS = 3;
 
         async function attemptSave(isRetry = false) {
             const userId = getUserId();
@@ -1400,20 +1433,15 @@
                 return;
             }
 
+            // Бесконечные повторные попытки — прогресс никогда не должен потеряться
             saveAttempts++;
-
-            if (saveAttempts < MAX_SAVE_ATTEMPTS) {
-                statusEl2.innerText = `Не удалось сохранить, пробуем снова...`;
-                setTimeout(() => attemptSave(true), 1500);
-            } else {
-                retryBtn.classList.add('active');
-                statusEl2.innerText = "Не удалось сохранить после нескольких попыток. Проверьте связь.";
-            }
+            retryBtn.classList.add('active');
+            statusEl2.innerText = `Не удалось сохранить, пробуем снова (попытка ${saveAttempts})...`;
+            setTimeout(() => attemptSave(true), 2000);
         }
 
         function retrySave() {
-            saveAttempts = 0;
-            attemptSave();
+            attemptSave(true);
         }
 
         document.getElementById('finishBtn').addEventListener('click', () => {
