@@ -20,7 +20,7 @@
             --success: #7bcf69;
         }
 
-        html { font-size: 27px; height: 100%; }
+        html { font-size: 30px; height: 100%; }
         html, body {
             margin: 0; padding: 0; text-align: center;
             background: radial-gradient(ellipse at top, #3a2318 0%, #180d08 70%);
@@ -46,11 +46,11 @@
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-        h1 { font-size: 1.85rem; } h2 { font-size: 1.5rem; }
+        h1 { font-size: 1.8rem; } h2 { font-size: 1.45rem; }
 
         .btn {
             display: block; width: 100%; max-width: 480px; margin: 12px auto; padding: 22px;
-            font-size: 1.1rem; font-family: 'Cinzel', serif; cursor: pointer;
+            font-size: 1.05rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-main);
             border: 1px solid var(--border-main); border-radius: 12px;
         }
@@ -58,11 +58,11 @@
             background: linear-gradient(#6a3618, #46230d);
             color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
         }
-        .btn small { display: block; font-size: 0.62rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
+        .btn small { display: block; font-size: 0.58rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
 
         .back-button {
             position: absolute; top: 18px; left: 16px; background: none; border: none;
-            color: var(--accent-bright); font-size: 1.3rem; z-index: 20; cursor: pointer;
+            color: var(--accent-bright); font-size: 1.25rem; z-index: 20; cursor: pointer;
         }
 
         .card {
@@ -72,7 +72,7 @@
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
             max-width: 480px; margin: 10px auto; padding: 16px 20px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.95rem;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.9rem;
         }
         .stat-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
@@ -82,69 +82,69 @@
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
             padding: 14px 4px;
         }
-        .stat-box .value { font-size: 1.3rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-        .stat-box .label { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; }
+        .stat-box .value { font-size: 1.25rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .stat-box .label { font-size: 0.56rem; color: var(--text-dim); margin-top: 5px; }
 
         .section-label {
             text-align: left; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
-            font-size: 0.68rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
+            font-size: 0.64rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
         }
 
-        .loading { opacity: 0.7; font-size: 0.8rem; margin: 16px; }
+        .loading { opacity: 0.7; font-size: 0.75rem; margin: 16px; }
 
         .nickname-input {
             display: block; width: 100%; max-width: 380px; margin: 22px auto; padding: 18px;
-            font-size: 0.95rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
+            font-size: 0.9rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
             color: var(--text-main); text-align: center; box-sizing: border-box;
         }
-        .nickname-error { color: #ff9999; font-size: 0.75rem; min-height: 24px; margin-bottom: 8px; }
+        .nickname-error { color: #ff9999; font-size: 0.7rem; min-height: 24px; margin-bottom: 8px; }
 
         .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 18px auto 12px; }
         .tab-button {
-            flex: 1; padding: 14px 4px; font-size: 0.78rem; font-family: 'Cinzel', serif; cursor: pointer;
+            flex: 1; padding: 14px 4px; font-size: 0.74rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
         }
         .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
         .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 0 auto 18px; }
         .sub-tab-button {
-            flex: 1; padding: 10px; font-size: 0.7rem; background: transparent; color: var(--text-dim); cursor: pointer;
+            flex: 1; padding: 10px; font-size: 0.66rem; background: transparent; color: var(--text-dim); cursor: pointer;
             border: 1px solid var(--border-main); border-radius: 10px;
         }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
         .leader-row {
             display: flex; justify-content: space-between; align-items: center; max-width: 480px; margin: 8px auto;
-            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
+            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.8rem;
         }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; }
 
         .achievement-row {
             max-width: 480px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.85rem;
+            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.8rem;
         }
         .achievement-row.locked { opacity: 0.4; }
 
-        .toggle-switch { position: relative; width: 50px; height: 30px; flex-shrink: 0; }
+        .toggle-switch { position: relative; width: 48px; height: 28px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
             background: #4a3020; border-radius: 32px; transition: 0.2s;
         }
         .toggle-slider:before {
-            position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px;
+            position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
             background: #a88968; border-radius: 50%; transition: 0.2s;
         }
         input:checked + .toggle-slider { background: var(--accent); }
         input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
 
-        .settings-row-text { text-align: left; font-size: 0.85rem; }
-        .settings-row-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 4px; }
-        .link-row { color: var(--accent-bright); font-size: 0.8rem; }
+        .settings-row-text { text-align: left; font-size: 0.8rem; }
+        .settings-row-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 4px; }
+        .link-row { color: var(--accent-bright); font-size: 0.75rem; }
 
         .days-selector { display: flex; gap: 6px; max-width: 480px; margin: 10px auto; }
         .day-chip {
             flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 0.9rem;
+            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 0.85rem;
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent-bright); }
 
@@ -159,31 +159,31 @@
         .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,122,69,0.3); }
         .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
         .path-icon {
-            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.3rem; background: #3a2418; border: 1px solid var(--border-main);
+            width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.2rem; background: #3a2418; border: 1px solid var(--border-main);
             flex-shrink: 0; overflow: hidden;
         }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
         .path-node.boss .path-icon { border-color: var(--gold); }
         .path-node.current .path-icon { border-color: var(--accent); }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--text-main); }
-        .path-info .subtitle { font-size: 0.62rem; color: var(--text-dim); margin-top: 3px; }
+        .path-info .title { font-family: 'Cinzel', serif; font-size: 0.78rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: 0.58rem; color: var(--text-dim); margin-top: 3px; }
         .path-node button {
-            padding: 10px 14px; font-size: 0.72rem; background: var(--accent); color: #1a0a04;
+            padding: 10px 14px; font-size: 0.66rem; background: var(--accent); color: #1a0a04;
             border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
         }
         .path-node.locked button { background: #4a3020; color: #8a7060; }
 
         .info-tip {
             max-width: 480px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,122,69,0.12);
-            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.75rem; text-align: left; display: none;
+            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.7rem; text-align: left; display: none;
         }
         .info-tip.active { display: block; }
 
         .free-card {
             max-width: 480px; margin: 14px auto; padding: 22px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 0.95rem;
+            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 0.9rem;
             font-family: 'Cinzel', serif; color: var(--text-main);
         }
         .free-card:active { border-color: var(--accent); }
@@ -210,25 +210,25 @@
         }
         .battle-header { max-width: 480px; margin: 0 auto; }
         .monster-portrait {
-            width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 8px;
+            width: 96px; height: 96px; border-radius: 50%; margin: 0 auto 8px;
             background: radial-gradient(circle, #4a2810, #200f06);
             border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 2.9rem; box-shadow: 0 0 20px rgba(255,122,69,0.35); overflow: hidden;
+            font-size: 2.7rem; box-shadow: 0 0 20px rgba(255,122,69,0.35); overflow: hidden;
         }
         .monster-portrait img { width: 100%; height: 100%; object-fit: cover; }
-        .monster-name { font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--text-main); background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; display: inline-block; }
+        .monster-name { font-family: 'Cinzel', serif; font-size: 0.76rem; color: var(--text-main); background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 8px; display: inline-block; }
         .hp-bar-bg {
-            width: 100%; max-width: 480px; height: 26px; margin: 10px auto 0; background: rgba(58,36,24,0.9);
-            border-radius: 13px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+            width: 100%; max-width: 480px; height: 24px; margin: 10px auto 0; background: rgba(58,36,24,0.9);
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
         }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;
+            align-items: center; justify-content: center; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
             color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
         #status {
-            font-size: 0.85rem; margin: 12px auto 0; color: var(--text-main); max-width: 480px;
+            font-size: 0.78rem; margin: 12px auto 0; color: var(--text-main); max-width: 480px;
             background: rgba(0,0,0,0.6); padding: 9px 16px; border-radius: 10px; display: inline-block;
         }
 
@@ -238,9 +238,9 @@
         }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
         .rep-circle {
-            width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle, #5a3212, #2a1608); border: 2px solid var(--gold);
-            font-family: 'JetBrains Mono', monospace; font-size: 1.9rem; font-weight: bold; color: var(--gold);
+            font-family: 'JetBrains Mono', monospace; font-size: 1.75rem; font-weight: bold; color: var(--gold);
             box-shadow: 0 0 18px rgba(240,192,100,0.4);
         }
 
@@ -255,11 +255,11 @@
             border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .saving-text { font-size: 1rem; color: var(--text-main); max-width: 320px; }
-        .saving-subtext { font-size: 0.75rem; color: var(--text-dim); margin-top: 10px; }
+        .saving-text { font-size: 0.9rem; color: var(--text-main); max-width: 320px; }
+        .saving-subtext { font-size: 0.68rem; color: var(--text-dim); margin-top: 10px; }
 
         .retry-button {
-            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: 0.85rem;
+            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: 0.78rem;
             background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
         }
         .retry-button.active { display: inline-block; }
@@ -274,10 +274,10 @@
             background: var(--bg-card); border: 1px solid var(--accent); border-radius: 16px;
             padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto;
         }
-        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); font-size: 1.15rem; }
+        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); font-size: 1.05rem; }
         .overlay-box .btn { max-width: 320px; }
-        .overlay-box p { text-align: left; font-size: 0.78rem; line-height: 1.5; }
-        .countdown-number { font-size: 2.8rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .overlay-box p { text-align: left; font-size: 0.72rem; line-height: 1.5; }
+        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
 <body>
@@ -320,8 +320,8 @@
         <div class="path-container" id="dungeon-select-list"></div>
 
         <div id="free-training-content" style="display:none;">
-            <div class="free-card" onclick="startActivity('pushup', false)">🤸 Свободные отжимания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
-            <div class="free-card" onclick="startActivity('plank', false)">🧘 Свободная планка<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('pushup')">🤸 Свободные отжимания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('plank')">🧘 Свободная планка<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
         </div>
     </div>
 
@@ -362,7 +362,7 @@
             <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
             <div class="card" style="text-align:left;">
-                <div id="profile-next" style="font-size:0.75rem; color: var(--text-dim); margin-bottom:10px;">—</div>
+                <div id="profile-next" style="font-size:0.7rem; color: var(--text-dim); margin-bottom:10px;">—</div>
                 <div class="hp-bar-bg" style="height:14px; margin:0;">
                     <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent));"></div>
                 </div>
@@ -407,7 +407,7 @@
         <button class="back-button" onclick="showScreen('menu')">← Назад</button>
         <h2 style="margin-top:50px;">🎖 Достижения</h2>
         <div id="achievements-list"></div>
-        <p style="opacity: 0.5; font-size: 0.7rem;">(тестовые данные, подключим позже)</p>
+        <p style="opacity: 0.5; font-size: 0.65rem;">(тестовые данные, подключим позже)</p>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
@@ -457,7 +457,7 @@
         </div>
 
         <div class="section-label">Цель</div>
-        <p style="max-width:480px; margin: 0 auto 8px; text-align:left; font-size:0.75rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
+        <p style="max-width:480px; margin: 0 auto 8px; text-align:left; font-size:0.7rem; color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
         <div class="days-selector" id="days-selector">
             <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
             <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
@@ -482,7 +482,7 @@
     <div id="overlay-dungeon-complete" class="overlay-panel">
         <div class="overlay-box">
             <h3>Уровень пройден! 🎉</h3>
-            <p id="dungeon-complete-xp" style="text-align:center; font-size:1.05rem;">+0 XP</p>
+            <p id="dungeon-complete-xp" style="text-align:center; font-size:0.95rem;">+0 XP</p>
             <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
             <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
         </div>
@@ -495,6 +495,15 @@
             <p><strong>Планка:</strong> поставь телефон сбоку от себя так, чтобы было видно плечо, бедро, колено и стопу той стороны, что ближе к камере.</p>
             <p>Освещение должно быть достаточным, а фон — по возможности без лишних людей в кадре.</p>
             <button class="btn btn-primary" onclick="document.getElementById('overlay-instructions').classList.remove('active')">Понятно</button>
+        </div>
+    </div>
+
+    <!-- ===== ПОДСКАЗКА-РАЗМИНКА ПЕРЕД СТАРТОМ ===== -->
+    <div id="overlay-warmup-tip" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>🧘 Разомнись перед стартом</h3>
+            <p id="warmup-tip-text" style="text-align:center;">Совет</p>
+            <button class="btn btn-primary" onclick="proceedAfterWarmup()">Пропустить</button>
         </div>
     </div>
 
@@ -523,8 +532,6 @@
             document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
         }
 
-        // Принудительно выставляем ТОЧНУЮ высоту в пикселях для текущего экрана —
-        // так центрирование через flexbox работает надёжно, без зависимости от CSS-таймингов.
         function enforceScreenHeight(screenId) {
             const el = document.getElementById('screen-' + screenId);
             if (!el) return;
@@ -555,6 +562,52 @@
             if (idFromUrl) return idFromUrl;
             const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
             return tgUser ? tgUser.id : null;
+        }
+
+        // ===== ПОДСКАЗКИ-РАЗМИНКА =====
+
+        const PUSHUP_TIPS = [
+            "Разомни запястья и плечи круговыми движениями 15–20 секунд перед началом.",
+            "Сделай 10–15 неглубоких приседаний или лёгкий бег на месте, чтобы разогреть тело.",
+            "Держи спину прямой на всём протяжении движения, не прогибайся в пояснице.",
+            "Дыши равномерно: вдох на опускании, выдох на подъёме — не задерживай дыхание.",
+            "Если чувствуешь дискомфорт в запястьях — попробуй отжиматься на кулаках или с упорами.",
+            "Начинай с посильного темпа — лучше меньше повторений, но с правильной техникой."
+        ];
+
+        const PLANK_TIPS = [
+            "Разогрей плечи и корпус лёгкими наклонами и вращениями 20–30 секунд перед стартом.",
+            "Держи тело на одной прямой линии от плеч до пяток — не поднимай и не опускай таз.",
+            "Напряги мышцы кора и ягодиц — это снижает нагрузку на поясницу.",
+            "Дыши спокойно и равномерно, не задерживай дыхание во время удержания позиции.",
+            "Расслабь шею и смотри в пол перед собой, а не вперёд — так меньше нагрузка на шею.",
+            "Если почувствуешь боль в пояснице — прервись и в следующий раз сократи время."
+        ];
+
+        let warmupPendingAction = null;
+        let warmupTimeout = null;
+
+        function showWarmupTip(activityType, onProceed) {
+            warmupPendingAction = onProceed;
+            const tips = activityType === 'plank' ? PLANK_TIPS : PUSHUP_TIPS;
+            const tip = tips[Math.floor(Math.random() * tips.length)];
+            document.getElementById('warmup-tip-text').innerText = tip;
+            document.getElementById('overlay-warmup-tip').classList.add('active');
+
+            if (warmupTimeout) clearTimeout(warmupTimeout);
+            warmupTimeout = setTimeout(() => proceedAfterWarmup(), 5000);
+        }
+
+        function proceedAfterWarmup() {
+            if (warmupTimeout) { clearTimeout(warmupTimeout); warmupTimeout = null; }
+            document.getElementById('overlay-warmup-tip').classList.remove('active');
+            const action = warmupPendingAction;
+            warmupPendingAction = null;
+            if (action) action();
+        }
+
+        function beginFreeTraining(mode) {
+            showWarmupTip(mode, () => startActivity(mode, false));
         }
 
         // ===== ЗВУК И ВИБРАЦИЯ =====
@@ -991,7 +1044,11 @@
         let dungeonIsReplay = false;
         let dungeonPaused = false;
 
-        async function startDungeonActivity(activity, dungeonN) {
+        function startDungeonActivity(activity, dungeonN) {
+            showWarmupTip(activity, () => doStartDungeonActivity(activity, dungeonN));
+        }
+
+        async function doStartDungeonActivity(activity, dungeonN) {
             const userId = getUserId();
             try {
                 const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, { cache: 'no-store' });
@@ -1130,7 +1187,7 @@
             document.getElementById('overlay-dungeon-complete').classList.remove('active');
             const nextN = dungeonNumber + 1;
             dungeonPaused = false;
-            startDungeonActivity(dungeonActivityType, nextN);
+            doStartDungeonActivity(dungeonActivityType, nextN);
         }
 
         function finishDungeonSession() {
@@ -1401,7 +1458,7 @@
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА — ЯВНЫЙ ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ, БЕСКОНЕЧНЫЕ ПОПЫТКИ =====
+        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
 
         let saveAttempts = 0;
 
