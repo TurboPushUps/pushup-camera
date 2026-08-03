@@ -1410,10 +1410,15 @@
             skeletonCtx.restore();
         }
 
-        function startCameraIfNeeded() {
+function startCameraIfNeeded() {
             if (cameraStarted) return;
             cameraObj = new Camera(video, {
-                onFrame: async () => { await pose.send({ image: video }); },
+                onFrame: async () => {
+                    // Во время паузы между врагами экран полностью закрыт оверлеем —
+                    // не тратим процессор/батарею на распознавание позы впустую.
+                    if (dungeonPaused) return;
+                    await pose.send({ image: video });
+                },
                 width: 480, height: 640
             });
             cameraObj.start();
