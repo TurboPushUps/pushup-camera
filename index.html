@@ -148,6 +148,20 @@
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent-bright); }
 
+        /* ===== ГЛАВНОЕ МЕНЮ — ГОРИЗОНТАЛЬНЫЕ КНОПКИ ===== */
+        .menu-btn {
+            display: flex; align-items: center; gap: 16px; text-align: left;
+        }
+        .menu-btn-icon { font-size: 1.7rem; flex-shrink: 0; width: 1.9rem; text-align: center; }
+        .menu-btn-text { flex: 1; display: flex; flex-direction: column; }
+        .menu-btn-title { font-family: 'Cinzel', serif; font-size: 1.05rem; }
+        .menu-btn-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; font-family: 'EB Garamond', serif; }
+        .menu-btn-arrow { font-size: 1.5rem; color: var(--text-dim); flex-shrink: 0; }
+        .menu-btn.btn-primary .menu-btn-arrow { color: var(--accent-bright); }
+        .btn-primary.menu-btn {
+            box-shadow: 0 0 24px rgba(255,122,69,0.45), inset 0 0 14px rgba(255,122,69,0.12);
+        }
+
         /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
         .path-container { max-width: 480px; margin: 12px auto; }
         .path-node {
@@ -294,11 +308,50 @@
     <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
     <div id="screen-menu" class="screen center-content">
         <h1>⚔️ Pushup Tracker</h1>
-        <button class="btn btn-primary" onclick="showScreen('adventure')">🔥 Начать поход<small>Новый день. Новые победы.</small></button>
-        <button class="btn" onclick="showScreen('profile')">🛡️ Профиль<small>Твой путь. Твоя сила.</small></button>
-        <button class="btn" onclick="showScreen('leaderboard')">🏆 Таблица лидеров<small>Сравни силу. Стань лучшим.</small></button>
-        <button class="btn" onclick="showScreen('achievements')">🎖 Достижения<small>Твои награды. Твоя гордость.</small></button>
-        <button class="btn" onclick="showScreen('settings')">⚙️ Настройки</button>
+
+        <button class="btn btn-primary menu-btn" onclick="showScreen('adventure')">
+            <span class="menu-btn-icon">🔥</span>
+            <span class="menu-btn-text">
+                <span class="menu-btn-title">Начать поход</span>
+                <span class="menu-btn-sub">Новый день. Новые победы.</span>
+            </span>
+            <span class="menu-btn-arrow">›</span>
+        </button>
+
+        <button class="btn menu-btn" onclick="showScreen('profile')">
+            <span class="menu-btn-icon">🛡️</span>
+            <span class="menu-btn-text">
+                <span class="menu-btn-title">Профиль</span>
+                <span class="menu-btn-sub">Твой путь. Твоя сила.</span>
+            </span>
+            <span class="menu-btn-arrow">›</span>
+        </button>
+
+        <button class="btn menu-btn" onclick="showScreen('leaderboard')">
+            <span class="menu-btn-icon">🏆</span>
+            <span class="menu-btn-text">
+                <span class="menu-btn-title">Таблица лидеров</span>
+                <span class="menu-btn-sub">Сравни силу. Стань лучшим.</span>
+            </span>
+            <span class="menu-btn-arrow">›</span>
+        </button>
+
+        <button class="btn menu-btn" onclick="showScreen('achievements')">
+            <span class="menu-btn-icon">🎖</span>
+            <span class="menu-btn-text">
+                <span class="menu-btn-title">Достижения</span>
+                <span class="menu-btn-sub">Твои награды. Твоя гордость.</span>
+            </span>
+            <span class="menu-btn-arrow">›</span>
+        </button>
+
+        <button class="btn menu-btn" onclick="showScreen('settings')">
+            <span class="menu-btn-icon">⚙️</span>
+            <span class="menu-btn-text">
+                <span class="menu-btn-title">Настройки</span>
+            </span>
+            <span class="menu-btn-arrow">›</span>
+        </button>
     </div>
 
     <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД ===== -->
@@ -1409,12 +1462,22 @@
             skeletonCtx.restore();
         }
 
-function startCameraIfNeeded() {
+        function stopCameraCompletely() {
+            if (cameraObj) {
+                try { cameraObj.stop(); } catch (e) {}
+                cameraObj = null;
+            }
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            cameraStarted = false;
+        }
+
+        function startCameraIfNeeded() {
             if (cameraStarted) return;
             cameraObj = new Camera(video, {
                 onFrame: async () => {
-                    // Во время паузы между врагами экран полностью закрыт оверлеем —
-                    // не тратим процессор/батарею на распознавание позы впустую.
                     if (dungeonPaused) return;
                     await pose.send({ image: video });
                 },
@@ -1519,7 +1582,7 @@ function startCameraIfNeeded() {
             }
 
             if (success) {
-                if (cameraObj) { cameraObj.stop(); cameraStarted = false; }
+                stopCameraCompletely();
                 inDungeonMode = false;
                 currentMode = null;
                 hideSavingOverlay();
