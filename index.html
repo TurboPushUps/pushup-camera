@@ -165,26 +165,26 @@
         /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
         .path-container { max-width: 480px; margin: 12px auto; }
         .path-node {
-            display: flex; align-items: center; gap: 14px; padding: 16px; margin-bottom: 4px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
+            display: flex; align-items: center; gap: 16px; padding: 18px; margin-bottom: 6px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 14px;
         }
         .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(240,192,100,0.25); }
         .path-node.locked { opacity: 0.35; }
         .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,122,69,0.3); }
         .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
         .path-icon {
-            width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.2rem; background: #3a2418; border: 1px solid var(--border-main);
+            width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.7rem; background: #3a2418; border: 1px solid var(--border-main);
             flex-shrink: 0; overflow: hidden;
         }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
         .path-node.boss .path-icon { border-color: var(--gold); }
         .path-node.current .path-icon { border-color: var(--accent); }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Cinzel', serif; font-size: 0.78rem; color: var(--text-main); }
-        .path-info .subtitle { font-size: 0.58rem; color: var(--text-dim); margin-top: 3px; }
+        .path-info .title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
         .path-node button {
-            padding: 10px 14px; font-size: 0.66rem; background: var(--accent); color: #1a0a04;
+            padding: 12px 16px; font-size: 0.8rem; background: var(--accent); color: #1a0a04;
             border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
         }
         .path-node.locked button { background: #4a3020; color: #8a7060; }
@@ -223,22 +223,22 @@
             padding: 20px 16px 16px; background: linear-gradient(rgba(12,7,4,0.9), rgba(12,7,4,0));
         }
         .battle-header { max-width: 480px; margin: 0 auto; }
-        .monster-portrait {
-            width: 168px; height: 168px; border-radius: 50%; margin: 0 auto 12px;
+.monster-portrait {
+            width: 210px; height: 210px; border-radius: 50%; margin: 0 auto 14px;
             background: radial-gradient(circle, #4a2810, #200f06);
-            border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 4.6rem; box-shadow: 0 0 26px rgba(255,122,69,0.45); overflow: hidden;
+            border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center;
+            font-size: 5.6rem; box-shadow: 0 0 30px rgba(255,122,69,0.5); overflow: hidden;
         }
         .monster-portrait img { width: 100%; height: 100%; object-fit: cover; }
-        .monster-name { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--text-main); background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 10px; display: inline-block; }
+        .monster-name { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--text-main); background: rgba(0,0,0,0.65); padding: 10px 20px; border-radius: 12px; display: inline-block; }
         .hp-bar-bg {
-            width: 100%; max-width: 480px; height: 38px; margin: 12px auto 0; background: rgba(58,36,24,0.92);
-            border-radius: 18px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+            width: 100%; max-width: 480px; height: 48px; margin: 14px auto 0; background: rgba(58,36,24,0.92);
+            border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
         }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: 1rem; font-family: 'JetBrains Mono', monospace;
+            align-items: center; justify-content: center; font-size: 1.25rem; font-family: 'JetBrains Mono', monospace;
             color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-weight: bold;
         }
         #status {
@@ -1260,10 +1260,12 @@
         let currentMode = null;
         let cameraStarted = false;
         let cameraObj = null;
+        let keepAliveInterval = null;
 
         let pushupCount = 0;
         let stage = "up";
         let inPosition = false;
+        let lastRepTimestamp = 0;
 
         let plankSeconds = 0;
         let plankLastTimestamp = null;
@@ -1299,14 +1301,21 @@
             const elbow = landmarks[LEFT_ELBOW];
             const wrist = landmarks[LEFT_WRIST];
             const angle = calculateAngle(shoulder, elbow, wrist);
-            if (angle < 90) stage = "down";
-            if (angle > 160 && stage === "down") {
-                stage = "up";
-                pushupCount++;
-                counterEl.innerText = pushupCount;
-                playRepBeep();
-                vibrate('light');
-                if (inDungeonMode) applyDungeonDamage(1);
+
+            // Засчитываем повторение в НИЖНЕЙ точке, а не в верхней —
+            // так намного сложнее случайно засчитать простое поднятие рук.
+            if (angle > 150) stage = "up";
+            if (angle < 75 && stage === "up") {
+                const now = Date.now();
+                if (now - lastRepTimestamp > 500) {
+                    stage = "down";
+                    lastRepTimestamp = now;
+                    pushupCount++;
+                    counterEl.innerText = pushupCount;
+                    playRepBeep();
+                    vibrate('light');
+                    if (inDungeonMode) applyDungeonDamage(1);
+                }
             }
         }
 
@@ -1462,6 +1471,20 @@
             skeletonCtx.restore();
         }
 
+        function startKeepAlivePing() {
+            if (keepAliveInterval) return;
+            keepAliveInterval = setInterval(() => {
+                fetch(`${API_BASE}/`).catch(() => {});
+            }, 60000);
+        }
+
+        function stopKeepAlivePing() {
+            if (keepAliveInterval) {
+                clearInterval(keepAliveInterval);
+                keepAliveInterval = null;
+            }
+        }
+
         function stopCameraCompletely() {
             if (cameraObj) {
                 try { cameraObj.stop(); } catch (e) {}
@@ -1472,6 +1495,7 @@
                 video.srcObject = null;
             }
             cameraStarted = false;
+            stopKeepAlivePing();
         }
 
         function startCameraIfNeeded() {
@@ -1489,6 +1513,7 @@
 
         function startActivity(mode, isDungeon) {
             fetch(`${API_BASE}/`).catch(() => {});
+            startKeepAlivePing();
             applyTelegramViewportHeight();
 
             currentMode = mode;
