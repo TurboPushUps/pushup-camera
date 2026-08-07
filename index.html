@@ -8,22 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #1a100c;
-            --bg-card: #2b1c14;
-            --border-main: #6b4028;
-            --accent: #ff7a45;
-            --accent-bright: #ffa066;
-            --gold: #f0c064;
-            --text-main: #f5e6d3;
-            --text-dim: #c2a488;
-            --danger: #e0564a;
-            --success: #7bcf69;
+            --bg-main: #0F1115;
+            --bg-card: #181B22;
+            --border-main: #2A2F3A;
+            --accent: #F59E0B;
+            --accent-bright: #FBBF24;
+            --gold: #F59E0B;
+            --text-main: #F8FAFC;
+            --text-dim: #94A3B8;
+            --danger: #EF4444;
+            --success: #22C55E;
         }
 
-        html { font-size: 32px; height: 100%; }
+        html { font-size: 36px; height: 100%; }
         html, body {
             margin: 0; padding: 0; text-align: center;
-            background: radial-gradient(ellipse at top, #3a2318 0%, #180d08 70%);
+            background: radial-gradient(ellipse at top, #171a20 0%, #0F1115 70%);
             color: var(--text-main); font-family: 'EB Garamond', serif;
         }
         body {
@@ -34,7 +34,7 @@
         }
         body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: var(--tg-viewport-height, 100dvh); }
 
-        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 1px; margin: 0 0 18px; }
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--accent); letter-spacing: 1px; margin: 0 0 18px; }
         .mono { font-family: 'JetBrains Mono', monospace; }
 
         .screen {
@@ -55,38 +55,39 @@
             border: 1px solid var(--border-main); border-radius: 12px;
         }
         .btn-primary {
-            background: linear-gradient(#6a3618, #46230d);
+            background: var(--bg-card);
             color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
+            box-shadow: 0 0 10px rgba(245,158,11,0.18);
         }
         .btn small { display: block; font-size: 0.58rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
 
         .back-button {
             position: absolute; top: 18px; left: 16px; background: none; border: none;
-            color: var(--accent-bright); font-size: 1.25rem; z-index: 20; cursor: pointer;
+            color: var(--accent); font-size: 1.25rem; z-index: 20; cursor: pointer;
         }
 
         .card {
-            max-width: 480px; margin: 12px auto; padding: 18px 20px;
+            width: 100%; max-width: 480px; margin: 12px auto; padding: 18px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
         }
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
-            max-width: 480px; margin: 10px auto; padding: 16px 20px;
+            width: 100%; max-width: 480px; margin: 10px auto; padding: 16px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.9rem;
         }
         .stat-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-            max-width: 480px; margin: 12px auto;
+            width: 100%; max-width: 480px; margin: 12px auto;
         }
         .stat-box {
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
             padding: 14px 4px;
         }
-        .stat-box .value { font-size: 1.25rem; color: var(--gold); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .stat-box .value { font-size: 1.25rem; color: var(--text-main); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
         .stat-box .label { font-size: 0.56rem; color: var(--text-dim); margin-top: 5px; }
 
         .section-label {
-            text-align: left; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
+            text-align: left; width: 100%; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
             font-size: 0.64rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
         }
 
@@ -97,15 +98,15 @@
             font-size: 0.9rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
             color: var(--text-main); text-align: center; box-sizing: border-box;
         }
-        .nickname-error { color: #ff9999; font-size: 0.7rem; min-height: 24px; margin-bottom: 8px; }
+        .nickname-error { color: var(--danger); font-size: 0.7rem; min-height: 24px; margin-bottom: 8px; }
 
-        .tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 18px auto 12px; }
+        .tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 640px; margin: 18px auto 12px; }
         .tab-button {
             flex: 1; padding: 14px 4px; font-size: 0.74rem; font-family: 'Cinzel', serif; cursor: pointer;
             background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
         }
         .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
-        .sub-tab-row { display: flex; justify-content: center; gap: 8px; max-width: 480px; margin: 0 auto 18px; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 640px; margin: 0 auto 18px; }
         .sub-tab-button {
             flex: 1; padding: 10px; font-size: 0.66rem; background: transparent; color: var(--text-dim); cursor: pointer;
             border: 1px solid var(--border-main); border-radius: 10px;
@@ -113,13 +114,14 @@
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
         .leader-row {
-            display: flex; justify-content: space-between; align-items: center; max-width: 480px; margin: 8px auto;
-            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.8rem;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 640px; margin: 8px auto;
+            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
         }
-        .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; }
+        .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; flex-shrink: 0; }
+        .leader-row .mono { margin-left: 12px; flex-shrink: 0; }
 
         .achievement-row {
-            max-width: 480px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
+            width: 100%; max-width: 480px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
             border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.8rem;
         }
         .achievement-row.locked { opacity: 0.4; }
@@ -128,70 +130,73 @@
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #4a3020; border-radius: 32px; transition: 0.2s;
+            background: #2A2F3A; border-radius: 32px; transition: 0.2s;
         }
         .toggle-slider:before {
             position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px;
-            background: #a88968; border-radius: 50%; transition: 0.2s;
+            background: #94A3B8; border-radius: 50%; transition: 0.2s;
         }
         input:checked + .toggle-slider { background: var(--accent); }
         input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
 
         .settings-row-text { text-align: left; font-size: 0.8rem; }
         .settings-row-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 4px; }
-        .link-row { color: var(--accent-bright); font-size: 0.75rem; }
+        .link-row { color: var(--accent); font-size: 0.75rem; }
 
-        .days-selector { display: flex; gap: 6px; max-width: 480px; margin: 10px auto; }
+        .days-selector { display: flex; gap: 6px; width: 100%; max-width: 480px; margin: 10px auto; }
         .day-chip {
             flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
             border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 0.85rem;
         }
-        .day-chip.active { border-color: var(--accent); color: var(--accent-bright); }
+        .day-chip.active { border-color: var(--accent); color: var(--accent); }
 
-        /* ===== ГЛАВНОЕ МЕНЮ — ГОРИЗОНТАЛЬНЫЕ КНОПКИ ===== */
+        /* ===== ГЛАВНОЕ МЕНЮ ===== */
         .menu-btn {
             display: flex; align-items: center; gap: 16px; text-align: left;
         }
-        .menu-btn-icon { font-size: 1.7rem; flex-shrink: 0; width: 1.9rem; text-align: center; }
+        .menu-btn-icon {
+            font-size: 1.7rem; flex-shrink: 0; width: 1.9rem; text-align: center;
+            filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
+        }
         .menu-btn-text { flex: 1; display: flex; flex-direction: column; }
         .menu-btn-title { font-family: 'Cinzel', serif; font-size: 1.05rem; }
         .menu-btn-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; font-family: 'EB Garamond', serif; }
         .menu-btn-arrow { font-size: 1.5rem; color: var(--text-dim); flex-shrink: 0; }
-        .menu-btn.btn-primary .menu-btn-arrow { color: var(--accent-bright); }
-        .btn-primary.menu-btn {
-            box-shadow: 0 0 24px rgba(255,122,69,0.45), inset 0 0 14px rgba(255,122,69,0.12);
-        }
+        .menu-btn.btn-primary .menu-btn-arrow { color: var(--accent); }
 
         /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
-        .path-container { max-width: 684px; margin: 12px auto; }
+        .path-container { max-width: 484px; margin: 12px auto; }
         .path-node {
             display: flex; align-items: center; gap: 16px; padding: 18px; margin-bottom: 6px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 14px;
         }
-        .path-node.boss { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(240,192,100,0.25); }
+        .path-node.boss { border: 1px solid var(--accent); }
         .path-node.locked { opacity: 0.35; }
-        .path-node.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(255,122,69,0.3); }
+        .path-node.current { border: 1px solid var(--accent-bright); }
         .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
         .path-icon {
             width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.7rem; background: #3a2418; border: 1px solid var(--border-main);
+            justify-content: center; font-size: 1.7rem; background: #1f232c; border: 1px solid var(--border-main);
             flex-shrink: 0; overflow: hidden;
         }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .path-node.boss .path-icon { border-color: var(--gold); }
-        .path-node.current .path-icon { border-color: var(--accent); }
+        .path-icon:not(:has(img)) {
+            filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
+        }
+        .path-node.boss .path-icon { border-color: var(--accent); }
+        .path-node.current .path-icon { border-color: var(--accent-bright); }
         .path-info { flex: 1; text-align: left; }
         .path-info .title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--text-main); }
         .path-info .subtitle { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
         .path-node button {
-            padding: 12px 16px; font-size: 0.8rem; background: var(--accent); color: #1a0a04;
+            padding: 12px 16px; font-size: 0.8rem; background: var(--accent); color: #14100a;
             border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
         }
-        .path-node.locked button { background: #4a3020; color: #8a7060; }
+        .path-node.locked button { background: #2A2F3A; color: #6a7385; }
 
         .info-tip {
-            max-width: 684px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(255,122,69,0.12);
-            border: 1px solid var(--accent); border-radius: 10px; font-size: 0.7rem; text-align: left; display: none;
+            max-width: 480px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(245,158,11,0.08);
+            border: 1px solid var(--border-main); border-radius: 10px; font-size: 0.7rem; text-align: left; display: none;
         }
         .info-tip.active { display: block; }
 
@@ -220,19 +225,22 @@
 
         .hud-top {
             position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-            padding: 20px 16px 16px; background: linear-gradient(rgba(12,7,4,0.9), rgba(12,7,4,0));
+            padding: 20px 16px 16px; background: linear-gradient(rgba(8,9,12,0.9), rgba(8,9,12,0));
         }
         .battle-header { max-width: 480px; margin: 0 auto; }
-.monster-portrait {
+        .monster-portrait {
             width: 210px; height: 210px; border-radius: 50%; margin: 0 auto 14px;
-            background: radial-gradient(circle, #4a2810, #200f06);
-            border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 5.6rem; box-shadow: 0 0 30px rgba(255,122,69,0.5); overflow: hidden;
+            background: radial-gradient(circle, #232833, #14171d);
+            border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center;
+            font-size: 5.6rem; overflow: hidden;
         }
         .monster-portrait img { width: 100%; height: 100%; object-fit: cover; }
+        .monster-portrait:not(:has(img)) {
+            filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
+        }
         .monster-name { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--text-main); background: rgba(0,0,0,0.65); padding: 10px 20px; border-radius: 12px; display: inline-block; }
         .hp-bar-bg {
-            width: 100%; max-width: 480px; height: 48px; margin: 14px auto 0; background: rgba(58,36,24,0.92);
+            width: 100%; max-width: 480px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.92);
             border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
         }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
@@ -248,20 +256,19 @@
 
         .hud-bottom {
             position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-            padding: 14px 16px 26px; background: linear-gradient(rgba(12,7,4,0), rgba(12,7,4,0.94));
+            padding: 14px 16px 26px; background: linear-gradient(rgba(8,9,12,0), rgba(8,9,12,0.94));
         }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
         .rep-circle {
             width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, #5a3212, #2a1608); border: 2px solid var(--gold);
-            font-family: 'JetBrains Mono', monospace; font-size: 1.75rem; font-weight: bold; color: var(--gold);
-            box-shadow: 0 0 18px rgba(240,192,100,0.4);
+            background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
+            font-family: 'JetBrains Mono', monospace; font-size: 1.75rem; font-weight: bold; color: var(--text-main);
         }
 
         /* ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== */
         .saving-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000;
-            background: rgba(10,6,3,0.96); align-items: center; justify-content: center; flex-direction: column;
+            background: rgba(8,9,12,0.97); align-items: center; justify-content: center; flex-direction: column;
         }
         .saving-overlay.active { display: flex; }
         .saving-spinner {
@@ -280,17 +287,17 @@
 
         .overlay-panel {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10,6,3,0.94); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
+            background: rgba(8,9,12,0.95); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
             padding: 20px; box-sizing: border-box;
         }
         .overlay-panel.active { display: flex; }
         .overlay-box {
-            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 16px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 16px;
             padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto;
         }
-        .overlay-box h3 { margin-top: 0; color: var(--accent-bright); font-size: 1.05rem; }
+        .overlay-box h3 { margin-top: 0; color: var(--accent); font-size: 1.05rem; }
         .overlay-box .btn { max-width: 320px; }
-        .overlay-box p { text-align: left; font-size: 0.72rem; line-height: 1.5; }
+        .overlay-box p { text-align: left; font-size: 0.72rem; line-height: 1.5; color: var(--text-dim); }
         .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
@@ -417,7 +424,7 @@
             <div class="card" style="text-align:left;">
                 <div id="profile-next" style="font-size:0.7rem; color: var(--text-dim); margin-bottom:10px;">—</div>
                 <div class="hp-bar-bg" style="height:14px; margin:0;">
-                    <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--gold), var(--accent));"></div>
+                    <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent), var(--accent-bright));"></div>
                 </div>
             </div>
 
@@ -949,7 +956,7 @@
                     const row = document.createElement('div');
                     row.className = 'leader-row';
                     const displayValue = formatLeaderboardValue(user.value, lbActivity);
-                    row.innerHTML = `<span class="rank">${index + 1}</span><span style="flex:1; text-align:left; margin-left:8px;">${user.name}</span><span class="mono">${displayValue}</span>`;
+                    row.innerHTML = `<span class="rank">${index + 1}</span><span style="flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${user.name}</span><span class="mono">${displayValue}</span>`;
                     list.appendChild(row);
                 });
             } catch (error) {
@@ -1291,14 +1298,11 @@
             [RIGHT_SHOULDER, RIGHT_ELBOW], [RIGHT_ELBOW, RIGHT_WRIST],
             [LEFT_SHOULDER, RIGHT_SHOULDER]
         ];
+
         function checkPushupPosition(landmarks) {
             const armsVisible = PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
             if (!armsVisible) return false;
-
-            // Дополнительная точка опоры: тело должно быть вытянуто в прямую линию
-            // (плечо-бедро-колено), как в упоре лёжа — а не согнуто, как при сидении.
-            const bodyStraight = isPushupBodyStraight(landmarks);
-            return bodyStraight;
+            return isPushupBodyStraight(landmarks);
         }
 
         function isPushupBodyStraight(landmarks) {
@@ -1322,7 +1326,6 @@
             const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
             const rightAngle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_ELBOW], landmarks[RIGHT_WRIST]);
 
-            // Требуем синхронного движения ОБЕИХ рук — так одиночный взмах одной рукой не засчитается.
             const bothUp = leftAngle > 150 && rightAngle > 150;
             const bothDown = leftAngle < 75 && rightAngle < 75;
 
@@ -1382,7 +1385,7 @@
         }
 
         function drawPoints(landmarks, points, connections) {
-            skeletonCtx.strokeStyle = '#ffa066';
+            skeletonCtx.strokeStyle = '#F59E0B';
             skeletonCtx.lineWidth = 3;
             for (const [startIdx, endIdx] of connections) {
                 const start = landmarks[startIdx];
@@ -1392,7 +1395,7 @@
                 skeletonCtx.lineTo(end.x * skeletonCanvas.width, end.y * skeletonCanvas.height);
                 skeletonCtx.stroke();
             }
-            skeletonCtx.fillStyle = '#e0564a';
+            skeletonCtx.fillStyle = '#EF4444';
             for (const idx of points) {
                 const point = landmarks[idx];
                 skeletonCtx.beginPath();
