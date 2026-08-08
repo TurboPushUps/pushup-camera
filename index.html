@@ -5,7 +5,7 @@
     <title>Pushup Tracker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:wght@500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-main: #0F1115;
@@ -24,7 +24,7 @@
         html, body {
             margin: 0; padding: 0; text-align: center;
             background: radial-gradient(ellipse at top, #171a20 0%, #0F1115 70%);
-            color: var(--text-main); font-family: 'EB Garamond', serif;
+            color: var(--text-main); font-family: 'Inter', sans-serif;
         }
         body {
             height: 100dvh;
@@ -34,8 +34,8 @@
         }
         body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: var(--tg-viewport-height, 100dvh); }
 
-        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--accent); letter-spacing: 1px; margin: 0 0 18px; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
+        h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(--accent); letter-spacing: 0.3px; margin: 0 0 18px; }
+        .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; }
 
         .screen {
             display: none; padding: 22px 16px 60px;
@@ -50,20 +50,20 @@
 
         .btn {
             display: block; width: 100%; max-width: 684px; margin: 14px auto; padding: 27px;
-            font-size: 1.05rem; font-family: 'Cinzel', serif; cursor: pointer;
+            font-size: 1.05rem; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
             background: var(--bg-card); color: var(--text-main);
             border: 1px solid var(--border-main); border-radius: 12px;
         }
         .btn-primary {
             background: var(--bg-card);
-            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: bold;
+            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: 700;
             box-shadow: 0 0 10px rgba(245,158,11,0.18);
         }
-        .btn small { display: block; font-size: 0.58rem; color: var(--text-dim); font-family: 'EB Garamond', serif; margin-top: 5px; font-weight: normal; }
+        .btn small { display: block; font-size: 0.58rem; color: var(--text-dim); font-family: 'Inter', sans-serif; font-weight: 500; margin-top: 5px; }
 
         .back-button {
             position: absolute; top: 18px; left: 16px; background: none; border: none;
-            color: var(--accent); font-size: 1.25rem; z-index: 20; cursor: pointer;
+            color: var(--accent); font-size: 1.25rem; z-index: 20; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600;
         }
 
         .card {
@@ -83,39 +83,39 @@
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
             padding: 14px 4px;
         }
-        .stat-box .value { font-size: 1.25rem; color: var(--text-main); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-        .stat-box .label { font-size: 0.56rem; color: var(--text-dim); margin-top: 5px; }
+        .stat-box .value { font-size: 1.25rem; color: var(--text-main); font-weight: 700; }
+        .stat-box .label { font-size: 0.56rem; color: var(--text-dim); margin-top: 5px; font-weight: 500; }
 
         .section-label {
             text-align: left; width: 100%; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
-            font-size: 0.64rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase;
+            font-size: 0.64rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; font-weight: 600;
         }
 
         .loading { opacity: 0.7; font-size: 0.75rem; margin: 16px; }
 
         .nickname-input {
             display: block; width: 100%; max-width: 380px; margin: 22px auto; padding: 18px;
-            font-size: 0.9rem; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
+            font-size: 0.9rem; font-family: 'Inter', sans-serif; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
             color: var(--text-main); text-align: center; box-sizing: border-box;
         }
         .nickname-error { color: var(--danger); font-size: 0.7rem; min-height: 24px; margin-bottom: 8px; }
 
-        .tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 640px; margin: 18px auto 12px; }
+        .tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 684px; margin: 18px auto 12px; }
         .tab-button {
-            flex: 1; padding: 14px 4px; font-size: 0.74rem; font-family: 'Cinzel', serif; cursor: pointer;
+            flex: 1; padding: 14px 4px; font-size: 0.74rem; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
             background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
         }
-        .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: bold; border: none; }
-        .sub-tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 640px; margin: 0 auto 18px; }
+        .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: 700; border: none; }
+        .sub-tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 684px; margin: 0 auto 18px; }
         .sub-tab-button {
-            flex: 1; padding: 10px; font-size: 0.66rem; background: transparent; color: var(--text-dim); cursor: pointer;
+            flex: 1; padding: 10px; font-size: 0.66rem; font-family: 'Inter', sans-serif; font-weight: 600; background: transparent; color: var(--text-dim); cursor: pointer;
             border: 1px solid var(--border-main); border-radius: 10px;
         }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
         .leader-row {
-            display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 640px; margin: 8px auto;
-            padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 684px; margin: 8px auto;
+            padding: 14px 4px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
         }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; flex-shrink: 0; }
         .leader-row .mono { margin-left: 12px; flex-shrink: 0; }
@@ -139,14 +139,14 @@
         input:checked + .toggle-slider { background: var(--accent); }
         input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
 
-        .settings-row-text { text-align: left; font-size: 0.8rem; }
+        .settings-row-text { text-align: left; font-size: 0.8rem; font-weight: 500; }
         .settings-row-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 4px; }
-        .link-row { color: var(--accent); font-size: 0.75rem; }
+        .link-row { color: var(--accent); font-size: 0.75rem; font-weight: 600; }
 
         .days-selector { display: flex; gap: 6px; width: 100%; max-width: 480px; margin: 10px auto; }
         .day-chip {
             flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 10px; color: var(--text-main); font-family: 'JetBrains Mono', monospace; cursor: pointer; font-size: 0.85rem;
+            border-radius: 10px; color: var(--text-main); font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer; font-size: 0.85rem;
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent); }
 
@@ -159,8 +159,8 @@
             filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
         }
         .menu-btn-text { flex: 1; display: flex; flex-direction: column; }
-        .menu-btn-title { font-family: 'Cinzel', serif; font-size: 1.05rem; }
-        .menu-btn-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; font-family: 'EB Garamond', serif; }
+        .menu-btn-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.05rem; }
+        .menu-btn-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
         .menu-btn-arrow { font-size: 1.5rem; color: var(--text-dim); flex-shrink: 0; }
         .menu-btn.btn-primary .menu-btn-arrow { color: var(--accent); }
 
@@ -186,11 +186,11 @@
         .path-node.boss .path-icon { border-color: var(--accent); }
         .path-node.current .path-icon { border-color: var(--accent-bright); }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--text-main); }
-        .path-info .subtitle { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
+        .path-info .title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; font-weight: 500; }
         .path-node button {
             padding: 12px 16px; font-size: 0.8rem; background: var(--accent); color: #14100a;
-            border: none; border-radius: 8px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer;
+            border: none; border-radius: 8px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer;
         }
         .path-node.locked button { background: #2A2F3A; color: #6a7385; }
 
@@ -201,9 +201,9 @@
         .info-tip.active { display: block; }
 
         .free-card {
-            max-width: 480px; margin: 14px auto; padding: 22px; background: var(--bg-card);
+            max-width: 684px; margin: 14px auto; padding: 22px; background: var(--bg-card);
             border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: 0.9rem;
-            font-family: 'Cinzel', serif; color: var(--text-main);
+            font-family: 'Inter', sans-serif; font-weight: 600; color: var(--text-main);
         }
         .free-card:active { border-color: var(--accent); }
 
@@ -238,7 +238,7 @@
         .monster-portrait:not(:has(img)) {
             filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
         }
-        .monster-name { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--text-main); background: rgba(0,0,0,0.65); padding: 10px 20px; border-radius: 12px; display: inline-block; }
+        .monster-name { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-main); background: rgba(0,0,0,0.65); padding: 10px 20px; border-radius: 12px; display: inline-block; }
         .hp-bar-bg {
             width: 100%; max-width: 480px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.92);
             border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
@@ -246,12 +246,12 @@
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: 1.25rem; font-family: 'JetBrains Mono', monospace;
-            color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-weight: bold;
+            align-items: center; justify-content: center; font-size: 1.25rem; font-family: 'Inter', sans-serif; font-weight: 700;
+            color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums;
         }
         #status {
             font-size: 0.85rem; margin: 14px auto 0; color: var(--text-main); max-width: 480px;
-            background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 10px; display: inline-block;
+            background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 10px; display: inline-block; font-weight: 500;
         }
 
         .hud-bottom {
@@ -262,7 +262,7 @@
         .rep-circle {
             width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
-            font-family: 'JetBrains Mono', monospace; font-size: 1.75rem; font-weight: bold; color: var(--text-main);
+            font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--text-main); font-variant-numeric: tabular-nums;
         }
 
         /* ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== */
@@ -276,11 +276,11 @@
             border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .saving-text { font-size: 0.9rem; color: var(--text-main); max-width: 320px; }
+        .saving-text { font-size: 0.9rem; color: var(--text-main); max-width: 320px; font-weight: 600; }
         .saving-subtext { font-size: 0.68rem; color: var(--text-dim); margin-top: 10px; }
 
         .retry-button {
-            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: 0.78rem;
+            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: 0.78rem; font-family: 'Inter', sans-serif; font-weight: 600;
             background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
         }
         .retry-button.active { display: inline-block; }
@@ -298,7 +298,7 @@
         .overlay-box h3 { margin-top: 0; color: var(--accent); font-size: 1.05rem; }
         .overlay-box .btn { max-width: 320px; }
         .overlay-box p { text-align: left; font-size: 0.72rem; line-height: 1.5; color: var(--text-dim); }
-        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
