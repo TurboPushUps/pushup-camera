@@ -38,13 +38,13 @@
         .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; }
 
         .screen {
-            display: none; padding: 22px 16px 60px;
+            display: none; padding: 22px 16px 120px;
             min-height: 100dvh;
             min-height: var(--tg-viewport-height, 100dvh);
             box-sizing: border-box; position: relative;
         }
         .screen.active { display: block; }
-        .screen.center-content.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .screen.center-content.active { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 60px; }
 
         h1 { font-size: 1.8rem; } h2 { font-size: 1.45rem; }
 
@@ -113,16 +113,22 @@
         }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
+        #leaderboard-list, #achievements-list {
+            width: 100%; max-width: 684px; margin: 0 auto;
+        }
+
         .leader-row {
-            display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 684px; margin: 8px auto;
-            padding: 14px 4px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 8px auto;
+            padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: 0.85rem;
+            box-sizing: border-box;
         }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; flex-shrink: 0; }
         .leader-row .mono { margin-left: 12px; flex-shrink: 0; }
 
         .achievement-row {
-            width: 100%; max-width: 480px; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
+            width: 100%; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
             border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: 0.8rem;
+            box-sizing: border-box;
         }
         .achievement-row.locked { opacity: 0.4; }
 
@@ -150,19 +156,23 @@
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent); }
 
-        /* ===== ГЛАВНОЕ МЕНЮ ===== */
-        .menu-btn {
-            display: flex; align-items: center; gap: 16px; text-align: left;
+        /* ===== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ===== */
+        .bottom-nav {
+            display: none;
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+            background: var(--bg-card); border-top: 1px solid var(--border-main);
+            padding: 12px 6px calc(12px + env(safe-area-inset-bottom, 0px));
+            justify-content: space-around; align-items: center;
         }
-        .menu-btn-icon {
-            font-size: 1.7rem; flex-shrink: 0; width: 1.9rem; text-align: center;
-            filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
+        .bottom-nav.active { display: flex; }
+        .bottom-nav-item {
+            background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: 0.42rem; font-weight: 600; cursor: pointer;
+            padding: 4px 2px; flex: 1;
         }
-        .menu-btn-text { flex: 1; display: flex; flex-direction: column; }
-        .menu-btn-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.05rem; }
-        .menu-btn-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 5px; font-family: 'Inter', sans-serif; font-weight: 500; }
-        .menu-btn-arrow { font-size: 1.5rem; color: var(--text-dim); flex-shrink: 0; }
-        .menu-btn.btn-primary .menu-btn-arrow { color: var(--accent); }
+        .bottom-nav-icon { font-size: 1.15rem; filter: grayscale(1) brightness(1.6); }
+        .bottom-nav-item.active { color: var(--accent); }
+        .bottom-nav-item.active .bottom-nav-icon { filter: none; }
 
         /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
         .path-container { max-width: 684px; margin: 12px auto; }
@@ -177,11 +187,16 @@
         .path-icon {
             width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center;
             justify-content: center; font-size: 1.7rem; background: #1f232c; border: 1px solid var(--border-main);
-            flex-shrink: 0; overflow: hidden;
+            flex-shrink: 0; overflow: hidden; position: relative;
         }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
         .path-icon:not(:has(img)) {
             filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
+        }
+        .boss-badge {
+            position: absolute; top: -4px; left: -4px; background: var(--accent);
+            border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.5rem; border: 1px solid var(--bg-card); filter: none; z-index: 2;
         }
         .path-node.boss .path-icon { border-color: var(--accent); }
         .path-node.current .path-icon { border-color: var(--accent-bright); }
@@ -312,53 +327,10 @@
         <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-    <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
+    <!-- ===== ГЛАВНОЕ МЕНЮ (домашняя вкладка, навигация — снизу) ===== -->
     <div id="screen-menu" class="screen center-content">
         <h1>⚔️ Pushup Tracker</h1>
-
-        <button class="btn btn-primary menu-btn" onclick="showScreen('adventure')">
-            <span class="menu-btn-icon">🔥</span>
-            <span class="menu-btn-text">
-                <span class="menu-btn-title">Начать поход</span>
-                <span class="menu-btn-sub">Новый день. Новые победы.</span>
-            </span>
-            <span class="menu-btn-arrow">›</span>
-        </button>
-
-        <button class="btn menu-btn" onclick="showScreen('profile')">
-            <span class="menu-btn-icon">🛡️</span>
-            <span class="menu-btn-text">
-                <span class="menu-btn-title">Профиль</span>
-                <span class="menu-btn-sub">Твой путь. Твоя сила.</span>
-            </span>
-            <span class="menu-btn-arrow">›</span>
-        </button>
-
-        <button class="btn menu-btn" onclick="showScreen('leaderboard')">
-            <span class="menu-btn-icon">🏆</span>
-            <span class="menu-btn-text">
-                <span class="menu-btn-title">Таблица лидеров</span>
-                <span class="menu-btn-sub">Сравни силу. Стань лучшим.</span>
-            </span>
-            <span class="menu-btn-arrow">›</span>
-        </button>
-
-        <button class="btn menu-btn" onclick="showScreen('achievements')">
-            <span class="menu-btn-icon">🎖</span>
-            <span class="menu-btn-text">
-                <span class="menu-btn-title">Достижения</span>
-                <span class="menu-btn-sub">Твои награды. Твоя гордость.</span>
-            </span>
-            <span class="menu-btn-arrow">›</span>
-        </button>
-
-        <button class="btn menu-btn" onclick="showScreen('settings')">
-            <span class="menu-btn-icon">⚙️</span>
-            <span class="menu-btn-text">
-                <span class="menu-btn-title">Настройки</span>
-            </span>
-            <span class="menu-btn-arrow">›</span>
-        </button>
+        <p style="color: var(--text-dim); font-size: 0.8rem;">Выбери раздел на панели снизу</p>
     </div>
 
     <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД ===== -->
@@ -575,6 +547,30 @@
         <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сейчас</button>
     </div>
 
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ===== -->
+    <div class="bottom-nav" id="bottom-nav">
+        <button class="bottom-nav-item" data-screen="adventure" onclick="showScreen('adventure')">
+            <span class="bottom-nav-icon">🗺️</span>
+            <span class="bottom-nav-label">Поход</span>
+        </button>
+        <button class="bottom-nav-item" data-screen="profile" onclick="showScreen('profile')">
+            <span class="bottom-nav-icon">👤</span>
+            <span class="bottom-nav-label">Профиль</span>
+        </button>
+        <button class="bottom-nav-item" data-screen="leaderboard" onclick="showScreen('leaderboard')">
+            <span class="bottom-nav-icon">🏆</span>
+            <span class="bottom-nav-label">Лидеры</span>
+        </button>
+        <button class="bottom-nav-item" data-screen="achievements" onclick="showScreen('achievements')">
+            <span class="bottom-nav-icon">🎖️</span>
+            <span class="bottom-nav-label">Достижения</span>
+        </button>
+        <button class="bottom-nav-item" data-screen="settings" onclick="showScreen('settings')">
+            <span class="bottom-nav-icon">⚙️</span>
+            <span class="bottom-nav-label">Настройки</span>
+        </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
@@ -599,6 +595,19 @@
             el.style.minHeight = h + 'px';
         }
 
+        function updateBottomNav(name) {
+            const nav = document.getElementById('bottom-nav');
+            const hideOn = ['activity', 'register'];
+            if (hideOn.includes(name)) {
+                nav.classList.remove('active');
+                return;
+            }
+            nav.classList.add('active');
+            document.querySelectorAll('.bottom-nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.screen === name);
+            });
+        }
+
         function showScreen(name) {
             applyTelegramViewportHeight();
             document.body.classList.toggle('no-scroll', name === 'activity');
@@ -610,6 +619,8 @@
             if (name === 'achievements') loadAchievementsMock();
             if (name === 'settings') renderSettingsScreen();
             if (name === 'adventure') switchAdventureTab(currentAdventureTab);
+
+            updateBottomNav(name);
 
             enforceScreenHeight(name);
             requestAnimationFrame(() => enforceScreenHeight(name));
@@ -1074,10 +1085,12 @@
                     list.appendChild(connector);
                 }
 
+                const bossBadge = (zone.isBoss && status !== 'locked') ? `<span class="boss-badge">👑</span>` : '';
+
                 const node = document.createElement('div');
                 node.className = 'path-node' + (zone.isBoss ? ' boss' : '') + (status === 'current' ? ' current' : '') + (status === 'locked' ? ' locked' : '');
                 node.innerHTML = `
-                    <div class="path-icon">${status === 'locked' ? '🔒' : monsterVisualHtml(zone)}</div>
+                    <div class="path-icon">${status === 'locked' ? '🔒' : monsterVisualHtml(zone)}${bossBadge}</div>
                     <div class="path-info">
                         <div class="title">${zone.name}</div>
                         <div class="subtitle">${subtitle}</div>
