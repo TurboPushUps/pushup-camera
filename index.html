@@ -19,7 +19,6 @@
             --danger: #EF4444;
             --success: #22C55E;
 
-            /* ===== ТОЛЬКО ТРИ РАЗМЕРА ШРИФТА ВО ВСЁМ ПРИЛОЖЕНИИ ===== */
             --fs-heading: 1.5rem;
             --fs-body: 1rem;
             --fs-caption: 0.75rem;
@@ -65,17 +64,19 @@
         .btn small { display: block; font-size: var(--fs-caption); color: var(--text-dim); font-family: 'Inter', sans-serif; font-weight: 500; margin-top: 5px; }
 
         .card {
-            width: 100%; max-width: 480px; margin: 12px auto; padding: 18px 20px;
+            width: 100%; max-width: 684px; margin: 12px auto; padding: 18px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
+            box-sizing: border-box;
         }
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
-            width: 100%; max-width: 480px; margin: 10px auto; padding: 16px 20px;
+            width: 100%; max-width: 684px; margin: 10px auto; padding: 16px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body);
+            box-sizing: border-box;
         }
         .stat-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-            width: 100%; max-width: 480px; margin: 12px auto;
+            width: 100%; max-width: 684px; margin: 12px auto;
         }
         .stat-box {
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
@@ -85,7 +86,7 @@
         .stat-box .label { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 5px; font-weight: 500; }
 
         .section-label {
-            text-align: left; width: 100%; max-width: 480px; margin: 20px auto 8px; padding: 0 6px;
+            text-align: left; width: 100%; max-width: 684px; margin: 20px auto 8px; padding: 0 6px;
             font-size: var(--fs-caption); letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; font-weight: 600;
         }
 
@@ -147,7 +148,7 @@
         .settings-row-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
         .link-row { color: var(--accent); font-size: var(--fs-caption); font-weight: 600; }
 
-        .days-selector { display: flex; gap: 6px; width: 100%; max-width: 480px; margin: 10px auto; }
+        .days-selector { display: flex; gap: 6px; width: 100%; max-width: 684px; margin: 10px auto; }
         .day-chip {
             flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
             border-radius: 10px; color: var(--text-main); font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer; font-size: var(--fs-body);
@@ -282,6 +283,7 @@
         .saving-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000;
             background: rgba(8,9,12,0.97); align-items: center; justify-content: center; flex-direction: column;
+            padding: 0 20px; box-sizing: border-box;
         }
         .saving-overlay.active { display: flex; }
         .saving-spinner {
@@ -289,8 +291,8 @@
             border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .saving-text { font-size: var(--fs-body); color: var(--text-main); max-width: 320px; font-weight: 600; }
-        .saving-subtext { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; }
+        .saving-text { font-size: var(--fs-body); color: var(--text-main); max-width: 90vw; white-space: nowrap; font-weight: 600; }
+        .saving-subtext { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; white-space: nowrap; }
 
         .retry-button {
             display: none; margin: 14px auto 0; padding: 16px 26px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 600;
@@ -327,7 +329,7 @@
 
     <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД (стартовый) ===== -->
     <div id="screen-adventure" class="screen">
-        <h2 style="margin-top:20px;">Начать поход</h2>
+        <h2 style="margin-top:20px;">Карта приключений</h2>
 
         <div class="tab-row">
             <button class="tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">🤸 Отжимания</button>
@@ -380,12 +382,12 @@
     <div id="screen-profile" class="screen center-content">
         <h2>🛡️ Профиль</h2>
         <div id="profile-loading" class="loading">Загрузка...</div>
-        <div id="profile-content" style="display: none;">
+        <div id="profile-content" style="display: none; width: 100%;">
             <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
             <div class="card" style="text-align:left;">
                 <div id="profile-next" style="font-size:var(--fs-caption); color: var(--text-dim); margin-bottom:10px;">—</div>
-                <div class="hp-bar-bg" style="height:14px; margin:0;">
+                <div class="hp-bar-bg" style="height:14px; margin:0; max-width: 100%;">
                     <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent), var(--accent-bright));"></div>
                 </div>
             </div>
@@ -476,7 +478,7 @@
         </div>
 
         <div class="section-label">Цель</div>
-        <p style="max-width:480px; margin: 0 auto 8px; text-align:left; font-size:var(--fs-caption); color: var(--text-dim); padding:0 6px;">Дней тренировок в неделю</p>
+        <p style="max-width:684px; width: 100%; margin: 0 auto 8px; text-align:left; font-size:var(--fs-caption); color: var(--text-dim); padding:0 6px; box-sizing: border-box;">Дней тренировок в неделю</p>
         <div class="days-selector" id="days-selector">
             <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
             <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
@@ -1273,6 +1275,7 @@
         let stage = "up";
         let inPosition = false;
         let lastRepTimestamp = 0;
+        let shoulderYAtUp = null;
 
         let plankSeconds = 0;
         let plankLastTimestamp = null;
@@ -1327,15 +1330,27 @@
             return false;
         }
 
+        // Защита от "фейковых" отжиманий: требуем, чтобы плечи РЕАЛЬНО сместились
+        // между верхней и нижней точкой — просто сгибание руки в локте сидя на месте это условие не пройдёт.
+        const MIN_SHOULDER_MOVEMENT = 0.02;
+
         function countPushups(landmarks) {
             const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
             const rightAngle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_ELBOW], landmarks[RIGHT_WRIST]);
+            const shoulderY = (landmarks[LEFT_SHOULDER].y + landmarks[RIGHT_SHOULDER].y) / 2;
 
             const bothUp = leftAngle > 150 && rightAngle > 150;
             const bothDown = leftAngle < 75 && rightAngle < 75;
 
-            if (bothUp) stage = "up";
+            if (bothUp) {
+                stage = "up";
+                shoulderYAtUp = shoulderY;
+            }
+
             if (bothDown && stage === "up") {
+                const bodyMoved = shoulderYAtUp === null || Math.abs(shoulderY - shoulderYAtUp) >= MIN_SHOULDER_MOVEMENT;
+                if (!bodyMoved) return; // похоже на имитацию — плечи не сдвинулись, не считаем
+
                 const now = Date.now();
                 if (now - lastRepTimestamp > 500) {
                     stage = "down";
@@ -1549,6 +1564,7 @@
             currentMode = mode;
             pushupCount = 0;
             stage = "up";
+            shoulderYAtUp = null;
             plankSeconds = 0;
             plankLastTimestamp = null;
             lastPlankMinuteMarked = 0;
