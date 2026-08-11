@@ -166,11 +166,11 @@
         }
         .bottom-nav.active { display: flex; }
         .bottom-nav-item {
-            background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
-            color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: 0.42rem; font-weight: 600; cursor: pointer;
-            padding: 4px 2px; flex: 1;
+            background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 600; cursor: pointer;
+            padding: 6px 2px; flex: 1;
         }
-        .bottom-nav-icon { font-size: 1.15rem; filter: grayscale(1) brightness(1.6); }
+        .bottom-nav-icon { font-size: 1.5rem; filter: grayscale(1) brightness(1.6); }
         .bottom-nav-item.active { color: var(--accent); }
         .bottom-nav-item.active .bottom-nav-icon { filter: none; }
 
@@ -327,16 +327,9 @@
         <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-    <!-- ===== ГЛАВНОЕ МЕНЮ (домашняя вкладка, навигация — снизу) ===== -->
-    <div id="screen-menu" class="screen center-content">
-        <h1>⚔️ Pushup Tracker</h1>
-        <p style="color: var(--text-dim); font-size: 0.8rem;">Выбери раздел на панели снизу</p>
-    </div>
-
     <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД ===== -->
     <div id="screen-adventure" class="screen">
-        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
-        <h2 style="margin-top:50px;">Начать поход</h2>
+        <h2 style="margin-top:20px;">Начать поход</h2>
 
         <div class="tab-row">
             <button class="tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">🤸 Отжимания</button>
@@ -387,7 +380,7 @@
 
     <!-- ===== ПРОФИЛЬ ===== -->
     <div id="screen-profile" class="screen center-content">
-        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <button class="back-button" onclick="showScreen('adventure')">← Назад</button>
         <h2>🛡️ Профиль</h2>
         <div id="profile-loading" class="loading">Загрузка...</div>
         <div id="profile-content" style="display: none;">
@@ -420,7 +413,7 @@
 
     <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen center-content">
-        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <button class="back-button" onclick="showScreen('adventure')">← Назад</button>
         <h2>🏆 Таблица лидеров</h2>
         <div class="tab-row">
             <button class="tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">🤸 Отжимания</button>
@@ -436,7 +429,7 @@
 
     <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <div id="screen-achievements" class="screen center-content">
-        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <button class="back-button" onclick="showScreen('adventure')">← Назад</button>
         <h2>🎖 Достижения</h2>
         <div id="achievements-list"></div>
         <p style="opacity: 0.5; font-size: 0.65rem;">(тестовые данные, подключим позже)</p>
@@ -444,7 +437,7 @@
 
     <!-- ===== НАСТРОЙКИ ===== -->
     <div id="screen-settings" class="screen center-content">
-        <button class="back-button" onclick="showScreen('menu')">← Назад</button>
+        <button class="back-button" onclick="showScreen('adventure')">← Назад</button>
         <h1>⚙️ Настройки</h1>
 
         <div class="section-label">Звук и вибрация</div>
@@ -803,7 +796,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`, { cache: 'no-store' });
                 const data = await response.json();
-                if (data.has_nickname) showScreen('menu');
+                if (data.has_nickname) showScreen('adventure');
                 else document.getElementById('screen-register').classList.add('active');
             } catch (error) {
                 document.getElementById('screen-register').classList.add('active');
@@ -827,7 +820,7 @@
                     body: JSON.stringify({ user_id: userId, nickname: nickname })
                 });
                 const data = await response.json();
-                if (data.success) showScreen('menu');
+                if (data.success) showScreen('adventure');
                 else errorEl.innerText = data.error || "Не удалось сохранить имя";
             } catch (error) {
                 errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз.";
@@ -1315,6 +1308,13 @@
         function checkPushupPosition(landmarks) {
             const armsVisible = PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
             if (!armsVisible) return false;
+
+            // Проверяем прямоту тела ТОЛЬКО если бёдра/колени реально видны в кадре
+            // (обычно их не видно при стандартной установке камеры — тогда не блокируем счёт).
+            const leftHipVisible = landmarks[LEFT_HIP].visibility > 0.5 && landmarks[LEFT_KNEE].visibility > 0.5;
+            const rightHipVisible = landmarks[RIGHT_HIP].visibility > 0.5 && landmarks[RIGHT_KNEE].visibility > 0.5;
+            if (!leftHipVisible && !rightHipVisible) return true;
+
             return isPushupBodyStraight(landmarks);
         }
 
@@ -1649,7 +1649,7 @@
                 inDungeonMode = false;
                 currentMode = null;
                 hideSavingOverlay();
-                showScreen('menu');
+                showScreen('adventure');
                 return;
             }
 
