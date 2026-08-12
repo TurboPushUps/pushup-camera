@@ -5,30 +5,46 @@
     <title>Pushup Tracker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-main: #0F1115;
-            --bg-card: #181B22;
-            --border-main: #2A2F3A;
+            --bg-card: #1A1E24;
+            --border-main: rgba(245, 245, 247, 0.12);
             --accent: #F59E0B;
             --accent-bright: #FBBF24;
-            --gold: #F59E0B;
             --text-main: #F8FAFC;
-            --text-dim: #94A3B8;
+            --text-dim: #A1A7B3;
             --danger: #EF4444;
             --success: #22C55E;
 
             --fs-heading: 1.5rem;
             --fs-body: 1rem;
             --fs-caption: 0.75rem;
+
+            --block-gap: 24px;
+        }
+
+        html[data-theme="light"] {
+            --bg-main: #FFFFFF;
+            --bg-card: #F6F7F9;
+            --border-main: #E5E7EB;
+            --accent: #F59E0B;
+            --accent-bright: #D97706;
+            --text-main: #0F1115;
+            --text-dim: #6B7280;
+            --danger: #EF4444;
+            --success: #16A34A;
         }
 
         html { font-size: 36px; height: 100%; }
         html, body {
             margin: 0; padding: 0; text-align: center;
-            background: radial-gradient(ellipse at top, #171a20 0%, #0F1115 70%);
+            background: var(--bg-main);
             color: var(--text-main); font-family: 'Inter', sans-serif;
+        }
+        html[data-theme="dark"] body, html:not([data-theme]) body {
+            background: radial-gradient(ellipse at top, #171a20 0%, #0F1115 70%);
         }
         body {
             height: 100dvh;
@@ -38,8 +54,8 @@
         }
         body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: var(--tg-viewport-height, 100dvh); }
 
-        h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 700; color: var(--accent); letter-spacing: 0.3px; margin: 0 0 18px; font-size: var(--fs-heading); }
-        .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 700; font-size: var(--fs-body); }
+        h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--accent); letter-spacing: 0.3px; margin: 0 0 18px; font-size: var(--fs-heading); }
+        .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--fs-body); }
 
         .screen {
             display: none; padding: 22px 16px 120px;
@@ -51,43 +67,44 @@
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 40px; }
 
         .btn {
-            display: block; width: 100%; max-width: 684px; margin: 14px auto; padding: 27px;
-            font-size: var(--fs-body); font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
+            display: block; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 27px;
+            font-size: var(--fs-body); font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer;
             background: var(--bg-card); color: var(--text-main);
-            border: 1px solid var(--border-main); border-radius: 12px;
+            border: 1px solid var(--border-main); border-radius: 12px; box-sizing: border-box;
         }
         .btn-primary {
             background: var(--bg-card);
-            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: 700;
+            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: 600;
             box-shadow: 0 0 10px rgba(245,158,11,0.18);
         }
         .btn small { display: block; font-size: var(--fs-caption); color: var(--text-dim); font-family: 'Inter', sans-serif; font-weight: 500; margin-top: 5px; }
 
         .card {
-            width: 100%; max-width: 684px; margin: 12px auto; padding: 18px 20px;
+            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 18px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
             box-sizing: border-box;
         }
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
-            width: 100%; max-width: 684px; margin: 10px auto; padding: 16px 20px;
+            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 16px 20px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body);
             box-sizing: border-box;
         }
         .stat-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-            width: 100%; max-width: 684px; margin: 12px auto;
+            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap);
         }
         .stat-box {
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
             padding: 14px 4px;
         }
-        .stat-box .value { font-size: var(--fs-body); color: var(--text-main); font-weight: 700; }
+        .stat-box .value { font-size: var(--fs-body); color: var(--text-main); font-weight: 600; }
         .stat-box .label { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 5px; font-weight: 500; }
 
         .section-label {
-            text-align: left; width: 100%; max-width: 684px; margin: 20px auto 8px; padding: 0 6px;
+            text-align: left; width: 100%; max-width: 784px; margin: var(--block-gap) auto 8px; padding: 0 6px;
             font-size: var(--fs-caption); letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; font-weight: 600;
+            box-sizing: border-box;
         }
 
         .loading { opacity: 0.7; font-size: var(--fs-caption); margin: 16px; }
@@ -99,25 +116,29 @@
         }
         .nickname-error { color: var(--danger); font-size: var(--fs-caption); min-height: 24px; margin-bottom: 8px; }
 
-        .tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 684px; margin: 18px auto 12px; }
-        .tab-button {
-            flex: 1; padding: 14px 4px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
-            background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
+        .tab-row {
+            display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 784px;
+            margin: 0 auto var(--block-gap);
         }
-        .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: 700; border: none; }
-        .sub-tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 684px; margin: 0 auto 18px; }
+        .tab-button {
+            flex: 1; padding: 14px 4px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer;
+            background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
+            box-sizing: border-box;
+        }
+        .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: 600; border: 1px solid var(--accent); }
+        .sub-tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); }
         .sub-tab-button {
-            flex: 1; padding: 10px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 600; background: transparent; color: var(--text-dim); cursor: pointer;
-            border: 1px solid var(--border-main); border-radius: 10px;
+            flex: 1; padding: 10px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 500; background: transparent; color: var(--text-dim); cursor: pointer;
+            border: 1px solid var(--border-main); border-radius: 10px; box-sizing: border-box;
         }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
         #leaderboard-list, #achievements-list {
-            width: 100%; max-width: 684px; margin: 0 auto;
+            width: 100%; max-width: 784px; margin: 0 auto;
         }
 
         .leader-row {
-            display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 8px auto;
+            display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0 auto 8px;
             padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body);
             box-sizing: border-box;
         }
@@ -125,7 +146,7 @@
         .leader-row .mono { margin-left: 12px; flex-shrink: 0; }
 
         .achievement-row {
-            width: 100%; margin: 10px auto; padding: 14px 18px; background: var(--bg-card);
+            width: 100%; margin: 0 auto 10px; padding: 14px 18px; background: var(--bg-card);
             border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: var(--fs-body);
             box-sizing: border-box;
         }
@@ -135,11 +156,11 @@
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .toggle-slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: #2A2F3A; border-radius: 32px; transition: 0.2s;
+            background: var(--border-main); border-radius: 32px; transition: 0.2s;
         }
         .toggle-slider:before {
             position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px;
-            background: #94A3B8; border-radius: 50%; transition: 0.2s;
+            background: var(--text-dim); border-radius: 50%; transition: 0.2s;
         }
         input:checked + .toggle-slider { background: var(--accent); }
         input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
@@ -148,10 +169,11 @@
         .settings-row-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
         .link-row { color: var(--accent); font-size: var(--fs-caption); font-weight: 600; }
 
-        .days-selector { display: flex; gap: 6px; width: 100%; max-width: 684px; margin: 10px auto; }
+        .days-selector { display: flex; gap: 6px; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); }
         .day-chip {
             flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 10px; color: var(--text-main); font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer; font-size: var(--fs-body);
+            border-radius: 10px; color: var(--text-main); font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer; font-size: var(--fs-body);
+            box-sizing: border-box;
         }
         .day-chip.active { border-color: var(--accent); color: var(--accent); }
 
@@ -160,21 +182,21 @@
             display: none;
             position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
             background: var(--bg-card); border-top: 1px solid var(--border-main);
-            padding: 12px 6px calc(12px + env(safe-area-inset-bottom, 0px));
+            padding: 18px 6px calc(18px + env(safe-area-inset-bottom, 0px));
             justify-content: space-around; align-items: center;
         }
         .bottom-nav.active { display: flex; }
         .bottom-nav-item {
-            background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 5px;
-            color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: var(--fs-caption); font-weight: 600; cursor: pointer;
+            background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: calc(var(--fs-caption) * 1.15); font-weight: 500; cursor: pointer;
             padding: 6px 2px; flex: 1;
         }
-        .bottom-nav-icon { font-size: 1.5rem; filter: grayscale(1) brightness(1.6); }
+        .bottom-nav-icon { font-size: 2.2rem; filter: grayscale(1) brightness(1.6); }
         .bottom-nav-item.active { color: var(--accent); }
-        .bottom-nav-item.active .bottom-nav-icon { filter: none; }
+        .bottom-nav-item.active .bottom-nav-icon { filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95); }
 
         /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
-        .path-container { max-width: 684px; margin: 12px auto; }
+        .path-container { max-width: 784px; margin: 0 auto; }
         .path-node {
             display: flex; align-items: center; gap: 16px; padding: 18px; margin-bottom: 6px;
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 14px;
@@ -185,7 +207,7 @@
         .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
         .path-icon {
             width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.7rem; background: #1f232c; border: 1px solid var(--border-main);
+            justify-content: center; font-size: 1.7rem; background: var(--bg-main); border: 1px solid var(--border-main);
             flex-shrink: 0; overflow: hidden; position: relative;
         }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
@@ -200,24 +222,25 @@
         .path-node.boss .path-icon { border-color: var(--accent); }
         .path-node.current .path-icon { border-color: var(--accent-bright); }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: var(--fs-body); color: var(--text-main); }
+        .path-info .title { font-family: 'Inter', sans-serif; font-weight: 600; font-size: var(--fs-body); color: var(--text-main); }
         .path-info .subtitle { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; font-weight: 500; }
         .path-node button {
             padding: 12px 16px; font-size: var(--fs-caption); background: var(--accent); color: #14100a;
-            border: none; border-radius: 8px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer;
+            border: none; border-radius: 8px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer;
         }
-        .path-node.locked button { background: #2A2F3A; color: #6a7385; }
+        .path-node.locked button { background: var(--border-main); color: var(--text-dim); }
 
         .info-tip {
-            max-width: 684px; margin: 0 auto 14px; padding: 14px 16px; background: rgba(245,158,11,0.08);
+            max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 16px; background: rgba(245,158,11,0.08);
             border: 1px solid var(--border-main); border-radius: 10px; font-size: var(--fs-caption); text-align: left; display: none;
+            box-sizing: border-box;
         }
         .info-tip.active { display: block; }
 
         .free-card {
-            max-width: 684px; margin: 14px auto; padding: 22px; background: var(--bg-card);
+            max-width: 784px; margin: 0 auto var(--block-gap); padding: 22px; background: var(--bg-card);
             border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: var(--fs-body);
-            font-family: 'Inter', sans-serif; font-weight: 600; color: var(--text-main);
+            font-family: 'Inter', sans-serif; font-weight: 500; color: var(--text-main); box-sizing: border-box;
         }
         .free-card:active { border-color: var(--accent); }
 
@@ -239,33 +262,39 @@
 
         .hud-top {
             position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-            padding: 20px 16px 16px; background: linear-gradient(rgba(8,9,12,0.9), rgba(8,9,12,0));
+            padding: 20px 16px 16px; background: linear-gradient(rgba(8,9,12,0.5), rgba(8,9,12,0));
         }
-        .battle-header { max-width: 480px; margin: 0 auto; }
+        .battle-header { max-width: 784px; margin: 0 auto; }
         .monster-portrait {
-            width: 210px; height: 210px; border-radius: 50%; margin: 0 auto 14px;
-            background: radial-gradient(circle, #232833, #14171d);
+            width: 420px; height: 420px; max-width: 80vw; max-height: 80vw;
+            border-radius: 50%; margin: 0 auto 14px;
+            background: radial-gradient(circle, rgba(35,40,51,0.3), rgba(20,23,29,0.3));
             border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 5.6rem; overflow: hidden;
+            font-size: 9rem; overflow: hidden;
         }
-        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; }
+        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
         .monster-portrait:not(:has(img)) {
             filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
         }
-        .monster-name { font-family: 'Inter', sans-serif; font-weight: 700; font-size: var(--fs-body); color: var(--text-main); background: rgba(0,0,0,0.65); padding: 10px 20px; border-radius: 12px; display: inline-block; }
+        .monster-name {
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: var(--fs-body); color: var(--text-main);
+            background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px;
+            display: block; width: 100%; max-width: 784px; margin: 0 auto; box-sizing: border-box;
+        }
         .hp-bar-bg {
-            width: 100%; max-width: 480px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.92);
-            border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative;
+            width: 100%; max-width: 784px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.3);
+            border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative; box-sizing: border-box;
         }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: var(--fs-body); font-family: 'Inter', sans-serif; font-weight: 700;
+            align-items: center; justify-content: center; font-size: var(--fs-body); font-family: 'Inter', sans-serif; font-weight: 600;
             color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums;
         }
         #status {
-            font-size: var(--fs-caption); margin: 14px auto 0; color: var(--text-main); max-width: 480px;
-            background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 10px; display: inline-block; font-weight: 500;
+            font-size: var(--fs-caption); margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%;
+            background: rgba(0,0,0,0.3); padding: 10px 18px; border-radius: 10px; display: block; font-weight: 500;
+            box-sizing: border-box;
         }
 
         .hud-bottom {
@@ -276,7 +305,7 @@
         .rep-circle {
             width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
-            font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--text-main); font-variant-numeric: tabular-nums;
+            font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums;
         }
 
         /* ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== */
@@ -291,11 +320,11 @@
             border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .saving-text { font-size: var(--fs-body); color: var(--text-main); max-width: 90vw; white-space: nowrap; font-weight: 600; }
+        .saving-text { font-size: var(--fs-body); color: var(--text-main); max-width: 90vw; white-space: nowrap; font-weight: 500; }
         .saving-subtext { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; white-space: nowrap; }
 
         .retry-button {
-            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 600;
+            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 500;
             background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
         }
         .retry-button.active { display: inline-block; }
@@ -310,10 +339,16 @@
             background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 16px;
             padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto;
         }
+        .overlay-box.overlay-box-large {
+            max-width: 630px; padding: 48px 36px;
+        }
+        .overlay-box.overlay-box-large h3 { font-size: 2.1rem; }
+        .overlay-box.overlay-box-large p { font-size: 1.1rem; }
+        .overlay-box.overlay-box-large .btn { padding: 34px; font-size: 1.2rem; }
         .overlay-box h3 { margin-top: 0; color: var(--accent); }
         .overlay-box .btn { max-width: 320px; }
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
-        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 700; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; }
+        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
@@ -332,9 +367,9 @@
         <h2 style="margin-top:20px;">Карта приключений</h2>
 
         <div class="tab-row">
-            <button class="tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">🤸 Отжимания</button>
-            <button class="tab-button" id="adv-tab-plank" onclick="switchAdventureTab('plank')">🧘 Планка</button>
-            <button class="tab-button" id="adv-tab-free" onclick="switchAdventureTab('free')">🏋️ Свободная</button>
+            <button class="tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">Отжимания</button>
+            <button class="tab-button" id="adv-tab-plank" onclick="switchAdventureTab('plank')">Планка</button>
+            <button class="tab-button" id="adv-tab-free" onclick="switchAdventureTab('free')">Свободная</button>
         </div>
 
         <div class="info-tip" id="camera-tip">
@@ -387,7 +422,7 @@
             <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
             <div class="card" style="text-align:left;">
                 <div id="profile-next" style="font-size:var(--fs-caption); color: var(--text-dim); margin-bottom:10px;">—</div>
-                <div class="hp-bar-bg" style="height:14px; margin:0; max-width: 100%;">
+                <div class="hp-bar-bg" style="height:14px; margin:0; max-width: 100%; background: rgba(24,27,34,0.92);">
                     <div class="hp-bar-fill" id="profile-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--accent), var(--accent-bright));"></div>
                 </div>
             </div>
@@ -436,6 +471,15 @@
     <div id="screen-settings" class="screen center-content">
         <h1>⚙️ Настройки</h1>
 
+        <div class="section-label" style="margin-top:0;">Оформление</div>
+        <div class="stat-row">
+            <span class="settings-row-text">☀️ Светлая тема</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-checkbox" onchange="toggleTheme()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
         <div class="section-label">Звук и вибрация</div>
         <div class="stat-row">
             <span class="settings-row-text">🔊 Звуковые сигналы</span>
@@ -478,7 +522,7 @@
         </div>
 
         <div class="section-label">Цель</div>
-        <p style="max-width:684px; width: 100%; margin: 0 auto 8px; text-align:left; font-size:var(--fs-caption); color: var(--text-dim); padding:0 6px; box-sizing: border-box;">Дней тренировок в неделю</p>
+        <p style="max-width:784px; width: 100%; margin: 0 auto 8px; text-align:left; font-size:var(--fs-caption); color: var(--text-dim); padding:0 6px; box-sizing: border-box;">Дней тренировок в неделю</p>
         <div class="days-selector" id="days-selector">
             <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
             <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
@@ -501,9 +545,9 @@
     </div>
 
     <div id="overlay-dungeon-complete" class="overlay-panel">
-        <div class="overlay-box">
+        <div class="overlay-box overlay-box-large">
             <h3>Уровень пройден! 🎉</h3>
-            <p id="dungeon-complete-xp" style="text-align:center; font-size:var(--fs-body);">+0 XP</p>
+            <p id="dungeon-complete-xp" style="text-align:center; font-size:1.1rem;">+0 XP</p>
             <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
             <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
         </div>
@@ -528,6 +572,14 @@
         </div>
     </div>
 
+    <!-- ===== ЗАГРУЗКА ПОДЗЕМЕЛЬЯ ===== -->
+    <div id="overlay-dungeon-loading" class="overlay-panel">
+        <div class="overlay-box">
+            <div class="saving-spinner" style="margin: 0 auto 20px;"></div>
+            <h3 style="margin-bottom:0;">Загружаем подземелье...</h3>
+        </div>
+    </div>
+
     <!-- ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== -->
     <div id="saving-overlay" class="saving-overlay">
         <div class="saving-spinner"></div>
@@ -539,7 +591,7 @@
     <!-- ===== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ===== -->
     <div class="bottom-nav" id="bottom-nav">
         <button class="bottom-nav-item" data-screen="adventure" onclick="showScreen('adventure')">
-            <span class="bottom-nav-icon">🗺️</span>
+            <span class="bottom-nav-icon">🧭</span>
             <span class="bottom-nav-label">Поход</span>
         </button>
         <button class="bottom-nav-item" data-screen="profile" onclick="showScreen('profile')">
@@ -566,6 +618,40 @@
 
     <script>
         const API_BASE = "https://pushup-bot-server.onrender.com";
+
+        // ===== ТЕМА =====
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            const checkbox = document.getElementById('theme-checkbox');
+            if (checkbox) checkbox.checked = (currentTheme === 'light');
+        }
+        function toggleTheme() {
+            currentTheme = document.getElementById('theme-checkbox').checked ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+        applyTheme();
+
+        // ===== ОБЩИЙ ХЕЛПЕР ДЛЯ ЗАПРОСОВ С ТАЙМАУТОМ И БЫСТРЫМ ПОВТОРОМ =====
+        async function fetchJsonWithRetry(url, options = {}, { timeoutMs = 12000, retries = 1, retryDelay = 300 } = {}) {
+            let lastError;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                    const res = await fetch(url, { ...options, signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    if (!res.ok) throw new Error('Bad response status');
+                    return await res.json();
+                } catch (e) {
+                    lastError = e;
+                    if (attempt < retries) await new Promise(r => setTimeout(r, retryDelay));
+                }
+            }
+            throw lastError;
+        }
 
         function getViewportPx() {
             const tgApp = window.Telegram.WebApp;
@@ -623,7 +709,7 @@
             return tgUser ? tgUser.id : null;
         }
 
-        // ===== ПОДСКАЗКИ-РАЗМИНКА =====
+        // ===== ПОДСКАЗКИ-РАЗМИНКА (один раз за сессию на каждый вид активности) =====
 
         const PUSHUP_TIPS = [
             "Разомни запястья и плечи круговыми движениями 15–20 секунд перед началом.",
@@ -645,8 +731,14 @@
 
         let warmupPendingAction = null;
         let warmupTimeout = null;
+        const warmupShownForActivity = { pushup: false, plank: false };
 
         function showWarmupTip(activityType, onProceed) {
+            if (warmupShownForActivity[activityType]) {
+                onProceed();
+                return;
+            }
+            warmupShownForActivity[activityType] = true;
             warmupPendingAction = onProceed;
             const tips = activityType === 'plank' ? PLANK_TIPS : PUSHUP_TIPS;
             const tip = tips[Math.floor(Math.random() * tips.length)];
@@ -730,6 +822,7 @@
             document.getElementById('vibration-checkbox').checked = vibrationEnabled;
             document.getElementById('camera-tip-checkbox').checked = cameraTipEnabled;
             document.getElementById('assault-checkbox').checked = assaultModeEnabled;
+            document.getElementById('theme-checkbox').checked = (currentTheme === 'light');
             document.querySelectorAll('.day-chip').forEach(chip => {
                 chip.classList.toggle('active', parseInt(chip.dataset.days) === weeklyGoal);
             });
@@ -790,8 +883,7 @@
                 return;
             }
             try {
-                const response = await fetch(`${API_BASE}/api/user_status?user_id=${userId}`, { cache: 'no-store' });
-                const data = await response.json();
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?user_id=${userId}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
                 if (data.has_nickname) showScreen('adventure');
                 else document.getElementById('screen-register').classList.add('active');
             } catch (error) {
@@ -859,8 +951,7 @@
             if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
 
             try {
-                const response = await fetch(`${API_BASE}/api/profile?user_id=${userId}`, { cache: 'no-store' });
-                const data = await response.json();
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
                 profileDataCache = data;
                 loadingEl.style.display = 'none';
                 contentEl.style.display = 'block';
@@ -940,8 +1031,7 @@
             loading.style.display = 'block';
 
             try {
-                const response = await fetch(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, { cache: 'no-store' });
-                const data = await response.json();
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
                 if (requestId !== leaderboardRequestId) return;
 
                 loading.style.display = 'none';
@@ -1038,8 +1128,7 @@
 
             const userId = getUserId();
             try {
-                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, { cache: 'no-store' });
-                const data = await response.json();
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
                 renderZoneList(activity, data.current_dungeon, data.max_dungeon);
             } catch (error) {
                 document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список приключений.";
@@ -1110,10 +1199,10 @@
         }
 
         async function doStartDungeonActivity(activity, dungeonN) {
+            document.getElementById('overlay-dungeon-loading').classList.add('active');
             const userId = getUserId();
             try {
-                const response = await fetch(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, { cache: 'no-store' });
-                const data = await response.json();
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, { cache: 'no-store' }, { timeoutMs: 20000, retries: 1 });
 
                 inDungeonMode = true;
                 dungeonJustWon = false;
@@ -1130,8 +1219,10 @@
                 updateMonsterPortrait();
                 updateDungeonHUD();
 
+                document.getElementById('overlay-dungeon-loading').classList.remove('active');
                 startActivity(activity, true);
             } catch (error) {
+                document.getElementById('overlay-dungeon-loading').classList.remove('active');
                 alert("Не удалось загрузить приключение. Попробуйте позже.");
             }
         }
@@ -1219,9 +1310,10 @@
 
             while (true) {
                 attempt++;
+                const timeoutMs = Math.min(15000 + (attempt - 1) * 10000, 45000);
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
                     const response = await fetch(`${API_BASE}/api/dungeon_complete`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1239,7 +1331,7 @@
                     console.error(`Попытка ${attempt} завершения подземелья не удалась:`, error);
                     document.getElementById('dungeon-complete-xp').innerText =
                         `Сохраняем награду... (попытка ${attempt}) ⏳`;
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 }
             }
         }
@@ -1330,8 +1422,6 @@
             return false;
         }
 
-        // Защита от "фейковых" отжиманий: требуем, чтобы плечи РЕАЛЬНО сместились
-        // между верхней и нижней точкой — просто сгибание руки в локте сидя на месте это условие не пройдёт.
         const MIN_SHOULDER_MOVEMENT = 0.02;
 
         function countPushups(landmarks) {
@@ -1349,7 +1439,7 @@
 
             if (bothDown && stage === "up") {
                 const bodyMoved = shoulderYAtUp === null || Math.abs(shoulderY - shoulderYAtUp) >= MIN_SHOULDER_MOVEMENT;
-                if (!bodyMoved) return; // похоже на имитацию — плечи не сдвинулись, не считаем
+                if (!bodyMoved) return;
 
                 const now = Date.now();
                 if (now - lastRepTimestamp > 500) {
@@ -1623,10 +1713,11 @@
             );
 
             let success = false;
+            const timeoutMs = Math.min(15000 + saveAttempts * 10000, 45000);
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 20000);
+                const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
                 if (userId && mode === 'pushup' && pushupCount > 0) {
                     const response = await fetch(`${API_BASE}/api/save_pushups`, {
@@ -1667,7 +1758,7 @@
                 `Не удалось сохранить, пробуем снова...`,
                 `Попытка ${saveAttempts}`
             );
-            setTimeout(() => attemptSave(true), 2000);
+            setTimeout(() => attemptSave(true), 500);
         }
 
         function retrySave() {
