@@ -266,13 +266,20 @@
         }
         .battle-header { max-width: 784px; margin: 0 auto; }
         .monster-portrait {
-            width: 420px; height: 420px; max-width: 80vw; max-height: 80vw;
+            width: 240px; height: 240px; max-width: 55vw; max-height: 55vw;
             border-radius: 50%; margin: 0 auto 14px;
             background: radial-gradient(circle, rgba(35,40,51,0.3), rgba(20,23,29,0.3));
             border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 9rem; overflow: hidden;
+            font-size: 5rem; overflow: hidden; transition: transform 0.1s;
         }
-        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
+        .monster-portrait.hit-shake { animation: hitShake 0.25s; }
+        @keyframes hitShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px) rotate(-2deg); }
+            50% { transform: translateX(5px) rotate(2deg); }
+            75% { transform: translateX(-3px); }
+        }
         .monster-portrait:not(:has(img)) {
             filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
         }
@@ -292,7 +299,7 @@
             color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums;
         }
         #status {
-            font-size: var(--fs-caption); margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%;
+            font-size: var(--fs-body); margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%;
             background: rgba(0,0,0,0.3); padding: 10px 18px; border-radius: 10px; display: block; font-weight: 500;
             box-sizing: border-box;
         }
@@ -585,7 +592,7 @@
         <div class="saving-spinner"></div>
         <div class="saving-text" id="saving-text">Сохраняем результат...</div>
         <div class="saving-subtext" id="saving-subtext"></div>
-        <button id="retryBtn" class="retry-button" onclick="retrySave()">Повторить сейчас</button>
+        <button id="retryBtn" class="retry-button" onclick="retrySave()">Попробовать сохранить снова</button>
     </div>
 
     <!-- ===== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ===== -->
@@ -794,7 +801,30 @@
             } catch (e) { console.error("Ошибка звука:", e); }
         }
 
-        function playRepBeep() { playBeep(700, 70, 'square', 0.12); }
+        function playHitSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctxA = getAudioCtx();
+                const osc = ctxA.createOscillator();
+                const gain = ctxA.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, ctxA.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(60, ctxA.currentTime + 0.09);
+                osc.connect(gain);
+                gain.connect(ctxA.destination);
+                gain.gain.setValueAtTime(0.35, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.12);
+                osc.start();
+                osc.stop(ctxA.currentTime + 0.12);
+            } catch (e) {}
+        }
+
+        function triggerHitShake() {
+            const portrait = document.getElementById('monster-portrait');
+            portrait.classList.remove('hit-shake');
+            void portrait.offsetWidth; // перезапуск анимации
+            portrait.classList.add('hit-shake');
+        }
         function playMinuteBeep() { playBeep(880, 200); }
         function playVictorySound() {
             playBeep(660, 150);
@@ -1423,6 +1453,7 @@
         }
 
         const MIN_SHOULDER_MOVEMENT = 0.02;
+        let expectedShoulderDirection = null; // +1 = вниз по кадру, -1 = вверх, определяется первым повторением
 
         function countPushups(landmarks) {
             const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
@@ -1438,8 +1469,16 @@
             }
 
             if (bothDown && stage === "up") {
-                const bodyMoved = shoulderYAtUp === null || Math.abs(shoulderY - shoulderYAtUp) >= MIN_SHOULDER_MOVEMENT;
+                const delta = shoulderYAtUp === null ? 0 : (shoulderY - shoulderYAtUp);
+                const bodyMoved = Math.abs(delta) >= MIN_SHOULDER_MOVEMENT;
                 if (!bodyMoved) return;
+
+                const direction = delta > 0 ? 1 : -1;
+                if (expectedShoulderDirection === null) {
+                    expectedShoulderDirection = direction; // фиксируем направление по первому повторению
+                } else if (direction !== expectedShoulderDirection) {
+                    return; // движение в обратную сторону — не засчитываем
+                }
 
                 const now = Date.now();
                 if (now - lastRepTimestamp > 500) {
@@ -1447,7 +1486,8 @@
                     lastRepTimestamp = now;
                     pushupCount++;
                     counterEl.innerText = pushupCount;
-                    playRepBeep();
+                    playHitSound();
+                    triggerHitShake();
                     vibrate('light');
                     if (inDungeonMode) applyDungeonDamage(1);
                 }
@@ -1655,6 +1695,7 @@
             pushupCount = 0;
             stage = "up";
             shoulderYAtUp = null;
+            expectedShoulderDirection = null;
             plankSeconds = 0;
             plankLastTimestamp = null;
             lastPlankMinuteMarked = 0;
@@ -1755,8 +1796,8 @@
             saveAttempts++;
             document.getElementById('retryBtn').classList.add('active');
             showSavingOverlay(
-                `Не удалось сохранить, пробуем снова...`,
-                `Попытка ${saveAttempts}`
+                `Соединение медленное — продолжаем пытаться сохранить`,
+                `Попытка ${saveAttempts}. Можно подождать или нажать кнопку ниже, чтобы попробовать прямо сейчас`
             );
             setTimeout(() => attemptSave(true), 500);
         }
