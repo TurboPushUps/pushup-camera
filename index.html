@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Pushup Hero</title>
+    <title>PushUp Hero</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
@@ -26,142 +26,72 @@
         }
 
         html[data-theme="light"] {
-            --bg-main: #FFFFFF;
-            --bg-card: #F6F7F9;
-            --border-main: #E5E7EB;
-            --accent: #F59E0B;
-            --accent-bright: #D97706;
-            --text-main: #0F1115;
-            --text-dim: #6B7280;
-            --danger: #EF4444;
-            --success: #16A34A;
+            --bg-main: #FFFFFF; --bg-card: #F6F7F9; --border-main: #E5E7EB;
+            --accent: #F59E0B; --accent-bright: #D97706;
+            --text-main: #0F1115; --text-dim: #6B7280;
+            --danger: #EF4444; --success: #16A34A;
         }
 
         html { font-size: 36px; height: 100%; }
-        html, body {
-            margin: 0; padding: 0; text-align: center;
-            background: var(--bg-main);
-            color: var(--text-main); font-family: 'Inter', sans-serif;
-        }
-        html[data-theme="dark"] body, html:not([data-theme]) body {
-            background: radial-gradient(ellipse at top, #171a20 0%, #0F1115 70%);
-        }
-        body {
-            height: 100dvh;
-            min-height: var(--tg-viewport-height, 100dvh);
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
+        html, body { margin: 0; padding: 0; text-align: center; background: var(--bg-main); color: var(--text-main); font-family: 'Inter', sans-serif; }
+        html[data-theme="dark"] body, html:not([data-theme]) body { background: radial-gradient(ellipse at top, #171a20 0%, #0F1115 70%); }
+        body { height: 100dvh; min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; overflow-y: auto; }
         body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: var(--tg-viewport-height, 100dvh); }
 
         h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--accent); letter-spacing: 0.3px; margin: 0 0 18px; font-size: var(--fs-heading); }
         .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--fs-body); }
 
-        .screen {
-            display: none; padding: 22px 16px 120px;
-            min-height: 100dvh;
-            min-height: var(--tg-viewport-height, 100dvh);
-            box-sizing: border-box; position: relative;
-        }
+        .screen { display: none; padding: 22px 16px 120px; min-height: 100dvh; min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; position: relative; }
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 40px; }
 
         .btn {
             display: block; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 27px;
             font-size: var(--fs-body); font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer;
-            background: var(--bg-card); color: var(--text-main);
-            border: 1px solid var(--border-main); border-radius: 12px; box-sizing: border-box;
+            background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 12px; box-sizing: border-box;
         }
-        .btn-primary {
-            background: var(--bg-card);
-            color: var(--accent-bright); border: 1px solid var(--accent); font-weight: 600;
-            box-shadow: 0 0 10px rgba(245,158,11,0.18);
-        }
-        .btn small { display: block; font-size: var(--fs-caption); color: var(--text-dim); font-family: 'Inter', sans-serif; font-weight: 500; margin-top: 5px; }
+        .btn-primary { background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); font-weight: 600; box-shadow: 0 0 10px rgba(245,158,11,0.18); }
+        .btn:disabled { opacity: 0.45; cursor: default; }
+        .btn small { display: block; font-size: var(--fs-caption); color: var(--text-dim); font-weight: 500; margin-top: 5px; }
 
-        .card {
-            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 18px 20px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
-            box-sizing: border-box;
-        }
+        .card { width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 18px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; box-sizing: border-box; }
         .stat-row {
             display: flex; justify-content: space-between; align-items: center;
             width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 16px 20px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body);
-            box-sizing: border-box;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body); box-sizing: border-box;
         }
-        .stat-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap);
-        }
-        .stat-box {
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
-            padding: 14px 4px;
-        }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); }
+        .stat-box { background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; padding: 14px 4px; }
         .stat-box .value { font-size: var(--fs-body); color: var(--text-main); font-weight: 600; }
         .stat-box .label { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 5px; font-weight: 500; }
 
-        .section-label {
-            text-align: left; width: 100%; max-width: 784px; margin: var(--block-gap) auto 8px; padding: 0 6px;
-            font-size: var(--fs-caption); letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; font-weight: 600;
-            box-sizing: border-box;
-        }
-
+        .section-label { text-align: left; width: 100%; max-width: 784px; margin: var(--block-gap) auto 8px; padding: 0 6px; font-size: var(--fs-caption); letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; font-weight: 600; box-sizing: border-box; }
         .loading { opacity: 0.7; font-size: var(--fs-caption); margin: 16px; }
 
-        .nickname-input {
-            display: block; width: 100%; max-width: 380px; margin: 22px auto; padding: 18px;
-            font-size: var(--fs-body); font-family: 'Inter', sans-serif; border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card);
-            color: var(--text-main); text-align: center; box-sizing: border-box;
-        }
+        .nickname-input { display: block; width: 100%; max-width: 380px; margin: 22px auto; padding: 18px; font-size: var(--fs-body); border-radius: 12px; border: 1px solid var(--border-main); background: var(--bg-card); color: var(--text-main); text-align: center; box-sizing: border-box; }
         .nickname-error { color: var(--danger); font-size: var(--fs-caption); min-height: 24px; margin-bottom: 8px; }
 
-        .tab-row {
-            display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 784px;
-            margin: 0 auto var(--block-gap);
-        }
-        .tab-button {
-            flex: 1; padding: 14px 4px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer;
-            background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px;
-            box-sizing: border-box;
-        }
+        .tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); }
+        .tab-button { flex: 1; padding: 14px 4px; font-size: var(--fs-caption); font-weight: 500; cursor: pointer; background: var(--bg-card); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 10px; box-sizing: border-box; }
         .tab-button.active { background: var(--accent); color: #1a0a04; font-weight: 600; border: 1px solid var(--accent); }
         .sub-tab-row { display: flex; justify-content: center; gap: 8px; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); }
-        .sub-tab-button {
-            flex: 1; padding: 10px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 500; background: transparent; color: var(--text-dim); cursor: pointer;
-            border: 1px solid var(--border-main); border-radius: 10px; box-sizing: border-box;
-        }
+        .sub-tab-button { flex: 1; padding: 10px; font-size: var(--fs-caption); font-weight: 500; background: transparent; color: var(--text-dim); cursor: pointer; border: 1px solid var(--border-main); border-radius: 10px; box-sizing: border-box; }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
-        #leaderboard-list, #achievements-list {
-            width: 100%; max-width: 784px; margin: 0 auto;
-        }
-
-        .leader-row {
-            display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0 auto 8px;
-            padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body);
-            box-sizing: border-box;
-        }
+        #leaderboard-list, #achievements-list { width: 100%; max-width: 784px; margin: 0 auto; }
+        .leader-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0 auto 8px; padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body); box-sizing: border-box; }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; flex-shrink: 0; }
         .leader-row .mono { margin-left: 12px; flex-shrink: 0; }
 
-        .achievement-row {
-            width: 100%; margin: 0 auto 10px; padding: 14px 18px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: var(--fs-body);
-            box-sizing: border-box;
-        }
+        .achievement-row { width: 100%; margin: 0 auto 10px; padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; text-align: left; font-size: var(--fs-body); box-sizing: border-box; }
         .achievement-row.locked { opacity: 0.4; }
+        .achv-progress-bg { width: 100%; height: 10px; background: rgba(245,158,11,0.15); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+        .achv-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
 
         .toggle-switch { position: relative; width: 48px; height: 30px; flex-shrink: 0; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--border-main); border-radius: 32px; transition: 0.2s;
-        }
-        .toggle-slider:before {
-            position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px;
-            background: var(--text-dim); border-radius: 50%; transition: 0.2s;
-        }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--border-main); border-radius: 32px; transition: 0.2s; }
+        .toggle-slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 3px; bottom: 3px; background: var(--text-dim); border-radius: 50%; transition: 0.2s; }
         input:checked + .toggle-slider { background: var(--accent); }
         input:checked + .toggle-slider:before { background: #fff2e0; transform: translateX(20px); }
 
@@ -170,252 +100,197 @@
         .link-row { color: var(--accent); font-size: var(--fs-caption); font-weight: 600; }
 
         .days-selector { display: flex; gap: 6px; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); }
-        .day-chip {
-            flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 10px; color: var(--text-main); font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer; font-size: var(--fs-body);
-            box-sizing: border-box;
-        }
+        .day-chip { flex: 1; padding: 13px 0; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 10px; color: var(--text-main); font-weight: 500; cursor: pointer; font-size: var(--fs-body); box-sizing: border-box; }
         .day-chip.active { border-color: var(--accent); color: var(--accent); }
 
-        /* ===== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ===== */
-        .bottom-nav {
-            display: none;
-            position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
-            background: var(--bg-card); border-top: 1px solid var(--border-main);
-            padding: 18px 6px calc(18px + env(safe-area-inset-bottom, 0px));
-            justify-content: space-around; align-items: center;
-        }
+        .bottom-nav { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--bg-card); border-top: 1px solid var(--border-main); padding: 18px 6px calc(18px + env(safe-area-inset-bottom, 0px)); justify-content: space-around; align-items: center; }
         .bottom-nav.active { display: flex; }
-        .bottom-nav-item {
-            background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px;
-            color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: calc(var(--fs-caption) * 1.15); font-weight: 500; cursor: pointer;
-            padding: 6px 2px; flex: 1;
-        }
+        .bottom-nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-dim); font-size: calc(var(--fs-caption) * 1.15); font-weight: 500; cursor: pointer; padding: 6px 2px; flex: 1; }
         .bottom-nav-icon { font-size: 2.2rem; filter: grayscale(1) brightness(1.6); }
         .bottom-nav-item.active { color: var(--accent); }
         .bottom-nav-item.active .bottom-nav-icon { filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95); }
 
-        /* ===== ВЫБОР ПОДЗЕМЕЛЬЯ — ЗОНЫ ===== */
-        .path-container { max-width: 784px; margin: 0 auto; }
-        .path-node {
-            display: flex; align-items: center; gap: 16px; padding: 18px; margin-bottom: 6px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 14px;
+        /* ===== СТАМИНА ===== */
+        .stamina-bar {
+            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 20px;
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
+            display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;
         }
+        .stamina-bar .stamina-label { font-size: var(--fs-caption); color: var(--text-dim); text-align: left; }
+        .stamina-dots { display: flex; gap: 6px; }
+        .stamina-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--border-main); }
+        .stamina-dot.filled { background: var(--accent); }
+        .stamina-bar .premium-badge { font-size: var(--fs-caption); color: var(--accent-bright); font-weight: 600; margin-left: 8px; }
+
+        /* ===== ГЛАВЫ — АККОРДЕОН ===== */
+        .chapters-container { max-width: 784px; margin: 0 auto; }
+        .chapter-block { margin-bottom: 10px; border: 1px solid var(--border-main); border-radius: 14px; overflow: hidden; background: var(--bg-card); }
+        .chapter-header { display: flex; align-items: center; gap: 14px; padding: 18px; cursor: pointer; }
+        .chapter-header.locked { opacity: 0.4; }
+        .chapter-header.current { border-left: 3px solid var(--accent); }
+        .chapter-num { font-size: 1.1rem; font-weight: 600; color: var(--accent); flex-shrink: 0; width: 2rem; }
+        .chapter-title-block { flex: 1; text-align: left; }
+        .chapter-title { font-size: var(--fs-body); font-weight: 600; }
+        .chapter-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 3px; }
+        .chapter-arrow { font-size: 1.2rem; color: var(--text-dim); transition: transform 0.2s; flex-shrink: 0; }
+        .chapter-block.open .chapter-arrow { transform: rotate(90deg); }
+        .chapter-body { display: none; padding: 0 14px 14px; }
+        .chapter-block.open .chapter-body { display: block; }
+
+        .path-node { display: flex; align-items: center; gap: 16px; padding: 16px; margin-bottom: 6px; background: var(--bg-main); border: 1px solid var(--border-main); border-radius: 12px; }
         .path-node.boss { border: 1px solid var(--accent); }
         .path-node.locked { opacity: 0.35; }
         .path-node.current { border: 1px solid var(--accent-bright); }
-        .path-connector { width: 2px; height: 16px; background: var(--border-main); margin: 0 auto; }
-        .path-icon {
-            width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.7rem; background: var(--bg-main); border: 1px solid var(--border-main);
-            flex-shrink: 0; overflow: hidden; position: relative;
-        }
+        .path-node.paid { border: 1px solid #7c5cff; }
+        .path-icon { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--bg-card); border: 1px solid var(--border-main); flex-shrink: 0; overflow: hidden; position: relative; }
         .path-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .path-icon:not(:has(img)) {
-            filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
-        }
-        .boss-badge {
-            position: absolute; top: -4px; left: -4px; background: var(--accent);
-            border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
-            font-size: 0.5rem; border: 1px solid var(--bg-card); filter: none; z-index: 2;
-        }
-        .path-node.boss .path-icon { border-color: var(--accent); }
-        .path-node.current .path-icon { border-color: var(--accent-bright); }
+        .path-icon:not(:has(img)) { filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95); }
+        .boss-badge { position: absolute; top: -4px; left: -4px; background: var(--accent); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; border: 1px solid var(--bg-card); filter: none; z-index: 2; }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-family: 'Inter', sans-serif; font-weight: 600; font-size: var(--fs-body); color: var(--text-main); }
-        .path-info .subtitle { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; font-weight: 500; }
-        .path-node button {
-            padding: 12px 16px; font-size: var(--fs-caption); background: var(--accent); color: #14100a;
-            border: none; border-radius: 8px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer;
-        }
+        .path-info .title { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
+        .path-info .subtitle { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
+        .path-node button { padding: 12px 14px; font-size: var(--fs-caption); background: var(--accent); color: #14100a; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .path-node.locked button { background: var(--border-main); color: var(--text-dim); }
+        .path-node.paid button { background: #7c5cff; color: #fff; }
 
-        .info-tip {
-            max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 16px; background: rgba(245,158,11,0.08);
-            border: 1px solid var(--border-main); border-radius: 10px; font-size: var(--fs-caption); text-align: left; display: none;
-            box-sizing: border-box;
-        }
+        .info-tip { max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 16px; background: rgba(245,158,11,0.08); border: 1px solid var(--border-main); border-radius: 10px; font-size: var(--fs-caption); text-align: left; display: none; box-sizing: border-box; }
         .info-tip.active { display: block; }
 
-        .free-card {
-            max-width: 784px; margin: 0 auto var(--block-gap); padding: 22px; background: var(--bg-card);
-            border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: var(--fs-body);
-            font-family: 'Inter', sans-serif; font-weight: 500; color: var(--text-main); box-sizing: border-box;
-        }
+        .free-card { max-width: 784px; margin: 0 auto var(--block-gap); padding: 22px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: var(--fs-body); font-weight: 500; color: var(--text-main); box-sizing: border-box; }
         .free-card:active { border-color: var(--accent); }
 
-        /* ===== ЭКРАН БОЯ — КАМЕРА НА ВЕСЬ ЭКРАН ===== */
-        .camera-fullscreen-wrapper {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            width: 100vw; height: 100dvh;
-            background: #000; overflow: hidden; z-index: 1;
+        /* ===== ПРЕМИУМ ===== */
+        .premium-card {
+            max-width: 784px; margin: 0 auto var(--block-gap); padding: 24px; text-align: left;
+            background: linear-gradient(135deg, rgba(124,92,255,0.15), rgba(245,158,11,0.1));
+            border: 1px solid #7c5cff; border-radius: 16px; box-sizing: border-box;
         }
-        .camera-fullscreen-wrapper video { display: none; }
-        .camera-fullscreen-wrapper canvas {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; display: block;
+        .premium-card h3 { color: #a78bfa; margin-bottom: 10px; }
+        .premium-card ul { margin: 10px 0; padding-left: 20px; font-size: var(--fs-caption); color: var(--text-dim); line-height: 1.7; }
+        .premium-card .btn-premium {
+            background: linear-gradient(90deg, #7c5cff, #a78bfa); color: #fff; border: none;
+            width: 100%; padding: 18px; border-radius: 10px; font-weight: 600; font-size: var(--fs-body); cursor: pointer; margin-top: 8px;
         }
-        #skeletonCanvas {
-            z-index: 15;
-            pointer-events: none;
-        }
+        .premium-active-badge { display: inline-block; padding: 6px 14px; background: rgba(124,92,255,0.2); color: #a78bfa; border-radius: 20px; font-size: var(--fs-caption); font-weight: 600; }
 
-        .hud-top {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-            padding: 20px 16px 16px; background: linear-gradient(rgba(8,9,12,0.5), rgba(8,9,12,0));
-        }
+        /* ===== ЭКРАН БОЯ — КАМЕРА ===== */
+        .camera-fullscreen-wrapper { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100dvh; background: #000; overflow: hidden; z-index: 1; }
+        .camera-fullscreen-wrapper video { display: none; }
+        .camera-fullscreen-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        #skeletonCanvas { z-index: 15; pointer-events: none; }
+
+        .hud-top { position: fixed; top: 0; left: 0; right: 0; z-index: 10; padding: 20px 16px 16px; background: linear-gradient(rgba(8,9,12,0.5), rgba(8,9,12,0)); }
         .battle-header { max-width: 784px; margin: 0 auto; }
         .monster-portrait {
-            width: 240px; height: 240px; max-width: 55vw; max-height: 55vw;
-            border-radius: 50%; margin: 0 auto 14px;
-            background: radial-gradient(circle, rgba(35,40,51,0.3), rgba(20,23,29,0.3));
-            border: 3px solid var(--accent); display: flex; align-items: center; justify-content: center;
-            font-size: 5rem; overflow: hidden; transition: transform 0.1s;
+            width: 240px; height: 240px; max-width: 55vw; max-height: 55vw; border-radius: 50%; margin: 0 auto 14px;
+            background: radial-gradient(circle, rgba(35,40,51,0.3), rgba(20,23,29,0.3)); border: 3px solid var(--accent);
+            display: flex; align-items: center; justify-content: center; font-size: 5rem; overflow: hidden; transition: transform 0.1s;
         }
         .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
         .monster-portrait.hit-shake { animation: hitShake 0.25s; }
-        @keyframes hitShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px) rotate(-2deg); }
-            50% { transform: translateX(5px) rotate(2deg); }
-            75% { transform: translateX(-3px); }
-        }
-        .monster-portrait:not(:has(img)) {
-            filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95);
-        }
-        .monster-name {
-            font-family: 'Inter', sans-serif; font-weight: 600; font-size: var(--fs-body); color: var(--text-main);
-            background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px;
-            display: block; width: 100%; max-width: 784px; margin: 0 auto; box-sizing: border-box;
-        }
-        .hp-bar-bg {
-            width: 100%; max-width: 784px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.3);
-            border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative; box-sizing: border-box;
-        }
+        @keyframes hitShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px) rotate(-2deg);} 50%{transform:translateX(5px) rotate(2deg);} 75%{transform:translateX(-3px);} }
+        .monster-name { font-weight: 600; font-size: var(--fs-body); color: var(--text-main); background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; display: block; width: 100%; max-width: 784px; margin: 0 auto; box-sizing: border-box; }
+        .hp-bar-bg { width: 100%; max-width: 784px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.3); border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative; box-sizing: border-box; }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
-        .hp-bar-label {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex;
-            align-items: center; justify-content: center; font-size: var(--fs-body); font-family: 'Inter', sans-serif; font-weight: 600;
-            color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums;
-        }
-        #status {
-            font-size: var(--fs-body); margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%;
-            background: rgba(0,0,0,0.3); padding: 10px 18px; border-radius: 10px; display: block; font-weight: 500;
-            box-sizing: border-box;
-        }
+        .hp-bar-label { position: absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size: var(--fs-body); font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums; }
+        #status { font-size: var(--fs-body); margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%; background: rgba(0,0,0,0.3); padding: 10px 18px; border-radius: 10px; display: block; font-weight: 500; box-sizing: border-box; }
 
-        .hud-bottom {
-            position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-            padding: 14px 16px 26px; background: linear-gradient(rgba(8,9,12,0), rgba(8,9,12,0.94));
-        }
+        .hud-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; padding: 14px 16px 26px; background: linear-gradient(rgba(8,9,12,0), rgba(8,9,12,0.94)); }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
-        .rep-circle {
-            width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
-            font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums;
-        }
+        .rep-circle { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent); font-size: 1.75rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums; }
 
-        /* ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== */
-        .saving-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000;
-            background: rgba(8,9,12,0.97); align-items: center; justify-content: center; flex-direction: column;
-            padding: 0 20px; box-sizing: border-box;
-        }
+        .saving-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; z-index: 2000; background: rgba(8,9,12,0.97); align-items: center; justify-content: center; flex-direction: column; padding: 0 20px; box-sizing: border-box; }
         .saving-overlay.active { display: flex; }
-        .saving-spinner {
-            width: 56px; height: 56px; border: 4px solid var(--border-main); border-top-color: var(--accent);
-            border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px;
-        }
+        .saving-spinner { width: 56px; height: 56px; border: 4px solid var(--border-main); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .saving-text { font-size: var(--fs-body); color: var(--text-main); max-width: 90vw; white-space: nowrap; font-weight: 500; }
         .saving-subtext { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; white-space: nowrap; }
 
-        .retry-button {
-            display: none; margin: 14px auto 0; padding: 16px 26px; font-size: var(--fs-caption); font-family: 'Inter', sans-serif; font-weight: 500;
-            background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;
-        }
+        .retry-button { display: none; margin: 14px auto 0; padding: 16px 26px; font-size: var(--fs-caption); font-weight: 500; background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer; }
         .retry-button.active { display: inline-block; }
 
-        .overlay-panel {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(8,9,12,0.95); z-index: 999; align-items: center; justify-content: center; flex-direction: column;
-            padding: 20px; box-sizing: border-box;
-        }
+        .overlay-panel { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(8,9,12,0.95); z-index: 999; align-items: center; justify-content: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
         .overlay-panel.active { display: flex; }
-        .overlay-box {
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 16px;
-            padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto;
-        }
-        .overlay-box.overlay-box-large {
-            max-width: 630px; padding: 48px 36px;
-        }
+        .overlay-box { background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 16px; padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto; }
+        .overlay-box.overlay-box-large { max-width: 630px; padding: 48px 36px; }
         .overlay-box.overlay-box-large h3 { font-size: 2.1rem; }
         .overlay-box.overlay-box-large p { font-size: 1.1rem; }
         .overlay-box.overlay-box-large .btn { padding: 34px; font-size: 1.2rem; }
         .overlay-box h3 { margin-top: 0; color: var(--accent); }
         .overlay-box .btn { max-width: 320px; }
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
-        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; }
+        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body>
 
     <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
     <div id="screen-register" class="screen center-content">
-        <h1>⚔️ Pushup Hero</h1>
+        <h1>⚔️ PushUp Hero</h1>
         <p style="font-size: var(--fs-caption); color: var(--text-dim);">Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
         <input type="text" id="nickname-input" class="nickname-input" maxlength="20" placeholder="Например: TigerPower">
         <div id="nickname-error" class="nickname-error"></div>
         <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
-    <!-- ===== ЕДИНЫЙ ЭКРАН: ПОХОД (стартовый) ===== -->
+    <!-- ===== КАРТА ПРИКЛЮЧЕНИЙ ===== -->
     <div id="screen-adventure" class="screen">
         <h2 style="margin-top:20px;">Карта приключений</h2>
 
+        <div class="stamina-bar">
+            <div class="stamina-label">Выносливость</div>
+            <div style="display:flex; align-items:center;">
+                <div class="stamina-dots" id="stamina-dots"></div>
+                <span class="premium-badge" id="premium-badge" style="display:none;">👑 Премиум</span>
+            </div>
+        </div>
+
         <div class="tab-row">
-            <button class="tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">Отжимания</button>
-            <button class="tab-button" id="adv-tab-plank" onclick="switchAdventureTab('plank')">Планка</button>
-            <button class="tab-button" id="adv-tab-free" onclick="switchAdventureTab('free')">Свободная</button>
+            <button class="tab-button active" id="mode-tab-campaign" onclick="switchAdventureMode('campaign')">Поход</button>
+            <button class="tab-button" id="mode-tab-free" onclick="switchAdventureMode('free')">Свободная</button>
         </div>
 
-        <div class="info-tip" id="camera-tip">
-            💡 Совет: для отжиманий поставь телефон на пол так, чтобы было видно плечи, локти и запястья. Для планки — ляг боком, чтобы видно было плечо, бедро и колено.
-        </div>
+        <div id="campaign-content">
+            <div class="sub-tab-row">
+                <button class="sub-tab-button active" id="adv-tab-pushup" onclick="switchAdventureTab('pushup')">Отжимания</button>
+                <button class="sub-tab-button" id="adv-tab-plank" onclick="switchAdventureTab('plank')">Планка</button>
+                <button class="sub-tab-button" id="adv-tab-squat" onclick="switchAdventureTab('squat')">Приседания</button>
+                <button class="sub-tab-button" id="adv-tab-wallsit" onclick="switchAdventureTab('wallsit')">Стульчик</button>
+            </div>
 
-        <div id="dungeon-select-loading" class="loading" style="display:none;">Загрузка...</div>
-        <div class="path-container" id="dungeon-select-list"></div>
+            <div class="info-tip" id="camera-tip">
+                💡 Совет: для отжиманий и планки поставь телефон так, чтобы было видно плечи, локти и запястья (для планки — сбоку). Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
+            </div>
+
+            <div id="dungeon-select-loading" class="loading" style="display:none;">Загрузка...</div>
+            <div class="chapters-container" id="chapters-container"></div>
+        </div>
 
         <div id="free-training-content" style="display:none;">
             <div class="free-card" onclick="beginFreeTraining('pushup')">🤸 Свободные отжимания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
             <div class="free-card" onclick="beginFreeTraining('plank')">🧘 Свободная планка<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('squat')">🦵 Свободные приседания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('wallsit')">🪑 Свободный стульчик<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
         </div>
     </div>
 
-    <!-- ===== КАМЕРА / БОЙ — ПОЛНОЭКРАННАЯ ===== -->
+    <!-- ===== КАМЕРА / БОЙ ===== -->
     <div id="screen-activity" class="screen" style="padding:0;">
         <div class="camera-fullscreen-wrapper">
             <video id="video" width="480" height="640" autoplay playsinline muted></video>
             <canvas id="canvas" width="480" height="640"></canvas>
             <canvas id="skeletonCanvas" width="480" height="640"></canvas>
         </div>
-
         <div class="hud-top">
             <div class="battle-header" id="battle-header">
                 <div class="monster-portrait" id="monster-portrait">👹</div>
-                <div class="monster-name" id="monster-name">Приключение 1 — Враг 1 из 1</div>
-                <div class="hp-bar-bg">
-                    <div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div>
-                    <div class="hp-bar-label" id="hp-bar-text">HP 18 / 18</div>
-                </div>
+                <div class="monster-name" id="monster-name">—</div>
+                <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div><div class="hp-bar-label" id="hp-bar-text">HP 18 / 18</div></div>
             </div>
             <div style="margin-top:10px;"><span id="status">Займите позицию 🧎</span></div>
         </div>
-
         <div class="hud-bottom">
-            <div class="rep-counter-row">
-                <div class="rep-circle" id="counter">0</div>
-            </div>
+            <div class="rep-counter-row"><div class="rep-circle" id="counter">0</div></div>
             <button id="finishBtn" class="btn btn-primary" style="max-width: 320px;">Завершить</button>
         </div>
     </div>
@@ -427,6 +302,17 @@
         <div id="profile-content" style="display: none; width: 100%;">
             <div class="stat-row"><span>Звание</span><span id="profile-level" class="mono">—</span></div>
             <div class="stat-row"><span>Очки</span><span id="profile-points" class="mono">—</span></div>
+
+            <div class="stamina-bar">
+                <div class="stamina-label">Выносливость сегодня</div>
+                <div style="display:flex; align-items:center;">
+                    <div class="stamina-dots" id="profile-stamina-dots"></div>
+                    <span class="premium-badge" id="profile-premium-badge" style="display:none;">👑</span>
+                </div>
+            </div>
+
+            <div id="profile-premium-card"></div>
+
             <div class="card" style="text-align:left;">
                 <div id="profile-next" style="font-size:var(--fs-caption); color: var(--text-dim); margin-bottom:10px;">—</div>
                 <div class="hp-bar-bg" style="height:14px; margin:0; max-width: 100%; background: rgba(24,27,34,0.92);">
@@ -434,9 +320,11 @@
                 </div>
             </div>
 
-            <div class="tab-row">
-                <button class="tab-button active" id="profile-tab-pushup" onclick="switchProfileTab('pushup')">🤸 Отжимания</button>
-                <button class="tab-button" id="profile-tab-plank" onclick="switchProfileTab('plank')">🧘 Планка</button>
+            <div class="sub-tab-row">
+                <button class="sub-tab-button active" id="profile-tab-pushup" onclick="switchProfileTab('pushup')">Отжимания</button>
+                <button class="sub-tab-button" id="profile-tab-plank" onclick="switchProfileTab('plank')">Планка</button>
+                <button class="sub-tab-button" id="profile-tab-squat" onclick="switchProfileTab('squat')">Приседания</button>
+                <button class="sub-tab-button" id="profile-tab-wallsit" onclick="switchProfileTab('wallsit')">Стульчик</button>
             </div>
 
             <div class="section-label">Дисциплина</div>
@@ -455,9 +343,11 @@
     <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen center-content">
         <h2>🏆 Таблица лидеров</h2>
-        <div class="tab-row">
-            <button class="tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">🤸 Отжимания</button>
-            <button class="tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">🧘 Планка</button>
+        <div class="sub-tab-row">
+            <button class="sub-tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">Отжимания</button>
+            <button class="sub-tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">Планка</button>
+            <button class="sub-tab-button" id="lb-activity-squat" onclick="switchLeaderboardActivity('squat')">Приседания</button>
+            <button class="sub-tab-button" id="lb-activity-wallsit" onclick="switchLeaderboardActivity('wallsit')">Стульчик</button>
         </div>
         <div class="sub-tab-row">
             <button class="sub-tab-button active" id="lb-period-today" onclick="switchLeaderboardPeriod('today')">Сегодня</button>
@@ -471,70 +361,43 @@
     <div id="screen-achievements" class="screen center-content">
         <h2>🎖 Достижения</h2>
         <div id="achievements-list"></div>
-        <p style="opacity: 0.5; font-size: var(--fs-caption);">(тестовые данные, подключим позже)</p>
     </div>
 
     <!-- ===== НАСТРОЙКИ ===== -->
     <div id="screen-settings" class="screen center-content">
         <h1>⚙️ Настройки</h1>
 
-        <div class="section-label" style="margin-top:0;">Оформление</div>
+        <div class="section-label" style="margin-top:0;">Премиум</div>
+        <div id="settings-premium-card"></div>
+
+        <div class="section-label">Оформление</div>
+        <div class="stat-row"><span class="settings-row-text">☀️ Светлая тема</span><label class="toggle-switch"><input type="checkbox" id="theme-checkbox" onchange="toggleTheme()"><span class="toggle-slider"></span></label></div>
+
+        <div class="section-label">Сюжет</div>
         <div class="stat-row">
-            <span class="settings-row-text">☀️ Светлая тема</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="theme-checkbox" onchange="toggleTheme()">
-                <span class="toggle-slider"></span>
-            </label>
+            <div style="text-align:left;"><span class="settings-row-text">📖 Сюжетные диалоги</span><div class="settings-row-sub">Отключи, чтобы сразу переходить к бою без сцен</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="story-checkbox" onchange="toggleStory()"><span class="toggle-slider"></span></label>
         </div>
 
         <div class="section-label">Звук и вибрация</div>
-        <div class="stat-row">
-            <span class="settings-row-text">🔊 Звуковые сигналы</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="sound-checkbox" onchange="toggleSound()">
-                <span class="toggle-slider"></span>
-            </label>
-        </div>
-        <div class="stat-row">
-            <span class="settings-row-text">📳 Вибрация</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="vibration-checkbox" onchange="toggleVibration()">
-                <span class="toggle-slider"></span>
-            </label>
-        </div>
+        <div class="stat-row"><span class="settings-row-text">🔊 Звуковые сигналы</span><label class="toggle-switch"><input type="checkbox" id="sound-checkbox" onchange="toggleSound()"><span class="toggle-slider"></span></label></div>
+        <div class="stat-row"><span class="settings-row-text">📳 Вибрация</span><label class="toggle-switch"><input type="checkbox" id="vibration-checkbox" onchange="toggleVibration()"><span class="toggle-slider"></span></label></div>
 
         <div class="section-label">Подсказки</div>
-        <div class="stat-row">
-            <span class="settings-row-text">Подсказки про камеру при выборе похода</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="camera-tip-checkbox" onchange="toggleCameraTip()">
-                <span class="toggle-slider"></span>
-            </label>
-        </div>
-        <div class="stat-row" onclick="showInstructions()" style="cursor:pointer;">
-            <span class="settings-row-text">Инструкции</span>
-            <span class="link-row">Как ставить телефон →</span>
-        </div>
+        <div class="stat-row"><span class="settings-row-text">Подсказки про камеру при выборе похода</span><label class="toggle-switch"><input type="checkbox" id="camera-tip-checkbox" onchange="toggleCameraTip()"><span class="toggle-slider"></span></label></div>
+        <div class="stat-row" onclick="showInstructions()" style="cursor:pointer;"><span class="settings-row-text">Инструкции</span><span class="link-row">Как ставить телефон →</span></div>
 
         <div class="section-label">Бой</div>
         <div class="stat-row">
-            <div style="text-align:left;">
-                <span class="settings-row-text">Штурмовой режим</span>
-                <div class="settings-row-sub">Без паузы между врагами в приключениях</div>
-            </div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="assault-checkbox" onchange="toggleAssaultMode()">
-                <span class="toggle-slider"></span>
-            </label>
+            <div style="text-align:left;"><span class="settings-row-text">Штурмовой режим</span><div class="settings-row-sub">Без паузы между врагами в приключениях</div></div>
+            <label class="toggle-switch"><input type="checkbox" id="assault-checkbox" onchange="toggleAssaultMode()"><span class="toggle-slider"></span></label>
         </div>
 
         <div class="section-label">Цель</div>
         <p style="max-width:784px; width: 100%; margin: 0 auto 8px; text-align:left; font-size:var(--fs-caption); color: var(--text-dim); padding:0 6px; box-sizing: border-box;">Дней тренировок в неделю</p>
         <div class="days-selector" id="days-selector">
-            <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div>
-            <div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
-            <div class="day-chip" data-days="5" onclick="setWeeklyGoal(5)">5</div>
-            <div class="day-chip" data-days="6" onclick="setWeeklyGoal(6)">6</div>
+            <div class="day-chip" data-days="3" onclick="setWeeklyGoal(3)">3</div><div class="day-chip" data-days="4" onclick="setWeeklyGoal(4)">4</div>
+            <div class="day-chip" data-days="5" onclick="setWeeklyGoal(5)">5</div><div class="day-chip" data-days="6" onclick="setWeeklyGoal(6)">6</div>
             <div class="day-chip" data-days="7" onclick="setWeeklyGoal(7)">7</div>
         </div>
 
@@ -543,13 +406,7 @@
     </div>
 
     <!-- ===== ОВЕРЛЕИ ===== -->
-    <div id="overlay-enemy-pause" class="overlay-panel">
-        <div class="overlay-box">
-            <h3>Враг повержен! 💥</h3>
-            <p style="text-align:center;">Передышка перед следующим врагом</p>
-            <div class="countdown-number" id="pause-countdown">5</div>
-        </div>
-    </div>
+    <div id="overlay-enemy-pause" class="overlay-panel"><div class="overlay-box"><h3>Враг повержен! 💥</h3><p style="text-align:center;">Передышка перед следующим врагом</p><div class="countdown-number" id="pause-countdown">5</div></div></div>
 
     <div id="overlay-dungeon-complete" class="overlay-panel">
         <div class="overlay-box overlay-box-large">
@@ -563,31 +420,35 @@
     <div id="overlay-instructions" class="overlay-panel">
         <div class="overlay-box">
             <h3>Как ставить телефон</h3>
-            <p><strong>Отжимания:</strong> положи телефон на пол экраном к себе так, чтобы в кадре было видно плечи, локти и запястья обеих рук.</p>
-            <p><strong>Планка:</strong> поставь телефон сбоку от себя так, чтобы было видно плечо, бедро, колено и стопу той стороны, что ближе к камере.</p>
-            <p>Освещение должно быть достаточным, а фон — по возможности без лишних людей в кадре.</p>
+            <p><strong>Отжимания:</strong> телефон на полу, видно плечи, локти, запястья.</p>
+            <p><strong>Планка:</strong> телефон сбоку, видно плечо, бедро, колено.</p>
+            <p><strong>Приседания и стульчик:</strong> встань лицом к камере на расстоянии, чтобы было видно всё тело от плеч до стоп.</p>
             <button class="btn btn-primary" onclick="document.getElementById('overlay-instructions').classList.remove('active')">Понятно</button>
         </div>
     </div>
 
-    <!-- ===== ПОДСКАЗКА-РАЗМИНКА ПЕРЕД СТАРТОМ ===== -->
-    <div id="overlay-warmup-tip" class="overlay-panel">
+    <div id="overlay-warmup-tip" class="overlay-panel"><div class="overlay-box"><h3>🧘 Разомнись перед стартом</h3><p id="warmup-tip-text" style="text-align:center;">Совет</p><button class="btn btn-primary" onclick="proceedAfterWarmup()">Пропустить</button></div></div>
+
+    <div id="overlay-dungeon-loading" class="overlay-panel"><div class="overlay-box"><div class="saving-spinner" style="margin: 0 auto 20px;"></div><h3 style="margin-bottom:0;">Загружаем подземелье...</h3></div></div>
+
+    <div id="overlay-no-stamina" class="overlay-panel">
         <div class="overlay-box">
-            <h3>🧘 Разомнись перед стартом</h3>
-            <p id="warmup-tip-text" style="text-align:center;">Совет</p>
-            <button class="btn btn-primary" onclick="proceedAfterWarmup()">Пропустить</button>
+            <h3>Выносливость закончилась 😮‍💨</h3>
+            <p style="text-align:center;">Все подходы на сегодня использованы. Возвращайся завтра, либо оформи премиум — он даёт 8 подходов в день вместо 4.</p>
+            <button class="btn btn-primary" onclick="openPremiumFromNoStamina()">Узнать о премиуме</button>
+            <button class="btn" onclick="document.getElementById('overlay-no-stamina').classList.remove('active')">Понятно</button>
         </div>
     </div>
 
-    <!-- ===== ЗАГРУЗКА ПОДЗЕМЕЛЬЯ ===== -->
-    <div id="overlay-dungeon-loading" class="overlay-panel">
+    <div id="overlay-zone-locked" class="overlay-panel">
         <div class="overlay-box">
-            <div class="saving-spinner" style="margin: 0 auto 20px;"></div>
-            <h3 style="margin-bottom:0;">Загружаем подземелье...</h3>
+            <h3 id="zone-locked-title">Платное подземелье</h3>
+            <p id="zone-locked-desc" style="text-align:center;">Описание</p>
+            <button class="btn btn-primary" id="zone-buy-btn">Купить за 200 ⭐</button>
+            <button class="btn" onclick="document.getElementById('overlay-zone-locked').classList.remove('active')">Позже</button>
         </div>
     </div>
 
-    <!-- ===== ПОЛНОЭКРАННЫЙ ОВЕРЛЕЙ СОХРАНЕНИЯ ===== -->
     <div id="saving-overlay" class="saving-overlay">
         <div class="saving-spinner"></div>
         <div class="saving-text" id="saving-text">Сохраняем результат...</div>
@@ -595,28 +456,12 @@
         <button id="retryBtn" class="retry-button" onclick="retrySave()">Попробовать сохранить снова</button>
     </div>
 
-    <!-- ===== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ===== -->
     <div class="bottom-nav" id="bottom-nav">
-        <button class="bottom-nav-item" data-screen="adventure" onclick="showScreen('adventure')">
-            <span class="bottom-nav-icon">🧭</span>
-            <span class="bottom-nav-label">Поход</span>
-        </button>
-        <button class="bottom-nav-item" data-screen="profile" onclick="showScreen('profile')">
-            <span class="bottom-nav-icon">👤</span>
-            <span class="bottom-nav-label">Профиль</span>
-        </button>
-        <button class="bottom-nav-item" data-screen="leaderboard" onclick="showScreen('leaderboard')">
-            <span class="bottom-nav-icon">🏆</span>
-            <span class="bottom-nav-label">Лидеры</span>
-        </button>
-        <button class="bottom-nav-item" data-screen="achievements" onclick="showScreen('achievements')">
-            <span class="bottom-nav-icon">🎖️</span>
-            <span class="bottom-nav-label">Достижения</span>
-        </button>
-        <button class="bottom-nav-item" data-screen="settings" onclick="showScreen('settings')">
-            <span class="bottom-nav-icon">⚙️</span>
-            <span class="bottom-nav-label">Настройки</span>
-        </button>
+        <button class="bottom-nav-item" data-screen="adventure" onclick="showScreen('adventure')"><span class="bottom-nav-icon">🧭</span><span class="bottom-nav-label">Поход</span></button>
+        <button class="bottom-nav-item" data-screen="profile" onclick="showScreen('profile')"><span class="bottom-nav-icon">👤</span><span class="bottom-nav-label">Профиль</span></button>
+        <button class="bottom-nav-item" data-screen="leaderboard" onclick="showScreen('leaderboard')"><span class="bottom-nav-icon">🏆</span><span class="bottom-nav-label">Лидеры</span></button>
+        <button class="bottom-nav-item" data-screen="achievements" onclick="showScreen('achievements')"><span class="bottom-nav-icon">🎖️</span><span class="bottom-nav-label">Достижения</span></button>
+        <button class="bottom-nav-item" data-screen="settings" onclick="showScreen('settings')"><span class="bottom-nav-icon">⚙️</span><span class="bottom-nav-label">Настройки</span></button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
@@ -628,11 +473,10 @@
 
         // ===== ТЕМА =====
         let currentTheme = localStorage.getItem('theme') || 'dark';
-
         function applyTheme() {
             document.documentElement.setAttribute('data-theme', currentTheme);
-            const checkbox = document.getElementById('theme-checkbox');
-            if (checkbox) checkbox.checked = (currentTheme === 'light');
+            const cb = document.getElementById('theme-checkbox');
+            if (cb) cb.checked = (currentTheme === 'light');
         }
         function toggleTheme() {
             currentTheme = document.getElementById('theme-checkbox').checked ? 'light' : 'dark';
@@ -641,7 +485,13 @@
         }
         applyTheme();
 
-        // ===== ОБЩИЙ ХЕЛПЕР ДЛЯ ЗАПРОСОВ С ТАЙМАУТОМ И БЫСТРЫМ ПОВТОРОМ =====
+        // ===== СЮЖЕТ ВКЛ/ВЫКЛ =====
+        let storyEnabled = localStorage.getItem('storyEnabled') !== 'false';
+        function toggleStory() {
+            storyEnabled = document.getElementById('story-checkbox').checked;
+            localStorage.setItem('storyEnabled', storyEnabled ? 'true' : 'false');
+        }
+
         async function fetchJsonWithRetry(url, options = {}, { timeoutMs = 12000, retries = 1, retryDelay = 300 } = {}) {
             let lastError;
             for (let attempt = 0; attempt <= retries; attempt++) {
@@ -664,30 +514,20 @@
             const tgApp = window.Telegram.WebApp;
             return tgApp.viewportStableHeight || tgApp.viewportHeight || window.innerHeight;
         }
-
         function applyTelegramViewportHeight() {
-            const height = getViewportPx();
-            document.documentElement.style.setProperty('--tg-viewport-height', height + 'px');
+            document.documentElement.style.setProperty('--tg-viewport-height', getViewportPx() + 'px');
         }
-
         function enforceScreenHeight(screenId) {
             const el = document.getElementById('screen-' + screenId);
             if (!el) return;
-            const h = getViewportPx();
-            el.style.minHeight = h + 'px';
+            el.style.minHeight = getViewportPx() + 'px';
         }
-
         function updateBottomNav(name) {
             const nav = document.getElementById('bottom-nav');
             const hideOn = ['activity', 'register'];
-            if (hideOn.includes(name)) {
-                nav.classList.remove('active');
-                return;
-            }
+            if (hideOn.includes(name)) { nav.classList.remove('active'); return; }
             nav.classList.add('active');
-            document.querySelectorAll('.bottom-nav-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.screen === name);
-            });
+            document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.toggle('active', item.dataset.screen === name));
         }
 
         function showScreen(name) {
@@ -698,12 +538,11 @@
 
             if (name === 'profile') loadProfile();
             if (name === 'leaderboard') loadLeaderboard();
-            if (name === 'achievements') loadAchievementsMock();
+            if (name === 'achievements') loadAchievements();
             if (name === 'settings') renderSettingsScreen();
-            if (name === 'adventure') switchAdventureTab(currentAdventureTab);
+            if (name === 'adventure') { loadStamina(); switchAdventureTab(currentAdventureTab); }
 
             updateBottomNav(name);
-
             enforceScreenHeight(name);
             requestAnimationFrame(() => enforceScreenHeight(name));
         }
@@ -716,135 +555,117 @@
             return tgUser ? tgUser.id : null;
         }
 
-        // ===== ПОДСКАЗКИ-РАЗМИНКА (один раз за сессию на каждый вид активности) =====
-
-        const PUSHUP_TIPS = [
-            "Разомни запястья и плечи круговыми движениями 15–20 секунд перед началом.",
-            "Сделай 10–15 неглубоких приседаний или лёгкий бег на месте, чтобы разогреть тело.",
-            "Держи спину прямой на всём протяжении движения, не прогибайся в пояснице.",
-            "Дыши равномерно: вдох на опускании, выдох на подъёме — не задерживай дыхание.",
-            "Если чувствуешь дискомфорт в запястьях — попробуй отжиматься на кулаках или с упорами.",
-            "Начинай с посильного темпа — лучше меньше повторений, но с правильной техникой."
+        // ===== ГЛАВЫ / ЗОНЫ =====
+        const CHAPTERS = [
+            { chapter: 1, title: "Крылья во тьме", start: 1, end: 2 },
+            { chapter: 2, title: "Кости не забывают", start: 3, end: 4 },
+            { chapter: 3, title: "Голод гор", start: 5, end: 6 },
+            { chapter: 4, title: "Лес, который помнит", start: 7, end: 8 },
+            { chapter: 5, title: "Гнилое сердце", start: 9, end: 10 },
+            { chapter: 6, title: "Крепость павших", start: 11, end: 12 },
+            { chapter: 7, title: "Земли пепла", start: 13, end: 14 },
+            { chapter: 8, title: "Бездна", start: 15, end: 16 },
+            { chapter: 9, title: "Цитадель", start: 17, end: 18 },
+            { chapter: 10, title: "Трон", start: 19, end: 20 },
         ];
 
-        const PLANK_TIPS = [
-            "Разогрей плечи и корпус лёгкими наклонами и вращениями 20–30 секунд перед стартом.",
-            "Держи тело на одной прямой линии от плеч до пяток — не поднимай и не опускай таз.",
-            "Напряги мышцы кора и ягодиц — это снижает нагрузку на поясницу.",
-            "Дыши спокойно и равномерно, не задерживай дыхание во время удержания позиции.",
-            "Расслабь шею и смотри в пол перед собой, а не вперёд — так меньше нагрузка на шею.",
-            "Если почувствуешь боль в пояснице — прервись и в следующий раз сократи время."
+        const ZONES = [
+            { n: 1, name: "Пещера летучих мышей", image: "Rat.png", isBoss: false },
+            { n: 2, name: "Гнездо ночного хищника", image: "Rat_Boss.png", isBoss: true },
+            { n: 3, name: "Подземелье скелетов", image: "Skelet.png", isBoss: false },
+            { n: 4, name: "Зал костяного командира", image: "Skelet_Boss.png", isBoss: true },
+            { n: 5, name: "Логово тролля", image: "Troll.png", isBoss: false },
+            { n: 6, name: "Двухголовый командир троллей", image: "Troll_Boss.png", isBoss: true },
+            { n: 7, name: "Лес призраков", image: "Ghost.png", isBoss: false },
+            { n: 8, name: "Рой погибших душ", image: "Ghost_Boss.png", isBoss: true },
+            { n: 9, name: "Топи гниения", image: "Swamp.png", isBoss: false },
+            { n: 10, name: "Трон затонувшего короля", image: "Swamp_Boss.png", isBoss: true },
+            { n: 11, name: "Павшие рыцари", image: "Fallen_knight.png", isBoss: false },
+            { n: 12, name: "Чёрный рыцарь", image: "Black_knight.png", isBoss: true },
+            { n: 13, name: "Огненные твари", image: "Flame_Demons.png", isBoss: false },
+            { n: 14, name: "Повелитель пламени", image: "Flame_Master.png", isBoss: true },
+            { n: 15, name: "Искажённые", image: "Distorted.png", isBoss: false },
+            { n: 16, name: "Страж Бездны", image: "Abyss_Guardian.png", isBoss: true },
+            { n: 17, name: "Зал испытаний", image: "Stone_Giant.png", isBoss: false },
+            { n: 18, name: "Варен", image: "Servant.png", isBoss: true },
+            { n: 19, name: "Последняя печать", image: "Bosses.png", isBoss: false },
+            { n: 20, name: "Морвен", image: "Main_Boss_Final.png", isBoss: true },
         ];
 
-        let warmupPendingAction = null;
-        let warmupTimeout = null;
-        const warmupShownForActivity = { pushup: false, plank: false };
+        const PAID_PAIR_STARTS = [7, 9, 11, 13, 15, 17, 19];
+        const PAIR_PRICE_STARS = 200;
+        const ACTIVITY_NAMES = { pushup: "Отжимания", plank: "Планка", squat: "Приседания", wallsit: "Стульчик" };
+
+        function getZoneForDungeon(n) { return ZONES.find(z => z.n === n) || ZONES[ZONES.length - 1]; }
+        function monsterVisualHtml(zone) { return zone.image ? `<img src="${zone.image}" alt="${zone.name}">` : '👹'; }
+
+        // ===== ПОДСКАЗКИ-РАЗМИНКА =====
+        const PUSHUP_TIPS = ["Разомни запястья и плечи 15–20 секунд.", "Держи спину прямой на всём протяжении.", "Дыши равномерно: вдох вниз, выдох вверх."];
+        const PLANK_TIPS = ["Тело — одна прямая линия от плеч до пяток.", "Напряги мышцы кора и ягодиц.", "Дыши спокойно, не задерживай дыхание."];
+        const SQUAT_TIPS = ["Держи спину прямой, колени не выходят за носки.", "Разомни колени и тазобедренные суставы.", "Опускайся до параллели бедра с полом."];
+        const WALLSIT_TIPS = ["Спина прямая, угол в колене около 90°.", "Разомни ноги перед стартом.", "Держи вес равномерно на обеих ногах."];
+        const TIPS_BY_ACTIVITY = { pushup: PUSHUP_TIPS, plank: PLANK_TIPS, squat: SQUAT_TIPS, wallsit: WALLSIT_TIPS };
+
+        let warmupPendingAction = null, warmupTimeout = null;
+        const warmupShownForActivity = { pushup: false, plank: false, squat: false, wallsit: false };
 
         function showWarmupTip(activityType, onProceed) {
-            if (warmupShownForActivity[activityType]) {
-                onProceed();
-                return;
-            }
+            if (warmupShownForActivity[activityType]) { onProceed(); return; }
             warmupShownForActivity[activityType] = true;
             warmupPendingAction = onProceed;
-            const tips = activityType === 'plank' ? PLANK_TIPS : PUSHUP_TIPS;
-            const tip = tips[Math.floor(Math.random() * tips.length)];
-            document.getElementById('warmup-tip-text').innerText = tip;
+            const tips = TIPS_BY_ACTIVITY[activityType] || PUSHUP_TIPS;
+            document.getElementById('warmup-tip-text').innerText = tips[Math.floor(Math.random() * tips.length)];
             document.getElementById('overlay-warmup-tip').classList.add('active');
-
             if (warmupTimeout) clearTimeout(warmupTimeout);
             warmupTimeout = setTimeout(() => proceedAfterWarmup(), 5000);
         }
-
         function proceedAfterWarmup() {
             if (warmupTimeout) { clearTimeout(warmupTimeout); warmupTimeout = null; }
             document.getElementById('overlay-warmup-tip').classList.remove('active');
-            const action = warmupPendingAction;
-            warmupPendingAction = null;
+            const action = warmupPendingAction; warmupPendingAction = null;
             if (action) action();
         }
+        function beginFreeTraining(mode) { showWarmupTip(mode, () => startActivity(mode, false)); }
 
-        function beginFreeTraining(mode) {
-            showWarmupTip(mode, () => startActivity(mode, false));
-        }
-
-        // ===== ЗВУК И ВИБРАЦИЯ =====
-
+        // ===== ЗВУК / ВИБРАЦИЯ / НАСТРОЙКИ =====
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
         let vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
         let cameraTipEnabled = localStorage.getItem('cameraTipEnabled') === 'true';
         let assaultModeEnabled = localStorage.getItem('assaultModeEnabled') === 'true';
         let weeklyGoal = parseInt(localStorage.getItem('weeklyGoal') || '5');
-
         let audioCtx = null;
-
-        function getAudioCtx() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return audioCtx;
-        }
-
-        function playBeep(freq = 880, duration = 150, type = 'sine', volume = 0.2) {
+        function getAudioCtx() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); return audioCtx; }
+        function playBeep(freq=880, duration=150, type='sine', volume=0.2) {
             if (!soundEnabled) return;
             try {
-                const ctxA = getAudioCtx();
-                const osc = ctxA.createOscillator();
-                const gain = ctxA.createGain();
-                osc.type = type;
-                osc.frequency.value = freq;
-                osc.connect(gain);
-                gain.connect(ctxA.destination);
-                gain.gain.setValueAtTime(volume, ctxA.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + duration / 1000);
-                osc.start();
-                osc.stop(ctxA.currentTime + duration / 1000);
-            } catch (e) { console.error("Ошибка звука:", e); }
+                const ctxA = getAudioCtx(); const osc = ctxA.createOscillator(); const gain = ctxA.createGain();
+                osc.type = type; osc.frequency.value = freq; osc.connect(gain); gain.connect(ctxA.destination);
+                gain.gain.setValueAtTime(volume, ctxA.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + duration/1000);
+                osc.start(); osc.stop(ctxA.currentTime + duration/1000);
+            } catch(e) {}
         }
-
         function playHitSound() {
             if (!soundEnabled) return;
             try {
-                const ctxA = getAudioCtx();
-                const osc = ctxA.createOscillator();
-                const gain = ctxA.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(180, ctxA.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(60, ctxA.currentTime + 0.09);
-                osc.connect(gain);
-                gain.connect(ctxA.destination);
-                gain.gain.setValueAtTime(0.35, ctxA.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.12);
-                osc.start();
-                osc.stop(ctxA.currentTime + 0.12);
-            } catch (e) {}
+                const ctxA = getAudioCtx(); const osc = ctxA.createOscillator(); const gain = ctxA.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(180, ctxA.currentTime); osc.frequency.exponentialRampToValueAtTime(60, ctxA.currentTime + 0.09);
+                osc.connect(gain); gain.connect(ctxA.destination);
+                gain.gain.setValueAtTime(0.35, ctxA.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.12);
+                osc.start(); osc.stop(ctxA.currentTime + 0.12);
+            } catch(e) {}
         }
-
         function triggerHitShake() {
-            const portrait = document.getElementById('monster-portrait');
-            portrait.classList.remove('hit-shake');
-            void portrait.offsetWidth; // перезапуск анимации
-            portrait.classList.add('hit-shake');
+            const p = document.getElementById('monster-portrait');
+            p.classList.remove('hit-shake'); void p.offsetWidth; p.classList.add('hit-shake');
         }
         function playMinuteBeep() { playBeep(880, 200); }
-        function playVictorySound() {
-            playBeep(660, 150);
-            setTimeout(() => playBeep(880, 150), 150);
-            setTimeout(() => playBeep(1100, 300), 300);
-        }
-        function playDefeatSound() {
-            playBeep(300, 300, 'sawtooth');
-            setTimeout(() => playBeep(180, 400, 'sawtooth'), 250);
-        }
-
+        function playVictorySound() { playBeep(660,150); setTimeout(()=>playBeep(880,150),150); setTimeout(()=>playBeep(1100,300),300); }
+        function playDefeatSound() { playBeep(300,300,'sawtooth'); setTimeout(()=>playBeep(180,400,'sawtooth'),250); }
         function vibrate(style) {
             if (!vibrationEnabled) return;
-            try {
-                const haptic = window.Telegram.WebApp.HapticFeedback;
-                if (!haptic) return;
-                if (style === 'light') haptic.impactOccurred('light');
-                else if (style === 'success') haptic.notificationOccurred('success');
-                else if (style === 'error') haptic.notificationOccurred('error');
-            } catch (e) {}
+            try { const h = window.Telegram.WebApp.HapticFeedback; if (!h) return;
+                if (style==='light') h.impactOccurred('light'); else if (style==='success') h.notificationOccurred('success'); else if (style==='error') h.notificationOccurred('error');
+            } catch(e) {}
         }
 
         function renderSettingsScreen() {
@@ -853,378 +674,382 @@
             document.getElementById('camera-tip-checkbox').checked = cameraTipEnabled;
             document.getElementById('assault-checkbox').checked = assaultModeEnabled;
             document.getElementById('theme-checkbox').checked = (currentTheme === 'light');
-            document.querySelectorAll('.day-chip').forEach(chip => {
-                chip.classList.toggle('active', parseInt(chip.dataset.days) === weeklyGoal);
-            });
+            document.getElementById('story-checkbox').checked = storyEnabled;
+            document.querySelectorAll('.day-chip').forEach(chip => chip.classList.toggle('active', parseInt(chip.dataset.days) === weeklyGoal));
+            renderPremiumCard('settings-premium-card');
         }
-
-        function toggleSound() {
-            soundEnabled = document.getElementById('sound-checkbox').checked;
-            localStorage.setItem('soundEnabled', soundEnabled ? 'true' : 'false');
-        }
-        function toggleVibration() {
-            vibrationEnabled = document.getElementById('vibration-checkbox').checked;
-            localStorage.setItem('vibrationEnabled', vibrationEnabled ? 'true' : 'false');
-        }
-        function toggleCameraTip() {
-            cameraTipEnabled = document.getElementById('camera-tip-checkbox').checked;
-            localStorage.setItem('cameraTipEnabled', cameraTipEnabled ? 'true' : 'false');
-        }
-        function toggleAssaultMode() {
-            assaultModeEnabled = document.getElementById('assault-checkbox').checked;
-            localStorage.setItem('assaultModeEnabled', assaultModeEnabled ? 'true' : 'false');
-        }
-        function setWeeklyGoal(n) {
-            weeklyGoal = n;
-            localStorage.setItem('weeklyGoal', n);
-            renderSettingsScreen();
-        }
-        function showInstructions() {
-            document.getElementById('overlay-instructions').classList.add('active');
-        }
+        function toggleSound() { soundEnabled = document.getElementById('sound-checkbox').checked; localStorage.setItem('soundEnabled', soundEnabled?'true':'false'); }
+        function toggleVibration() { vibrationEnabled = document.getElementById('vibration-checkbox').checked; localStorage.setItem('vibrationEnabled', vibrationEnabled?'true':'false'); }
+        function toggleCameraTip() { cameraTipEnabled = document.getElementById('camera-tip-checkbox').checked; localStorage.setItem('cameraTipEnabled', cameraTipEnabled?'true':'false'); }
+        function toggleAssaultMode() { assaultModeEnabled = document.getElementById('assault-checkbox').checked; localStorage.setItem('assaultModeEnabled', assaultModeEnabled?'true':'false'); }
+        function setWeeklyGoal(n) { weeklyGoal = n; localStorage.setItem('weeklyGoal', n); renderSettingsScreen(); }
+        function showInstructions() { document.getElementById('overlay-instructions').classList.add('active'); }
 
         async function resetProgress() {
             if (!confirm("Точно сбросить весь прогресс? Это действие необратимо.")) return;
-            const userId = getUserId();
-            if (!userId) return;
+            const userId = getUserId(); if (!userId) return;
             try {
-                const response = await fetch(`${API_BASE}/api/reset_progress`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId })
-                });
+                const response = await fetch(`${API_BASE}/api/reset_progress`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId}) });
                 const data = await response.json();
-                if (data.success) {
-                    alert("Прогресс сброшен.");
-                } else {
-                    alert("Не удалось сбросить прогресс. Попробуйте позже.");
-                }
-            } catch (error) {
-                alert("Ошибка соединения. Попробуйте позже.");
-            }
+                alert(data.success ? "Прогресс сброшен." : "Не удалось сбросить прогресс. Попробуйте позже.");
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
 
-        // ===== РЕГИСТРАЦИЯ НИКНЕЙМА =====
-
+        // ===== РЕГИСТРАЦИЯ =====
         async function checkUserStatus() {
             const userId = getUserId();
-            if (!userId) {
-                document.getElementById('screen-register').classList.add('active');
-                document.getElementById('nickname-error').innerText = "Не удалось определить пользователя";
-                return;
-            }
+            if (!userId) { document.getElementById('screen-register').classList.add('active'); document.getElementById('nickname-error').innerText = "Не удалось определить пользователя"; return; }
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?user_id=${userId}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
-                if (data.has_nickname) showScreen('adventure');
-                else document.getElementById('screen-register').classList.add('active');
-            } catch (error) {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                if (data.has_nickname) showScreen('adventure'); else document.getElementById('screen-register').classList.add('active');
+            } catch(e) {
                 document.getElementById('screen-register').classList.add('active');
                 document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
             }
         }
-
         async function submitNickname() {
-            const userId = getUserId();
-            const input = document.getElementById('nickname-input');
-            const errorEl = document.getElementById('nickname-error');
-            const nickname = input.value.trim();
-            errorEl.innerText = "";
-
+            const userId = getUserId(); const input = document.getElementById('nickname-input'); const errorEl = document.getElementById('nickname-error');
+            const nickname = input.value.trim(); errorEl.innerText = "";
             if (!userId) { errorEl.innerText = "Не удалось определить пользователя"; return; }
             if (nickname.length < 2 || nickname.length > 20) { errorEl.innerText = "Имя должно быть от 2 до 20 символов"; return; }
-
             try {
-                const response = await fetch(`${API_BASE}/api/register_nickname`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: userId, nickname: nickname })
-                });
+                const response = await fetch(`${API_BASE}/api/register_nickname`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, nickname})});
                 const data = await response.json();
-                if (data.success) showScreen('adventure');
-                else errorEl.innerText = data.error || "Не удалось сохранить имя";
-            } catch (error) {
-                errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз.";
+                if (data.success) showScreen('adventure'); else errorEl.innerText = data.error || "Не удалось сохранить имя";
+            } catch(e) { errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз."; }
+        }
+
+        // ===== СТАМИНА =====
+        let staminaCache = { remaining: 4, max: 4 };
+        function renderStaminaDots(containerId, remaining, max) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            el.innerHTML = '';
+            for (let i = 0; i < max; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'stamina-dot' + (i < remaining ? ' filled' : '');
+                el.appendChild(dot);
             }
+        }
+        async function loadStamina() {
+            const userId = getUserId(); if (!userId) return;
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
+                staminaCache = data;
+                renderStaminaDots('stamina-dots', data.remaining, data.max);
+                document.getElementById('premium-badge').style.display = data.max > 4 ? 'inline' : 'none';
+            } catch(e) {}
+        }
+
+        // ===== ПРЕМИУМ =====
+        function renderPremiumCard(containerId) {
+            const el = document.getElementById(containerId);
+            if (!el || !profileDataCache) return;
+            if (profileDataCache.premium_active) {
+                el.innerHTML = `
+                    <div class="premium-card">
+                        <span class="premium-active-badge">👑 Премиум активен</span>
+                        <p style="margin-top:10px; font-size: var(--fs-caption); color: var(--text-dim);">Действует до ${profileDataCache.premium_until}. 8 подходов в день и все главы открыты.</p>
+                    </div>`;
+            } else {
+                el.innerHTML = `
+                    <div class="premium-card">
+                        <h3>👑 Премиум — 1000 ⭐ / 30 дней</h3>
+                        <ul>
+                            <li>8 подходов в день вместо 4</li>
+                            <li>Все платные подземелья открыты на весь срок</li>
+                            <li>Разовый платёж, автопродления нет</li>
+                        </ul>
+                        <button class="btn-premium" onclick="buyPremium()">Оформить премиум</button>
+                    </div>`;
+            }
+        }
+        async function buyPremium() {
+            const userId = getUserId();
+            try {
+                const res = await fetch(`${API_BASE}/api/create_premium_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const data = await res.json();
+                if (!data.url) { alert("Не удалось создать счёт. Попробуйте позже."); return; }
+                window.Telegram.WebApp.openInvoice(data.url, (status) => {
+                    if (status === 'paid') { loadProfile(); loadStamina(); }
+                });
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
+        }
+        function openPremiumFromNoStamina() {
+            document.getElementById('overlay-no-stamina').classList.remove('active');
+            showScreen('settings');
+        }
+
+        async function buyZone(activity, pairStart) {
+            const userId = getUserId();
+            try {
+                const res = await fetch(`${API_BASE}/api/create_zone_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, pair_start: pairStart})});
+                const data = await res.json();
+                if (!data.url) { alert(data.error || "Не удалось создать счёт."); return; }
+                document.getElementById('overlay-zone-locked').classList.remove('active');
+                window.Telegram.WebApp.openInvoice(data.url, (status) => {
+                    if (status === 'paid') loadDungeonPath(activity);
+                });
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
 
         // ===== ПРОФИЛЬ =====
-
         let profileDataCache = null;
         let activeProfileTab = 'pushup';
-
         const LEVELS_JS = [
-            { threshold: 0, title: "🐣 Новичок" },
-            { threshold: 100, title: "💪 Крепыш" },
-            { threshold: 500, title: "🔥 Силач" },
-            { threshold: 1500, title: "⚡ Терминатор" },
-            { threshold: 5000, title: "👑 Легенда зала" }
+            {threshold:0,title:"🐣 Новичок"},{threshold:100,title:"💪 Крепыш"},{threshold:500,title:"🔥 Силач"},
+            {threshold:1500,title:"⚡ Терминатор"},{threshold:5000,title:"👑 Легенда зала"}
         ];
-
         function getLevelRange(points) {
             let current = LEVELS_JS[0];
-            for (const lvl of LEVELS_JS) { if (points >= lvl.threshold) current = lvl; }
+            for (const lvl of LEVELS_JS) if (points >= lvl.threshold) current = lvl;
             const idx = LEVELS_JS.indexOf(current);
-            return { current, next: LEVELS_JS[idx + 1] || null };
+            return { current, next: LEVELS_JS[idx+1] || null };
         }
-
-        function formatSeconds(totalSeconds) {
-            const m = Math.floor(totalSeconds / 60);
-            const s = totalSeconds % 60;
-            return `${m}м${s}с`;
-        }
+        function formatSeconds(s) { const m = Math.floor(s/60); const sec = s%60; return `${m}м${sec}с`; }
 
         async function loadProfile() {
             const userId = getUserId();
-            const loadingEl = document.getElementById('profile-loading');
-            const contentEl = document.getElementById('profile-content');
-            loadingEl.style.display = 'block';
-            contentEl.style.display = 'none';
-
+            const loadingEl = document.getElementById('profile-loading'); const contentEl = document.getElementById('profile-content');
+            loadingEl.style.display = 'block'; contentEl.style.display = 'none';
             if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
-
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 profileDataCache = data;
-                loadingEl.style.display = 'none';
-                contentEl.style.display = 'block';
+                loadingEl.style.display = 'none'; contentEl.style.display = 'block';
                 renderProfileValues();
-            } catch (error) {
-                loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже.";
-            }
+                renderStaminaDots('profile-stamina-dots', data.stamina.remaining, data.stamina.max);
+                document.getElementById('profile-premium-badge').style.display = data.premium_active ? 'inline' : 'none';
+                renderPremiumCard('profile-premium-card');
+                document.getElementById('story-checkbox') && (storyEnabled = data.story_enabled ?? storyEnabled);
+            } catch(e) { loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже."; }
         }
-
         function renderProfileValues() {
             if (!profileDataCache) return;
             const data = profileDataCache;
-
             document.getElementById('profile-level').innerText = data.level;
             document.getElementById('profile-points').innerText = data.points + " ⭐";
-            document.getElementById('profile-next').innerText =
-                data.points_to_next_level !== null
-                    ? `${data.points_to_next_level} очков до «${data.next_level}»`
-                    : "Максимальный уровень!";
-
+            document.getElementById('profile-next').innerText = data.points_to_next_level !== null ? `${data.points_to_next_level} очков до «${data.next_level}»` : "Максимальный уровень!";
             const { current, next } = getLevelRange(data.points);
             let fraction = 1;
-            if (next) {
-                fraction = (data.points - current.threshold) / (next.threshold - current.threshold);
-                fraction = Math.max(0, Math.min(1, fraction));
-            }
-            document.getElementById('profile-progress-fill').style.width = (fraction * 100) + '%';
+            if (next) fraction = Math.max(0, Math.min(1, (data.points - current.threshold) / (next.threshold - current.threshold)));
+            document.getElementById('profile-progress-fill').style.width = (fraction*100) + '%';
 
-            const source = activeProfileTab === 'pushup' ? data.pushup : data.plank;
-            document.getElementById('profile-stat-today').innerText =
-                activeProfileTab === 'pushup' ? source.today : formatSeconds(source.today_seconds);
+            const source = data[activeProfileTab];
+            const isTimeBased = (activeProfileTab === 'plank' || activeProfileTab === 'wallsit');
+            document.getElementById('profile-stat-today').innerText = isTimeBased ? formatSeconds(source.today_seconds) : source.today;
             document.getElementById('profile-stat-streak').innerText = source.streak;
-            document.getElementById('profile-stat-total').innerText =
-                activeProfileTab === 'pushup' ? source.total : formatSeconds(source.total_seconds);
+            document.getElementById('profile-stat-total').innerText = isTimeBased ? formatSeconds(source.total_seconds) : source.total;
             document.getElementById('profile-stat-beststreak').innerText = source.best_streak;
             document.getElementById('profile-stat-dungeon').innerText = "№" + source.dungeon;
         }
-
         function switchProfileTab(tab) {
             activeProfileTab = tab;
-            document.getElementById('profile-tab-pushup').classList.toggle('active', tab === 'pushup');
-            document.getElementById('profile-tab-plank').classList.toggle('active', tab === 'plank');
+            ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('profile-tab-'+t).classList.toggle('active', t===tab));
             renderProfileValues();
         }
 
         // ===== ТАБЛИЦА ЛИДЕРОВ =====
-
-        let lbActivity = 'pushup';
-        let lbPeriod = 'today';
-        let leaderboardRequestId = 0;
-
+        let lbActivity = 'pushup', lbPeriod = 'today', leaderboardRequestId = 0;
         function switchLeaderboardActivity(activity) {
             lbActivity = activity;
-            document.getElementById('lb-activity-pushup').classList.toggle('active', activity === 'pushup');
-            document.getElementById('lb-activity-plank').classList.toggle('active', activity === 'plank');
+            ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('lb-activity-'+t).classList.toggle('active', t===activity));
             loadLeaderboard();
         }
         function switchLeaderboardPeriod(period) {
             lbPeriod = period;
-            document.getElementById('lb-period-today').classList.toggle('active', period === 'today');
-            document.getElementById('lb-period-total').classList.toggle('active', period === 'total');
+            document.getElementById('lb-period-today').classList.toggle('active', period==='today');
+            document.getElementById('lb-period-total').classList.toggle('active', period==='total');
             loadLeaderboard();
         }
         function formatLeaderboardValue(value, activity) {
-            if (activity === 'plank') {
-                const m = Math.floor(value / 60);
-                const s = value % 60;
-                return `${m}м ${s}с`;
-            }
+            if (activity === 'plank' || activity === 'wallsit') { const m=Math.floor(value/60); const s=value%60; return `${m}м ${s}с`; }
             return value;
         }
-
         async function loadLeaderboard() {
             const requestId = ++leaderboardRequestId;
-            const list = document.getElementById('leaderboard-list');
-            const loading = document.getElementById('leaderboard-loading');
+            const list = document.getElementById('leaderboard-list'); const loading = document.getElementById('leaderboard-loading');
             loading.style.display = 'block';
-
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 if (requestId !== leaderboardRequestId) return;
-
-                loading.style.display = 'none';
-                list.innerHTML = "";
-
-                if (data.leaderboard.length === 0) {
-                    list.innerHTML = "<p>Пока никто не тренировался 🤷</p>";
-                    return;
-                }
-
+                loading.style.display = 'none'; list.innerHTML = "";
+                if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
                 data.leaderboard.forEach((user, index) => {
-                    const row = document.createElement('div');
-                    row.className = 'leader-row';
-                    const displayValue = formatLeaderboardValue(user.value, lbActivity);
-                    row.innerHTML = `<span class="rank">${index + 1}</span><span style="flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${user.name}</span><span class="mono">${displayValue}</span>`;
+                    const row = document.createElement('div'); row.className = 'leader-row';
+                    row.innerHTML = `<span class="rank">${index+1}</span><span style="flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${user.name}</span><span class="mono">${formatLeaderboardValue(user.value, lbActivity)}</span>`;
                     list.appendChild(row);
                 });
-            } catch (error) {
-                if (requestId !== leaderboardRequestId) return;
-                loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже.";
-            }
+            } catch(e) { if (requestId === leaderboardRequestId) loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже."; }
         }
 
-        function loadAchievementsMock() {
-            const mockAchievements = [
-                { title: "🥉 Первые 10 отжиманий", unlocked: true },
-                { title: "🥈 100 отжиманий за день", unlocked: false },
-                { title: "🥇 30 дней без пропуска", unlocked: false },
-                { title: "🎯 1000 отжиманий за всё время", unlocked: false }
-            ];
+        // ===== ДОСТИЖЕНИЯ =====
+        async function loadAchievements() {
+            const userId = getUserId();
             const list = document.getElementById('achievements-list');
-            list.innerHTML = "";
-            mockAchievements.forEach(a => {
-                const row = document.createElement('div');
-                row.className = 'achievement-row' + (a.unlocked ? '' : ' locked');
-                row.innerText = a.title + (a.unlocked ? " ✅" : " 🔒");
-                list.appendChild(row);
-            });
+            list.innerHTML = '<div class="loading">Загрузка...</div>';
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const a = data.achievements;
+                list.innerHTML = '';
+
+                function achvRow(title, level, today, nextThreshold) {
+                    const row = document.createElement('div'); row.className = 'achievement-row';
+                    const currentThreshold = level > 0 ? (10 + 10*level) : 0;
+                    const span = nextThreshold - currentThreshold;
+                    const progressInLevel = Math.max(0, Math.min(span, today - currentThreshold));
+                    const pct = span > 0 ? (progressInLevel/span*100) : 100;
+                    row.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span>${title} — уровень ${level}</span>
+                            <span class="mono">${today} / ${nextThreshold}</span>
+                        </div>
+                        <div class="achv-progress-bg"><div class="achv-progress-fill" style="width:${pct}%;"></div></div>
+                    `;
+                    return row;
+                }
+
+                list.appendChild(achvRow("🏋️ Мастер отжиманий (за день)", a.pushup_level, a.pushup_today, a.pushup_next_threshold));
+                list.appendChild(achvRow("🦵 Мастер приседаний (за день)", a.squat_level, a.squat_today, a.squat_next_threshold));
+
+                const staticRow = document.createElement('div'); staticRow.className = 'achievement-row';
+                staticRow.innerText = '🥉 Первые 10 отжиманий ✅';
+                list.appendChild(staticRow);
+            } catch(e) { list.innerHTML = '<p>Не удалось загрузить достижения.</p>'; }
         }
 
-        // ===== ЗОНЫ ПОДЗЕМЕЛИЙ =====
-
-        const ZONES = [
-            { n: 1, name: "Пещера летучих мышей", image: "Rat.png", isBoss: false },
-            { n: 2, name: "Пещера летучих мышей (Босс)", image: "Rat_Boss.png", isBoss: true },
-            { n: 3, name: "Подземелье скелетов", image: "Skelet.png", isBoss: false },
-            { n: 4, name: "Подземелье скелетов (Босс)", image: "Skelet_Boss.png", isBoss: true },
-            { n: 5, name: "Логово тролля", image: "Troll.png", isBoss: false },
-            { n: 6, name: "Логово тролля (Босс)", image: "Troll_Boss.png", isBoss: true },
-            { n: 7, name: "Лес призраков", image: "Ghost.png", isBoss: false },
-            { n: 8, name: "Лес призраков (Босс)", image: "Ghost_Boss.png", isBoss: true },
-            { n: 9, name: "Забытые руины", emoji: "🏚️", isBoss: false },
-            { n: 10, name: "Забытые руины (Босс)", emoji: "👺", isBoss: true },
-            { n: 11, name: "Ледяная бездна", emoji: "🧊", isBoss: false },
-            { n: 12, name: "Ледяная бездна (Босс)", emoji: "❄️", isBoss: true },
-            { n: 13, name: "Огненные врата", emoji: "🔥", isBoss: false },
-            { n: 14, name: "Огненные врата (Босс)", emoji: "😈", isBoss: true },
-        ];
-
-        function getZoneForDungeon(n) {
-            return ZONES.find(z => z.n === n) || ZONES[ZONES.length - 1];
-        }
-
-        function monsterVisualHtml(zone) {
-            return zone.image ? `<img src="${zone.image}" alt="${zone.name}">` : zone.emoji;
-        }
-
-        // ===== ЕДИНЫЙ ЭКРАН ПОХОДА =====
-
+        // ===== АККОРДЕОН ГЛАВ =====
         let currentAdventureTab = 'pushup';
+        let currentAdventureMode = 'campaign';
+        let openChapterId = null;
+
+        function switchAdventureMode(mode) {
+            currentAdventureMode = mode;
+            document.getElementById('mode-tab-campaign').classList.toggle('active', mode==='campaign');
+            document.getElementById('mode-tab-free').classList.toggle('active', mode==='free');
+            document.getElementById('campaign-content').style.display = mode==='campaign' ? 'block' : 'none';
+            document.getElementById('free-training-content').style.display = mode==='free' ? 'block' : 'none';
+        }
 
         function switchAdventureTab(tab) {
             currentAdventureTab = tab;
-            document.getElementById('adv-tab-pushup').classList.toggle('active', tab === 'pushup');
-            document.getElementById('adv-tab-plank').classList.toggle('active', tab === 'plank');
-            document.getElementById('adv-tab-free').classList.toggle('active', tab === 'free');
-
-            document.getElementById('camera-tip').classList.toggle('active', cameraTipEnabled && tab !== 'free');
-
-            if (tab === 'free') {
-                document.getElementById('dungeon-select-list').style.display = 'none';
-                document.getElementById('dungeon-select-loading').style.display = 'none';
-                document.getElementById('free-training-content').style.display = 'block';
-            } else {
-                document.getElementById('free-training-content').style.display = 'none';
-                document.getElementById('dungeon-select-list').style.display = 'block';
-                loadDungeonPath(tab);
-            }
+            ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('adv-tab-'+t).classList.toggle('active', t===tab));
+            document.getElementById('camera-tip').classList.toggle('active', cameraTipEnabled);
+            openChapterId = null;
+            loadDungeonPath(tab);
         }
 
         async function loadDungeonPath(activity) {
             document.getElementById('dungeon-select-loading').style.display = 'block';
-            document.getElementById('dungeon-select-list').innerHTML = '';
-
+            document.getElementById('chapters-container').innerHTML = '';
             const userId = getUserId();
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, { cache: 'no-store' }, { timeoutMs: 15000, retries: 1 });
-                renderZoneList(activity, data.current_dungeon, data.max_dungeon);
-            } catch (error) {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                renderChapters(activity, data.current_dungeon, data.purchased_pairs || [], data.premium_active);
+            } catch(e) {
                 document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список приключений.";
             }
         }
 
-        function renderZoneList(activity, currentDungeon, maxDungeon) {
+        function renderChapters(activity, currentDungeon, purchasedPairs, premiumActive) {
             document.getElementById('dungeon-select-loading').style.display = 'none';
-            const list = document.getElementById('dungeon-select-list');
-            list.innerHTML = '';
+            const container = document.getElementById('chapters-container');
+            container.innerHTML = '';
 
-            ZONES.forEach((zone, idx) => {
-                let status, subtitle, btnText;
+            CHAPTERS.forEach(chapter => {
+                const chapterUnlocked = chapter.start <= currentDungeon || (chapter.start > currentDungeon && false);
+                const isChapterCurrent = currentDungeon >= chapter.start && currentDungeon <= chapter.end;
+                const isChapterDone = currentDungeon > chapter.end;
+                const isChapterLocked = currentDungeon < chapter.start;
 
-                if (zone.n < currentDungeon) {
-                    status = 'done';
-                    subtitle = 'Пройдено — можно перепройти';
-                    btnText = 'Повторить';
-                } else if (zone.n === currentDungeon) {
-                    status = 'current';
-                    subtitle = 'Текущий этап';
-                    btnText = 'Начать';
-                } else {
-                    status = 'locked';
-                    subtitle = 'Закрыто';
-                    btnText = 'Закрыто';
-                }
+                const block = document.createElement('div');
+                block.className = 'chapter-block' + (openChapterId === chapter.chapter ? ' open' : '');
+                block.id = 'chapter-' + chapter.chapter;
 
-                if (idx > 0) {
-                    const connector = document.createElement('div');
-                    connector.className = 'path-connector';
-                    list.appendChild(connector);
-                }
+                const subtitle = isChapterLocked ? 'Закрыто' : (isChapterDone ? 'Пройдено' : 'В процессе');
+                const headerClasses = 'chapter-header' + (isChapterLocked ? ' locked' : '') + (isChapterCurrent ? ' current' : '');
 
-                const bossBadge = (zone.isBoss && status !== 'locked') ? `<span class="boss-badge">👑</span>` : '';
-
-                const node = document.createElement('div');
-                node.className = 'path-node' + (zone.isBoss ? ' boss' : '') + (status === 'current' ? ' current' : '') + (status === 'locked' ? ' locked' : '');
-                node.innerHTML = `
-                    <div class="path-icon">${status === 'locked' ? '🔒' : monsterVisualHtml(zone)}${bossBadge}</div>
-                    <div class="path-info">
-                        <div class="title">${zone.name}</div>
-                        <div class="subtitle">${subtitle}</div>
+                block.innerHTML = `
+                    <div class="${headerClasses}" onclick="toggleChapter(${chapter.chapter}, '${activity}')">
+                        <div class="chapter-num">${chapter.chapter}</div>
+                        <div class="chapter-title-block">
+                            <div class="chapter-title">Глава ${chapter.chapter} — ${chapter.title}</div>
+                            <div class="chapter-sub">${subtitle}</div>
+                        </div>
+                        <div class="chapter-arrow">›</div>
                     </div>
-                    ${status === 'locked'
-                        ? `<button disabled>Закрыто</button>`
-                        : `<button onclick="startDungeonActivity('${activity}', ${zone.n})">${btnText}</button>`}
+                    <div class="chapter-body" id="chapter-body-${chapter.chapter}"></div>
                 `;
-                list.appendChild(node);
+                container.appendChild(block);
+
+                if (openChapterId === chapter.chapter && !isChapterLocked) {
+                    renderChapterZones(chapter, activity, currentDungeon, purchasedPairs, premiumActive);
+                }
             });
         }
 
-        // ===== СОСТОЯНИЕ ПРИКЛЮЧЕНИЯ ВО ВРЕМЯ БОЯ =====
+        function toggleChapter(chapterNum, activity) {
+            const chapter = CHAPTERS.find(c => c.chapter === chapterNum);
+            if (currentDungeonGlobalCache && currentDungeonGlobalCache < chapter.start) return; // заблокировано
 
-        let inDungeonMode = false;
-        let dungeonJustWon = false;
-        let dungeonActivityType = null;
-        let dungeonNumber = null;
-        let dungeonEnemies = [];
-        let dungeonEnemyIndex = 0;
-        let dungeonEnemyRemainingHP = 0;
-        let dungeonEnemyMaxHP = 0;
-        let dungeonIsReplay = false;
-        let dungeonPaused = false;
+            if (openChapterId === chapterNum) { openChapterId = null; }
+            else { openChapterId = chapterNum; }
+            loadDungeonPath(activity);
+        }
 
-        function startDungeonActivity(activity, dungeonN) {
+        let currentDungeonGlobalCache = 1;
+
+        function renderChapterZones(chapter, activity, currentDungeon, purchasedPairs, premiumActive) {
+            currentDungeonGlobalCache = currentDungeon;
+            const body = document.getElementById('chapter-body-' + chapter.chapter);
+            if (!body) return;
+            body.innerHTML = '';
+
+            for (let n = chapter.start; n <= chapter.end; n++) {
+                const zone = getZoneForDungeon(n);
+                let status, subtitle, btnText, extraClass = '';
+
+                const pairStart = PAID_PAIR_STARTS.includes(n) ? n : (PAID_PAIR_STARTS.includes(n-1) ? n-1 : null);
+                const needsPayment = pairStart !== null && !premiumActive && !purchasedPairs.includes(pairStart);
+
+                if (n < currentDungeon) { status = 'done'; subtitle = 'Пройдено — можно перепройти'; btnText = 'Повторить'; }
+                else if (n === currentDungeon) {
+                    if (needsPayment) { status = 'paid'; subtitle = `Платно — ${PAIR_PRICE_STARS} ⭐ за пару`; btnText = 'Купить'; extraClass = ' paid'; }
+                    else { status = 'current'; subtitle = 'Текущий этап'; btnText = 'Начать'; }
+                } else { status = 'locked'; subtitle = 'Закрыто'; btnText = 'Закрыто'; }
+
+                const bossBadge = (zone.isBoss && status !== 'locked') ? `<span class="boss-badge">👑</span>` : '';
+                const node = document.createElement('div');
+                node.className = 'path-node' + (zone.isBoss ? ' boss' : '') + (status==='current'?' current':'') + (status==='locked'?' locked':'') + extraClass;
+
+                let buttonHtml;
+                if (status === 'locked') buttonHtml = `<button disabled>Закрыто</button>`;
+                else if (status === 'paid') buttonHtml = `<button onclick="showZoneLockedOverlay('${activity}', ${pairStart})">Купить</button>`;
+                else buttonHtml = `<button onclick="startDungeonActivity('${activity}', ${n})">${btnText}</button>`;
+
+                node.innerHTML = `
+                    <div class="path-icon">${status==='locked' ? '🔒' : monsterVisualHtml(zone)}${bossBadge}</div>
+                    <div class="path-info"><div class="title">${zone.name}</div><div class="subtitle">${subtitle}</div></div>
+                    ${buttonHtml}
+                `;
+                body.appendChild(node);
+            }
+        }
+
+        function showZoneLockedOverlay(activity, pairStart) {
+            const zone = getZoneForDungeon(pairStart);
+            document.getElementById('zone-locked-title').innerText = zone.name;
+            document.getElementById('zone-locked-desc').innerText = `Откроет «${zone.name}» и следующий уровень (босс) для дисциплины «${ACTIVITY_NAMES[activity]}» за ${PAIR_PRICE_STARS} ⭐. Можно также оформить премиум — он открывает все главы сразу.`;
+            document.getElementById('zone-buy-btn').onclick = () => buyZone(activity, pairStart);
+            document.getElementById('overlay-zone-locked').classList.add('active');
+        }
+
+        // ===== СОСТОЯНИЕ БОЯ =====
+        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
+        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
+
+        async function startDungeonActivity(activity, dungeonN) {
+            if (staminaCache.remaining <= 0) { document.getElementById('overlay-no-stamina').classList.add('active'); return; }
             showWarmupTip(activity, () => doStartDungeonActivity(activity, dungeonN));
         }
 
@@ -1232,585 +1057,354 @@
             document.getElementById('overlay-dungeon-loading').classList.add('active');
             const userId = getUserId();
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, { cache: 'no-store' }, { timeoutMs: 20000, retries: 1 });
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, {cache:'no-store'}, {timeoutMs:20000, retries:1});
 
-                inDungeonMode = true;
-                dungeonJustWon = false;
-                dungeonActivityType = activity;
-                dungeonNumber = data.requested_dungeon;
-                dungeonEnemies = data.enemies;
-                dungeonEnemyIndex = 0;
-                dungeonEnemyMaxHP = dungeonEnemies[0];
-                dungeonEnemyRemainingHP = dungeonEnemies[0];
-                dungeonIsReplay = data.is_replay;
-                dungeonPaused = false;
+                if (data.requires_payment) {
+                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    showZoneLockedOverlay(activity, data.pair_start);
+                    return;
+                }
+
+                const consumeRes = await fetch(`${API_BASE}/api/consume_stamina`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const consumeData = await consumeRes.json();
+                if (!consumeData.success) {
+                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    document.getElementById('overlay-no-stamina').classList.add('active');
+                    return;
+                }
+                staminaCache = { remaining: consumeData.remaining, max: consumeData.max };
+                renderStaminaDots('stamina-dots', consumeData.remaining, consumeData.max);
+
+                inDungeonMode = true; dungeonJustWon = false; dungeonActivityType = activity; dungeonNumber = data.requested_dungeon;
+                dungeonEnemies = data.enemies; dungeonEnemyIndex = 0; dungeonEnemyMaxHP = dungeonEnemies[0]; dungeonEnemyRemainingHP = dungeonEnemies[0];
+                dungeonIsReplay = data.is_replay; dungeonPaused = false;
 
                 document.getElementById('battle-header').style.display = 'block';
-                updateMonsterPortrait();
-                updateDungeonHUD();
-
+                updateMonsterPortrait(); updateDungeonHUD();
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
                 startActivity(activity, true);
-            } catch (error) {
+            } catch(e) {
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
                 alert("Не удалось загрузить приключение. Попробуйте позже.");
             }
         }
 
-        function updateMonsterPortrait() {
-            const zone = getZoneForDungeon(dungeonNumber);
-            document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone);
-        }
-
+        function updateMonsterPortrait() { const zone = getZoneForDungeon(dungeonNumber); document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone); }
         function updateDungeonHUD() {
             const zone = getZoneForDungeon(dungeonNumber);
-            document.getElementById('monster-name').innerText =
-                `${zone.name} — Враг ${dungeonEnemyIndex + 1} из ${dungeonEnemies.length}`;
-            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP / dungeonEnemyMaxHP) * 100));
+            document.getElementById('monster-name').innerText = `${zone.name} — Враг ${dungeonEnemyIndex+1} из ${dungeonEnemies.length}`;
+            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP/dungeonEnemyMaxHP)*100));
             document.getElementById('hp-bar-fill').style.width = pct + '%';
-            document.getElementById('hp-bar-text').innerText =
-                `HP ${Math.max(0, Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
+            document.getElementById('hp-bar-text').innerText = `HP ${Math.max(0,Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
         }
-
         function applyDungeonDamage(amount) {
             if (!inDungeonMode || dungeonPaused) return;
             dungeonEnemyRemainingHP -= amount;
-
-            if (dungeonEnemyRemainingHP <= 0) {
-                const overflow = -dungeonEnemyRemainingHP;
-                handleEnemyDefeated(overflow);
-            } else {
-                updateDungeonHUD();
-            }
+            if (dungeonEnemyRemainingHP <= 0) handleEnemyDefeated(-dungeonEnemyRemainingHP); else updateDungeonHUD();
         }
-
         function handleEnemyDefeated(overflow) {
-            const isLastEnemy = (dungeonEnemyIndex === dungeonEnemies.length - 1);
-
-            if (isLastEnemy) {
-                finishDungeonVictory();
-                return;
-            }
-
-            dungeonEnemyIndex++;
-            dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex];
-            dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
+            if (dungeonEnemyIndex === dungeonEnemies.length - 1) { finishDungeonVictory(); return; }
+            dungeonEnemyIndex++; dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex]; dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
             updateDungeonHUD();
-
-            if (dungeonActivityType === 'pushup' && !assaultModeEnabled) {
-                startEnemyPause();
-            }
+            const isRepBased = (dungeonActivityType === 'pushup' || dungeonActivityType === 'squat');
+            if (isRepBased && !assaultModeEnabled) startEnemyPause();
         }
-
         function startEnemyPause() {
             dungeonPaused = true;
-            const overlay = document.getElementById('overlay-enemy-pause');
-            const countdownEl = document.getElementById('pause-countdown');
-            overlay.classList.add('active');
-            let secondsLeft = 5;
-            countdownEl.innerText = secondsLeft;
-            const interval = setInterval(() => {
-                secondsLeft--;
-                countdownEl.innerText = secondsLeft;
-                if (secondsLeft <= 0) {
-                    clearInterval(interval);
-                    overlay.classList.remove('active');
-                    dungeonPaused = false;
-                }
-            }, 1000);
+            const overlay = document.getElementById('overlay-enemy-pause'); const countdownEl = document.getElementById('pause-countdown');
+            overlay.classList.add('active'); let secondsLeft = 5; countdownEl.innerText = secondsLeft;
+            const interval = setInterval(() => { secondsLeft--; countdownEl.innerText = secondsLeft; if (secondsLeft<=0){clearInterval(interval); overlay.classList.remove('active'); dungeonPaused=false;} }, 1000);
         }
-
         async function finishDungeonVictory() {
-            dungeonPaused = true;
-            dungeonJustWon = true;
-            playVictorySound();
-            vibrate('success');
-
+            dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
             document.getElementById('dungeon-complete-xp').innerText = "Подсчитываем награду... ⏳";
             document.getElementById('overlay-dungeon-complete').classList.add('active');
-
             await saveDungeonCompletionWithRetry();
         }
-
         async function saveDungeonCompletionWithRetry() {
-            const userId = getUserId();
-            const activity = dungeonActivityType;
-            const dungeonN = dungeonNumber;
-            let attempt = 0;
-
+            const userId = getUserId(); const activity = dungeonActivityType; const dungeonN = dungeonNumber; let attempt = 0;
             while (true) {
                 attempt++;
-                const timeoutMs = Math.min(15000 + (attempt - 1) * 10000, 45000);
+                const timeoutMs = Math.min(15000 + (attempt-1)*10000, 45000);
                 try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId, activity: activity, dungeon: dungeonN }),
-                        signal: controller.signal
-                    });
+                    const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
+                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, dungeon: dungeonN}), signal: controller.signal});
                     clearTimeout(timeoutId);
-
                     if (!response.ok) throw new Error("Сервер ответил ошибкой");
-
                     const data = await response.json();
-                    document.getElementById('dungeon-complete-xp').innerText = `+${data.xp_earned || 0} XP ⭐`;
+                    document.getElementById('dungeon-complete-xp').innerText = `+${data.xp_earned||0} XP ⭐`;
                     return;
-                } catch (error) {
-                    console.error(`Попытка ${attempt} завершения подземелья не удалась:`, error);
-                    document.getElementById('dungeon-complete-xp').innerText =
-                        `Сохраняем награду... (попытка ${attempt}) ⏳`;
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                } catch(e) {
+                    document.getElementById('dungeon-complete-xp').innerText = `Сохраняем награду... (попытка ${attempt}) ⏳`;
+                    await new Promise(r=>setTimeout(r,500));
                 }
             }
         }
+        function continueDungeon() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); dungeonPaused=false; doStartDungeonActivity(dungeonActivityType, dungeonNumber+1); }
+        function finishDungeonSession() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); attemptSave(); }
 
-        function continueDungeon() {
-            document.getElementById('overlay-dungeon-complete').classList.remove('active');
-            const nextN = dungeonNumber + 1;
-            dungeonPaused = false;
-            doStartDungeonActivity(dungeonActivityType, nextN);
+        // ===== КАМЕРА =====
+        const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        const skeletonCanvas = document.getElementById('skeletonCanvas'), skeletonCtx = skeletonCanvas.getContext('2d');
+        const statusEl = document.getElementById('status'), counterEl = document.getElementById('counter');
+
+        let currentMode = null, cameraStarted = false, cameraObj = null, keepAliveInterval = null;
+        let repCount = 0, stage = "up", inPosition = false, lastRepTimestamp = 0, shoulderYAtUp = null, expectedShoulderDirection = null;
+        let holdSeconds = 0, holdLastTimestamp = null, lastHoldMinuteMarked = 0;
+
+        function calculateAngle(a,b,c) {
+            const radians = Math.atan2(c.y-b.y, c.x-b.x) - Math.atan2(a.y-b.y, a.x-b.x);
+            let angle = Math.abs(radians*180.0/Math.PI); if (angle>180.0) angle = 360-angle; return angle;
         }
+        const LEFT_SHOULDER=11, RIGHT_SHOULDER=12, LEFT_ELBOW=13, RIGHT_ELBOW=14, LEFT_WRIST=15, RIGHT_WRIST=16;
+        const LEFT_HIP=23, RIGHT_HIP=24, LEFT_KNEE=25, RIGHT_KNEE=26, LEFT_ANKLE=27, RIGHT_ANKLE=28;
 
-        function finishDungeonSession() {
-            document.getElementById('overlay-dungeon-complete').classList.remove('active');
-            attemptSave();
-        }
+        const PUSHUP_POINTS = [LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_ELBOW,RIGHT_ELBOW,LEFT_WRIST,RIGHT_WRIST];
+        const PUSHUP_CONNECTIONS = [[LEFT_SHOULDER,LEFT_ELBOW],[LEFT_ELBOW,LEFT_WRIST],[RIGHT_SHOULDER,RIGHT_ELBOW],[RIGHT_ELBOW,RIGHT_WRIST],[LEFT_SHOULDER,RIGHT_SHOULDER]];
+        const SQUAT_POINTS = [LEFT_HIP,RIGHT_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ANKLE,RIGHT_ANKLE];
+        const SQUAT_CONNECTIONS = [[LEFT_HIP,LEFT_KNEE],[LEFT_KNEE,LEFT_ANKLE],[RIGHT_HIP,RIGHT_KNEE],[RIGHT_KNEE,RIGHT_ANKLE],[LEFT_HIP,RIGHT_HIP]];
+        const WALLSIT_POINTS = [LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_HIP,RIGHT_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ANKLE,RIGHT_ANKLE];
+        const WALLSIT_CONNECTIONS = [[LEFT_SHOULDER,LEFT_HIP],[LEFT_HIP,LEFT_KNEE],[LEFT_KNEE,LEFT_ANKLE],[RIGHT_SHOULDER,RIGHT_HIP],[RIGHT_HIP,RIGHT_KNEE],[RIGHT_KNEE,RIGHT_ANKLE]];
 
-        // ===== КАМЕРА И РАСПОЗНАВАНИЕ ПОЗЫ =====
-
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const skeletonCanvas = document.getElementById('skeletonCanvas');
-        const skeletonCtx = skeletonCanvas.getContext('2d');
-        const statusEl = document.getElementById('status');
-        const counterEl = document.getElementById('counter');
-
-        let currentMode = null;
-        let cameraStarted = false;
-        let cameraObj = null;
-        let keepAliveInterval = null;
-
-        let pushupCount = 0;
-        let stage = "up";
-        let inPosition = false;
-        let lastRepTimestamp = 0;
-        let shoulderYAtUp = null;
-
-        let plankSeconds = 0;
-        let plankLastTimestamp = null;
-        let lastPlankMinuteMarked = 0;
-
-        function calculateAngle(a, b, c) {
-            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
-            let angle = Math.abs(radians * 180.0 / Math.PI);
-            if (angle > 180.0) angle = 360 - angle;
-            return angle;
-        }
-
-        const LEFT_SHOULDER = 11, RIGHT_SHOULDER = 12;
-        const LEFT_ELBOW = 13, RIGHT_ELBOW = 14;
-        const LEFT_WRIST = 15, RIGHT_WRIST = 16;
-        const LEFT_HIP = 23, RIGHT_HIP = 24;
-        const LEFT_KNEE = 25, RIGHT_KNEE = 26;
-        const LEFT_ANKLE = 27, RIGHT_ANKLE = 28;
-
-        const PUSHUP_POINTS = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST];
-        const PUSHUP_CONNECTIONS = [
-            [LEFT_SHOULDER, LEFT_ELBOW], [LEFT_ELBOW, LEFT_WRIST],
-            [RIGHT_SHOULDER, RIGHT_ELBOW], [RIGHT_ELBOW, RIGHT_WRIST],
-            [LEFT_SHOULDER, RIGHT_SHOULDER]
-        ];
-
+        // --- Отжимания ---
         function checkPushupPosition(landmarks) {
             const armsVisible = PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
             if (!armsVisible) return false;
-
-            const leftHipVisible = landmarks[LEFT_HIP].visibility > 0.5 && landmarks[LEFT_KNEE].visibility > 0.5;
-            const rightHipVisible = landmarks[RIGHT_HIP].visibility > 0.5 && landmarks[RIGHT_KNEE].visibility > 0.5;
+            const leftHipVisible = landmarks[LEFT_HIP].visibility>0.5 && landmarks[LEFT_KNEE].visibility>0.5;
+            const rightHipVisible = landmarks[RIGHT_HIP].visibility>0.5 && landmarks[RIGHT_KNEE].visibility>0.5;
             if (!leftHipVisible && !rightHipVisible) return true;
-
-            return isPushupBodyStraight(landmarks);
-        }
-
-        function isPushupBodyStraight(landmarks) {
-            const leftVisible = landmarks[LEFT_HIP].visibility > 0.5 && landmarks[LEFT_KNEE].visibility > 0.5;
-            const rightVisible = landmarks[RIGHT_HIP].visibility > 0.5 && landmarks[RIGHT_KNEE].visibility > 0.5;
-
-            if (!leftVisible && !rightVisible) return false;
-
-            if (leftVisible) {
-                const angle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_HIP], landmarks[LEFT_KNEE]);
-                if (angle > 140) return true;
-            }
-            if (rightVisible) {
-                const angle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_HIP], landmarks[RIGHT_KNEE]);
-                if (angle > 140) return true;
-            }
+            if (leftHipVisible && calculateAngle(landmarks[LEFT_SHOULDER],landmarks[LEFT_HIP],landmarks[LEFT_KNEE])>140) return true;
+            if (rightHipVisible && calculateAngle(landmarks[RIGHT_SHOULDER],landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE])>140) return true;
             return false;
         }
-
-        const MIN_SHOULDER_MOVEMENT = 0.02;
-        let expectedShoulderDirection = null; // +1 = вниз по кадру, -1 = вверх, определяется первым повторением
-
+        const MIN_MOVEMENT = 0.02;
         function countPushups(landmarks) {
-            const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
-            const rightAngle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_ELBOW], landmarks[RIGHT_WRIST]);
-            const shoulderY = (landmarks[LEFT_SHOULDER].y + landmarks[RIGHT_SHOULDER].y) / 2;
-
-            const bothUp = leftAngle > 150 && rightAngle > 150;
-            const bothDown = leftAngle < 75 && rightAngle < 75;
-
-            if (bothUp) {
-                stage = "up";
-                shoulderYAtUp = shoulderY;
-            }
-
-            if (bothDown && stage === "up") {
-                const delta = shoulderYAtUp === null ? 0 : (shoulderY - shoulderYAtUp);
-                const bodyMoved = Math.abs(delta) >= MIN_SHOULDER_MOVEMENT;
-                if (!bodyMoved) return;
-
-                const direction = delta > 0 ? 1 : -1;
-                if (expectedShoulderDirection === null) {
-                    expectedShoulderDirection = direction; // фиксируем направление по первому повторению
-                } else if (direction !== expectedShoulderDirection) {
-                    return; // движение в обратную сторону — не засчитываем
-                }
-
+            const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER],landmarks[LEFT_ELBOW],landmarks[LEFT_WRIST]);
+            const rightAngle = calculateAngle(landmarks[RIGHT_SHOULDER],landmarks[RIGHT_ELBOW],landmarks[RIGHT_WRIST]);
+            const shoulderY = (landmarks[LEFT_SHOULDER].y + landmarks[RIGHT_SHOULDER].y)/2;
+            const bothUp = leftAngle>150 && rightAngle>150, bothDown = leftAngle<75 && rightAngle<75;
+            if (bothUp) { stage="up"; shoulderYAtUp = shoulderY; }
+            if (bothDown && stage==="up") {
+                const delta = shoulderYAtUp===null?0:(shoulderY-shoulderYAtUp);
+                if (Math.abs(delta) < MIN_MOVEMENT) return;
+                const direction = delta>0?1:-1;
+                if (expectedShoulderDirection===null) expectedShoulderDirection=direction; else if (direction!==expectedShoulderDirection) return;
                 const now = Date.now();
-                if (now - lastRepTimestamp > 500) {
-                    stage = "down";
-                    lastRepTimestamp = now;
-                    pushupCount++;
-                    counterEl.innerText = pushupCount;
-                    playHitSound();
-                    triggerHitShake();
-                    vibrate('light');
-                    if (inDungeonMode) applyDungeonDamage(1);
-                }
+                if (now-lastRepTimestamp>500) { stage="down"; lastRepTimestamp=now; countRepGeneric(); }
             }
         }
 
-        function drawPushupLandmarks(landmarks) {
-            drawPoints(landmarks, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
+        // --- Приседания ---
+        function checkSquatPosition(landmarks) {
+            return SQUAT_POINTS.every(idx => landmarks[idx].visibility > 0.55);
+        }
+        function countSquats(landmarks) {
+            const leftAngle = calculateAngle(landmarks[LEFT_HIP],landmarks[LEFT_KNEE],landmarks[LEFT_ANKLE]);
+            const rightAngle = calculateAngle(landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE],landmarks[RIGHT_ANKLE]);
+            const hipY = (landmarks[LEFT_HIP].y + landmarks[RIGHT_HIP].y)/2;
+            const bothUp = leftAngle>160 && rightAngle>160, bothDown = leftAngle<100 && rightAngle<100;
+            if (bothUp) { stage="up"; shoulderYAtUp = hipY; }
+            if (bothDown && stage==="up") {
+                const delta = shoulderYAtUp===null?0:(hipY-shoulderYAtUp);
+                if (Math.abs(delta) < MIN_MOVEMENT) return;
+                const direction = delta>0?1:-1;
+                if (expectedShoulderDirection===null) expectedShoulderDirection=direction; else if (direction!==expectedShoulderDirection) return;
+                const now = Date.now();
+                if (now-lastRepTimestamp>500) { stage="down"; lastRepTimestamp=now; countRepGeneric(); }
+            }
+        }
+        function countRepGeneric() {
+            repCount++; counterEl.innerText = repCount; playHitSound(); triggerHitShake(); vibrate('light');
+            if (inDungeonMode) applyDungeonDamage(1);
         }
 
-        function avgVisibility(indices, landmarks) {
-            return indices.reduce((sum, idx) => sum + landmarks[idx].visibility, 0) / indices.length;
-        }
-
+        // --- Планка (сбоку) ---
+        function avgVisibility(indices, landmarks) { return indices.reduce((s,idx)=>s+landmarks[idx].visibility,0)/indices.length; }
         function getPlankSidePoints(landmarks) {
-            const leftIndices = [LEFT_SHOULDER, LEFT_ELBOW, LEFT_WRIST, LEFT_HIP, LEFT_KNEE, LEFT_ANKLE];
-            const rightIndices = [RIGHT_SHOULDER, RIGHT_ELBOW, RIGHT_WRIST, RIGHT_HIP, RIGHT_KNEE, RIGHT_ANKLE];
-            const leftScore = avgVisibility(leftIndices, landmarks);
-            const rightScore = avgVisibility(rightIndices, landmarks);
-            if (leftScore >= rightScore) {
-                return { shoulder: LEFT_SHOULDER, elbow: LEFT_ELBOW, wrist: LEFT_WRIST, hip: LEFT_HIP, knee: LEFT_KNEE, ankle: LEFT_ANKLE };
-            } else {
-                return { shoulder: RIGHT_SHOULDER, elbow: RIGHT_ELBOW, wrist: RIGHT_WRIST, hip: RIGHT_HIP, knee: RIGHT_KNEE, ankle: RIGHT_ANKLE };
-            }
+            const leftIndices=[LEFT_SHOULDER,LEFT_ELBOW,LEFT_WRIST,LEFT_HIP,LEFT_KNEE,LEFT_ANKLE];
+            const rightIndices=[RIGHT_SHOULDER,RIGHT_ELBOW,RIGHT_WRIST,RIGHT_HIP,RIGHT_KNEE,RIGHT_ANKLE];
+            return avgVisibility(leftIndices,landmarks) >= avgVisibility(rightIndices,landmarks)
+                ? {shoulder:LEFT_SHOULDER,elbow:LEFT_ELBOW,wrist:LEFT_WRIST,hip:LEFT_HIP,knee:LEFT_KNEE,ankle:LEFT_ANKLE}
+                : {shoulder:RIGHT_SHOULDER,elbow:RIGHT_ELBOW,wrist:RIGHT_WRIST,hip:RIGHT_HIP,knee:RIGHT_KNEE,ankle:RIGHT_ANKLE};
         }
-
         function checkPlankPosition(landmarks) {
             const p = getPlankSidePoints(landmarks);
-            const required = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
-            const allVisible = required.every(idx => landmarks[idx].visibility > 0.6);
-            if (!allVisible) return { valid: false, reason: "not_visible", points: p };
-            const bodyAngle = calculateAngle(landmarks[p.shoulder], landmarks[p.hip], landmarks[p.knee]);
-            const legAngle = calculateAngle(landmarks[p.hip], landmarks[p.knee], landmarks[p.ankle]);
-            const isStraight = bodyAngle > 150 && legAngle > 150;
-            return { valid: isStraight, reason: isStraight ? "ok" : "not_straight", points: p };
+            const required = [p.shoulder,p.elbow,p.wrist,p.hip,p.knee,p.ankle];
+            if (!required.every(idx=>landmarks[idx].visibility>0.6)) return {valid:false, reason:"not_visible", points:p};
+            const bodyAngle = calculateAngle(landmarks[p.shoulder],landmarks[p.hip],landmarks[p.knee]);
+            const legAngle = calculateAngle(landmarks[p.hip],landmarks[p.knee],landmarks[p.ankle]);
+            const isStraight = bodyAngle>150 && legAngle>150;
+            return {valid:isStraight, reason:isStraight?"ok":"not_straight", points:p};
         }
 
-        function drawPlankLandmarks(landmarks, p) {
-            const points = [p.shoulder, p.elbow, p.wrist, p.hip, p.knee, p.ankle];
-            const connections = [
-                [p.shoulder, p.elbow], [p.elbow, p.wrist],
-                [p.shoulder, p.hip], [p.hip, p.knee], [p.knee, p.ankle]
-            ];
-            drawPoints(landmarks, points, connections);
+        // --- Стульчик (лицом к камере, статика) ---
+        function checkWallsitPosition(landmarks) {
+            if (!WALLSIT_POINTS.every(idx => landmarks[idx].visibility > 0.55)) return {valid:false, reason:"not_visible"};
+            const leftKneeAngle = calculateAngle(landmarks[LEFT_HIP],landmarks[LEFT_KNEE],landmarks[LEFT_ANKLE]);
+            const rightKneeAngle = calculateAngle(landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE],landmarks[RIGHT_ANKLE]);
+            const kneeOk = (leftKneeAngle>60 && leftKneeAngle<120) || (rightKneeAngle>60 && rightKneeAngle<120);
+            const shoulderMidX = (landmarks[LEFT_SHOULDER].x+landmarks[RIGHT_SHOULDER].x)/2;
+            const hipMidX = (landmarks[LEFT_HIP].x+landmarks[RIGHT_HIP].x)/2;
+            const shoulderMidY = (landmarks[LEFT_SHOULDER].y+landmarks[RIGHT_SHOULDER].y)/2;
+            const hipMidY = (landmarks[LEFT_HIP].y+landmarks[RIGHT_HIP].y)/2;
+            const torsoAngleFromVertical = Math.abs(Math.atan2(hipMidX-shoulderMidX, hipMidY-shoulderMidY) * 180/Math.PI);
+            const torsoUpright = torsoAngleFromVertical < 25;
+            const isValid = kneeOk && torsoUpright;
+            return {valid: isValid, reason: isValid ? "ok" : "not_straight"};
         }
 
         function drawPoints(landmarks, points, connections) {
-            skeletonCtx.strokeStyle = '#F59E0B';
-            skeletonCtx.lineWidth = 3;
-            for (const [startIdx, endIdx] of connections) {
-                const start = landmarks[startIdx];
-                const end = landmarks[endIdx];
-                skeletonCtx.beginPath();
-                skeletonCtx.moveTo(start.x * skeletonCanvas.width, start.y * skeletonCanvas.height);
-                skeletonCtx.lineTo(end.x * skeletonCanvas.width, end.y * skeletonCanvas.height);
-                skeletonCtx.stroke();
+            skeletonCtx.strokeStyle = '#F59E0B'; skeletonCtx.lineWidth = 3;
+            for (const [a,b] of connections) {
+                const s=landmarks[a], e=landmarks[b];
+                skeletonCtx.beginPath(); skeletonCtx.moveTo(s.x*skeletonCanvas.width, s.y*skeletonCanvas.height);
+                skeletonCtx.lineTo(e.x*skeletonCanvas.width, e.y*skeletonCanvas.height); skeletonCtx.stroke();
             }
             skeletonCtx.fillStyle = '#EF4444';
-            for (const idx of points) {
-                const point = landmarks[idx];
-                skeletonCtx.beginPath();
-                skeletonCtx.arc(point.x * skeletonCanvas.width, point.y * skeletonCanvas.height, 6, 0, 2 * Math.PI);
-                skeletonCtx.fill();
-            }
+            for (const idx of points) { const p=landmarks[idx]; skeletonCtx.beginPath(); skeletonCtx.arc(p.x*skeletonCanvas.width, p.y*skeletonCanvas.height, 6, 0, 2*Math.PI); skeletonCtx.fill(); }
         }
-
-        function formatTime(totalSeconds) {
-            const m = Math.floor(totalSeconds / 60);
-            const s = Math.floor(totalSeconds % 60);
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        function updatePlankTimer(isInPosition) {
+        function formatTime(s) { const m=Math.floor(s/60); const sec=Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+        function updateHoldTimer(isInPosition) {
             const now = Date.now();
             if (isInPosition) {
-                if (plankLastTimestamp !== null) {
-                    const delta = (now - plankLastTimestamp) / 1000;
-                    plankSeconds += delta;
+                if (holdLastTimestamp !== null) {
+                    const delta = (now-holdLastTimestamp)/1000; holdSeconds += delta;
                     if (inDungeonMode) applyDungeonDamage(delta);
-
-                    const currentMinute = Math.floor(plankSeconds / 60);
-                    if (currentMinute > lastPlankMinuteMarked) {
-                        lastPlankMinuteMarked = currentMinute;
-                        playMinuteBeep();
-                        vibrate('light');
-                    }
+                    const currentMinute = Math.floor(holdSeconds/60);
+                    if (currentMinute > lastHoldMinuteMarked) { lastHoldMinuteMarked = currentMinute; playMinuteBeep(); vibrate('light'); }
                 }
-                plankLastTimestamp = now;
-            } else {
-                plankLastTimestamp = null;
-            }
-            counterEl.innerText = formatTime(plankSeconds);
+                holdLastTimestamp = now;
+            } else holdLastTimestamp = null;
+            counterEl.innerText = formatTime(holdSeconds);
         }
 
-        const pose = new Pose({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-        });
-
-        pose.setOptions({
-            modelComplexity: 1, smoothLandmarks: true,
-            minDetectionConfidence: 0.5, minTrackingConfidence: 0.5
-        });
-
+        const pose = new Pose({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
+        pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
         pose.onResults(onResults);
 
         function onResults(results) {
             if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
-                canvas.width = results.image.width;
-                canvas.height = results.image.height;
-                skeletonCanvas.width = results.image.width;
-                skeletonCanvas.height = results.image.height;
+                canvas.width = results.image.width; canvas.height = results.image.height;
+                skeletonCanvas.width = results.image.width; skeletonCanvas.height = results.image.height;
             }
+            ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1); ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(results.image,0,0,canvas.width,canvas.height); ctx.restore();
 
-            ctx.save();
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-            ctx.restore();
-
-            skeletonCtx.save();
-            skeletonCtx.clearRect(0, 0, skeletonCanvas.width, skeletonCanvas.height);
-            skeletonCtx.translate(skeletonCanvas.width, 0);
-            skeletonCtx.scale(-1, 1);
+            skeletonCtx.save(); skeletonCtx.clearRect(0,0,skeletonCanvas.width,skeletonCanvas.height);
+            skeletonCtx.translate(skeletonCanvas.width,0); skeletonCtx.scale(-1,1);
 
             if (results.poseLandmarks) {
+                const lm = results.poseLandmarks;
                 if (currentMode === 'pushup') {
-                    drawPushupLandmarks(results.poseLandmarks);
-                    inPosition = checkPushupPosition(results.poseLandmarks);
-
-                    if (inPosition) {
-                        statusEl.innerText = dungeonPaused ? "Передышка..." : "Позиция ОК, считаем! 💪";
-                        if (!dungeonPaused) countPushups(results.poseLandmarks);
-                    } else {
-                        statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                    }
+                    drawPoints(lm, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
+                    inPosition = checkPushupPosition(lm);
+                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 💪") : "Займите позицию для отжиманий 🧎";
+                    if (inPosition && !dungeonPaused) countPushups(lm);
+                } else if (currentMode === 'squat') {
+                    drawPoints(lm, SQUAT_POINTS, SQUAT_CONNECTIONS);
+                    inPosition = checkSquatPosition(lm);
+                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🚶";
+                    if (inPosition && !dungeonPaused) countSquats(lm);
                 } else if (currentMode === 'plank') {
-                    const result = checkPlankPosition(results.poseLandmarks);
-                    drawPlankLandmarks(results.poseLandmarks, result.points);
-
-                    if (result.reason === "not_visible") {
-                        statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                    } else if (result.reason === "not_straight") {
-                        statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
-                    } else {
-                        statusEl.innerText = "Отлично держите планку! 🔥";
-                    }
-                    updatePlankTimer(result.valid && !dungeonPaused);
+                    const result = checkPlankPosition(lm);
+                    drawPoints(lm, [result.points.shoulder,result.points.elbow,result.points.wrist,result.points.hip,result.points.knee,result.points.ankle],
+                        [[result.points.shoulder,result.points.elbow],[result.points.elbow,result.points.wrist],[result.points.shoulder,result.points.hip],[result.points.hip,result.points.knee],[result.points.knee,result.points.ankle]]);
+                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
+                    else if (result.reason==="not_straight") statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
+                    else statusEl.innerText = "Отлично держите планку! 🔥";
+                    updateHoldTimer(result.valid && !dungeonPaused);
+                } else if (currentMode === 'wallsit') {
+                    drawPoints(lm, WALLSIT_POINTS, WALLSIT_CONNECTIONS);
+                    const result = checkWallsitPosition(lm);
+                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте лицом к камере, покажите всё тело 🚶";
+                    else if (result.reason==="not_straight") statusEl.innerText = "Держите спину прямой, угол в колене — прямой угол 📏";
+                    else statusEl.innerText = "Отлично держите стульчик! 🔥";
+                    updateHoldTimer(result.valid && !dungeonPaused);
                 }
             } else {
-                inPosition = false;
-                statusEl.innerText = "Не вижу тело в кадре 👀";
-                if (currentMode === 'plank') updatePlankTimer(false);
+                inPosition = false; statusEl.innerText = "Не вижу тело в кадре 👀";
+                if (currentMode==='plank' || currentMode==='wallsit') updateHoldTimer(false);
             }
-
             skeletonCtx.restore();
         }
 
-        function startKeepAlivePing() {
-            if (keepAliveInterval) return;
-            keepAliveInterval = setInterval(() => {
-                fetch(`${API_BASE}/`).catch(() => {});
-            }, 60000);
-        }
-
-        function stopKeepAlivePing() {
-            if (keepAliveInterval) {
-                clearInterval(keepAliveInterval);
-                keepAliveInterval = null;
-            }
-        }
-
+        function startKeepAlivePing() { if (keepAliveInterval) return; keepAliveInterval = setInterval(()=>{fetch(`${API_BASE}/`).catch(()=>{});}, 60000); }
+        function stopKeepAlivePing() { if (keepAliveInterval) { clearInterval(keepAliveInterval); keepAliveInterval=null; } }
         function stopCameraCompletely() {
-            if (cameraObj) {
-                try { cameraObj.stop(); } catch (e) {}
-                cameraObj = null;
-            }
-            if (video.srcObject) {
-                video.srcObject.getTracks().forEach(track => track.stop());
-                video.srcObject = null;
-            }
-            cameraStarted = false;
-            stopKeepAlivePing();
+            if (cameraObj) { try{cameraObj.stop();}catch(e){} cameraObj=null; }
+            if (video.srcObject) { video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject=null; }
+            cameraStarted = false; stopKeepAlivePing();
         }
-
         function startCameraIfNeeded() {
             if (cameraStarted) return;
-            cameraObj = new Camera(video, {
-                onFrame: async () => {
-                    if (dungeonPaused) return;
-                    await pose.send({ image: video });
-                },
-                width: 480, height: 640
-            });
-            cameraObj.start();
-            cameraStarted = true;
+            cameraObj = new Camera(video, { onFrame: async () => { if (dungeonPaused) return; await pose.send({image:video}); }, width:480, height:640 });
+            cameraObj.start(); cameraStarted = true;
         }
 
         function startActivity(mode, isDungeon) {
-            fetch(`${API_BASE}/`).catch(() => {});
-            startKeepAlivePing();
-            applyTelegramViewportHeight();
-
-            currentMode = mode;
-            pushupCount = 0;
-            stage = "up";
-            shoulderYAtUp = null;
-            expectedShoulderDirection = null;
-            plankSeconds = 0;
-            plankLastTimestamp = null;
-            lastPlankMinuteMarked = 0;
+            fetch(`${API_BASE}/`).catch(()=>{}); startKeepAlivePing(); applyTelegramViewportHeight();
+            currentMode = mode; repCount = 0; stage = "up"; shoulderYAtUp = null; expectedShoulderDirection = null;
+            holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0;
 
             document.getElementById('finishBtn').style.display = 'block';
             document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
-
             if (!isDungeon) inDungeonMode = false;
 
-            if (mode === 'pushup') {
-                statusEl.innerText = "Займите позицию для отжиманий 🧎";
-                counterEl.innerText = "0";
-            } else {
-                statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                counterEl.innerText = "00:00";
-            }
+            const isTimeBased = (mode==='plank' || mode==='wallsit');
+            statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий 🧎"
+                : mode==='squat' ? "Встаньте лицом к камере 🚶"
+                : mode==='plank' ? "Встаньте боком к камере, покажите всё тело 🚶"
+                : "Встаньте лицом к камере, покажите всё тело 🚶";
+            counterEl.innerText = isTimeBased ? "00:00" : "0";
 
-            showScreen('activity');
-            startCameraIfNeeded();
-
-            setTimeout(applyTelegramViewportHeight, 150);
-            setTimeout(applyTelegramViewportHeight, 500);
+            showScreen('activity'); startCameraIfNeeded();
+            setTimeout(applyTelegramViewportHeight,150); setTimeout(applyTelegramViewportHeight,500);
         }
 
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        applyTelegramViewportHeight();
+        tg.ready(); tg.expand(); applyTelegramViewportHeight();
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
-        // ===== СОХРАНЕНИЕ РЕЗУЛЬТАТА =====
-
+        // ===== СОХРАНЕНИЕ =====
         let saveAttempts = 0;
+        function showSavingOverlay(text, subtext) { document.getElementById('saving-text').innerText=text; document.getElementById('saving-subtext').innerText=subtext||''; document.getElementById('saving-overlay').classList.add('active'); }
+        function hideSavingOverlay() { document.getElementById('saving-overlay').classList.remove('active'); document.getElementById('retryBtn').classList.remove('active'); }
 
-        function showSavingOverlay(text, subtext) {
-            document.getElementById('saving-text').innerText = text;
-            document.getElementById('saving-subtext').innerText = subtext || '';
-            document.getElementById('saving-overlay').classList.add('active');
-        }
+        const SAVE_ENDPOINT = { pushup:'save_pushups', squat:'save_squats', plank:'save_plank', wallsit:'save_wallsit' };
+        const SAVE_KEY = { pushup:'count', squat:'count', plank:'seconds', wallsit:'seconds' };
 
-        function hideSavingOverlay() {
-            document.getElementById('saving-overlay').classList.remove('active');
-            document.getElementById('retryBtn').classList.remove('active');
-        }
-
-        async function attemptSave(isRetry = false) {
-            const userId = getUserId();
-            const mode = currentMode;
-
+        async function attemptSave(isRetry=false) {
+            const userId = getUserId(); const mode = currentMode;
             if (!isRetry) saveAttempts = 0;
-
-            showSavingOverlay(
-                saveAttempts > 0 ? `Сохраняем результат... (попытка ${saveAttempts + 1})` : "Сохраняем результат...",
-                "Не закрывайте приложение"
-            );
+            showSavingOverlay(saveAttempts>0?`Сохраняем результат... (попытка ${saveAttempts+1})`:"Сохраняем результат...", "Не закрывайте приложение");
 
             let success = false;
-            const timeoutMs = Math.min(15000 + saveAttempts * 10000, 45000);
+            const timeoutMs = Math.min(15000 + saveAttempts*10000, 45000);
+            const value = (mode==='plank'||mode==='wallsit') ? Math.floor(holdSeconds) : repCount;
+            const minValue = (mode==='plank'||mode==='wallsit') ? 1 : 1;
 
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-                if (userId && mode === 'pushup' && pushupCount > 0) {
-                    const response = await fetch(`${API_BASE}/api/save_pushups`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId, count: pushupCount }),
-                        signal: controller.signal
-                    });
+                const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
+                if (userId && value >= minValue) {
+                    const body = {user_id:userId}; body[SAVE_KEY[mode]] = value;
+                    const response = await fetch(`${API_BASE}/api/${SAVE_ENDPOINT[mode]}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body), signal: controller.signal});
                     success = response.ok;
-                } else if (userId && mode === 'plank' && plankSeconds >= 1) {
-                    const response = await fetch(`${API_BASE}/api/save_plank`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId, seconds: Math.floor(plankSeconds) }),
-                        signal: controller.signal
-                    });
-                    success = response.ok;
-                } else {
-                    success = true;
-                }
-
+                } else success = true;
                 clearTimeout(timeoutId);
-            } catch (error) {
-                console.error("Ошибка сохранения:", error);
-                success = false;
-            }
+            } catch(e) { success = false; }
 
-            if (success) {
-                stopCameraCompletely();
-                inDungeonMode = false;
-                currentMode = null;
-                hideSavingOverlay();
-                showScreen('adventure');
-                return;
-            }
+            if (success) { stopCameraCompletely(); inDungeonMode=false; currentMode=null; hideSavingOverlay(); showScreen('adventure'); return; }
 
             saveAttempts++;
             document.getElementById('retryBtn').classList.add('active');
-            showSavingOverlay(
-                `Соединение медленное — продолжаем пытаться сохранить`,
-                `Попытка ${saveAttempts}. Можно подождать или нажать кнопку ниже, чтобы попробовать прямо сейчас`
-            );
-            setTimeout(() => attemptSave(true), 500);
+            showSavingOverlay(`Соединение медленное — продолжаем пытаться сохранить`, `Попытка ${saveAttempts}. Можно подождать или нажать кнопку ниже`);
+            setTimeout(()=>attemptSave(true), 500);
         }
-
-        function retrySave() {
-            attemptSave(true);
-        }
+        function retrySave() { attemptSave(true); }
 
         document.getElementById('finishBtn').addEventListener('click', () => {
-            if (inDungeonMode && !dungeonJustWon) {
-                playDefeatSound();
-                vibrate('error');
-            }
+            if (inDungeonMode && !dungeonJustWon) { playDefeatSound(); vibrate('error'); }
             attemptSave();
         });
 
