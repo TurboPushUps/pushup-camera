@@ -220,6 +220,46 @@
         .overlay-box .btn { max-width: 320px; }
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
         .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+        /* ===== СЮЖЕТНЫЕ СЦЕНЫ ===== */
+        .story-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000;
+            background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; justify-content: flex-end;
+            padding: 20px; box-sizing: border-box; cursor: pointer;
+        }
+        .story-overlay.active { display: flex; }
+        .story-skip-btn {
+            position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; z-index: 3001;
+            background: rgba(255,255,255,0.1); color: var(--text-dim); border: 1px solid var(--border-main);
+            border-radius: 20px; padding: 8px 16px; font-size: var(--fs-caption); cursor: pointer;
+        }
+        .story-card {
+            width: 100%; max-width: 684px; background: var(--bg-card); border-radius: 18px;
+            padding: 24px; box-sizing: border-box; margin-bottom: 20px;
+            border: 2px solid var(--border-main); transition: border-color 0.2s;
+        }
+        .story-card.speaker-ally { border-color: #7dd3fc; box-shadow: 0 0 18px rgba(125,211,252,0.15); }
+        .story-card.speaker-enemy { border-color: var(--danger); }
+        .story-card.speaker-boss { border-color: var(--accent); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
+        .story-card.speaker-swamp { border-color: #4ade80; }
+        .story-card.speaker-author { border-color: var(--border-main); background: rgba(0,0,0,0.2); }
+        .story-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+        .story-avatar {
+            width: 58px; height: 58px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+            border: 2px solid var(--border-main); background: var(--bg-main); display: flex; align-items: center; justify-content: center;
+        }
+        .story-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .story-name { font-weight: 600; font-size: var(--fs-body); text-align: left; }
+        .story-card.speaker-ally .story-name { color: #7dd3fc; }
+        .story-card.speaker-enemy .story-name { color: var(--danger); }
+        .story-card.speaker-boss .story-name { color: var(--accent-bright); }
+        .story-card.speaker-swamp .story-name { color: #4ade80; }
+        .story-text { text-align: left; font-size: var(--fs-body); line-height: 1.55; color: var(--text-main); min-height: 2.4em; }
+        .story-text.author-text { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); font-style: normal; }
+        .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; opacity: 0.6; }
+        .story-continue-btn {
+            width: 100%; max-width: 684px; padding: 22px; background: var(--bg-card); color: var(--accent-bright);
+            border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -447,6 +487,19 @@
             <button class="btn btn-primary" id="zone-buy-btn">Купить за 200 ⭐</button>
             <button class="btn" onclick="document.getElementById('overlay-zone-locked').classList.remove('active')">Позже</button>
         </div>
+    </div>
+    <!-- ===== СЮЖЕТНАЯ СЦЕНА ===== -->
+    <div id="story-overlay" class="story-overlay" onclick="handleStoryTap()">
+        <button class="story-skip-btn" onclick="event.stopPropagation(); skipStoryScene();">Пропустить сцену</button>
+        <div class="story-card" id="story-card">
+            <div class="story-header" id="story-header" style="display:none;">
+                <div class="story-avatar" id="story-avatar"></div>
+                <div class="story-name" id="story-name"></div>
+            </div>
+            <div class="story-text" id="story-text"></div>
+        </div>
+        <div class="story-tap-hint" id="story-tap-hint">Нажми, чтобы продолжить</div>
+        <button class="story-continue-btn" id="story-final-btn" style="display:none;" onclick="event.stopPropagation(); finishStoryScene();">Дальше</button>
     </div>
 
     <div id="saving-overlay" class="saving-overlay">
@@ -1048,9 +1101,12 @@
         let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
         let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
 
-        async function startDungeonActivity(activity, dungeonN) {
+        function startDungeonActivity(activity, dungeonN) {
             if (staminaCache.remaining <= 0) { document.getElementById('overlay-no-stamina').classList.add('active'); return; }
-            showWarmupTip(activity, () => doStartDungeonActivity(activity, dungeonN));
+            showWarmupTip(activity, () => {
+                const scene = STORY_SCENES[dungeonN];
+                showStoryScene(scene ? scene.pre : null, () => doStartDungeonActivity(activity, dungeonN));
+            });
         }
 
         async function doStartDungeonActivity(activity, dungeonN) {
@@ -1117,9 +1173,21 @@
         }
         async function finishDungeonVictory() {
             dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
-            document.getElementById('dungeon-complete-xp').innerText = "Подсчитываем награду... ⏳";
-            document.getElementById('overlay-dungeon-complete').classList.add('active');
-            await saveDungeonCompletionWithRetry();
+
+            const savePromise = saveDungeonCompletionWithRetry();
+            const scene = STORY_SCENES[dungeonNumber];
+
+            const showReward = async () => {
+                const xp = await savePromise;
+                document.getElementById('dungeon-complete-xp').innerText = `+${xp} XP ⭐`;
+                document.getElementById('overlay-dungeon-complete').classList.add('active');
+            };
+
+            if (scene && scene.post) {
+                showStoryScene(scene.post, showReward);
+            } else {
+                await showReward();
+            }
         }
         async function saveDungeonCompletionWithRetry() {
             const userId = getUserId(); const activity = dungeonActivityType; const dungeonN = dungeonNumber; let attempt = 0;
@@ -1132,10 +1200,8 @@
                     clearTimeout(timeoutId);
                     if (!response.ok) throw new Error("Сервер ответил ошибкой");
                     const data = await response.json();
-                    document.getElementById('dungeon-complete-xp').innerText = `+${data.xp_earned||0} XP ⭐`;
-                    return;
+                    return data.xp_earned || 0;
                 } catch(e) {
-                    document.getElementById('dungeon-complete-xp').innerText = `Сохраняем награду... (попытка ${attempt}) ⏳`;
                     await new Promise(r=>setTimeout(r,500));
                 }
             }
@@ -1407,7 +1473,542 @@
             if (inDungeonMode && !dungeonJustWon) { playDefeatSound(); vibrate('error'); }
             attemptSave();
         });
+        // ===== ЗВУК ПЕЧАТИ (шелест пера, не клавиатура) =====
+        function playTypeTick() {
+            if (!soundEnabled) return;
+            try {
+                const ctxA = getAudioCtx();
+                const bufferSize = Math.floor(ctxA.sampleRate * 0.02);
+                const buffer = ctxA.createBuffer(1, bufferSize, ctxA.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.25;
+                const noise = ctxA.createBufferSource(); noise.buffer = buffer;
+                const filter = ctxA.createBiquadFilter();
+                filter.type = 'bandpass'; filter.frequency.value = 2200 + Math.random() * 1600; filter.Q.value = 5;
+                const gain = ctxA.createGain();
+                gain.gain.setValueAtTime(0.14, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.035);
+                noise.connect(filter); filter.connect(gain); gain.connect(ctxA.destination);
+                noise.start();
+            } catch (e) {}
+        }
 
+        // ===== ДАННЫЕ СЮЖЕТА =====
+        function A(text) { return { speaker: 'author', text }; }
+        function E(text) { return { speaker: 'ally', name: 'Эйра', avatar: 'Eira.png', text }; }
+        function S(text) { return { speaker: 'player', name: 'Странник', text }; }
+        function M(name, avatar, text, color) { return { speaker: color === 'gold' ? 'boss' : (color === 'green' ? 'swamp' : 'enemy'), name, avatar, text }; }
+        function V(text) { return { speaker: 'boss', name: 'Варен', avatar: 'Servant.png', text }; }
+        function U(text) { return { speaker: 'boss', name: 'Неизвестный', avatar: 'Main_Boss.png', text }; }
+        function MR(text) { return { speaker: 'boss', name: 'Морвен', avatar: 'Main_Boss.png', text }; }
+        function MO(text) { return { speaker: 'boss', name: 'Морвен', avatar: 'Main_Boss_Final.png', text }; }
+
+        const STORY_SCENES = {
+            1: {
+                pre: [
+                    A("Вход в пещеру был открыт совсем недавно. На камнях ещё видны остатки разрушенной печати. Из глубины доносится шорох сотен крыльев."),
+                    E("Здесь что-то не так. Обычные животные не пытаются прорваться сквозь древние печати."),
+                    A("Из темноты раздаётся пронзительный визг."),
+                    E("Приготовься. Они уже заметили нас."),
+                    M("Летучая мышь", "Rat.png", "КРРР-ААА!"),
+                    S("Тогда пусть летят.")
+                ],
+                post: [A("Последняя тварь падает на каменный пол. Но впереди слышится другой звук. Медленные шаги. Кто-то гораздо крупнее приближается из глубины пещеры.")]
+            },
+            2: {
+                pre: [
+                    A("На стенах больше нет следов когтей. Вместо них — древние символы и потемневшие металлические цепи."),
+                    E("Эти существа кому-то служили."),
+                    M("Неизвестный голос", "Rat_Boss.png", "Не служили. — Повиновались.", "gold"),
+                    A("Из темноты выходит высокий вампир."),
+                    M("Вампир", "Rat_Boss.png", "Странник… Я чувствую твою кровь отсюда.", "gold"),
+                    E("Он охраняет проход."),
+                    M("Вампир", "Rat_Boss.png", "Нет. — Я охраняю вас от того, что находится дальше.", "gold"),
+                    S("Тогда отойди."),
+                    M("Вампир", "Rat_Boss.png", "Попробуй заставить меня.", "gold")
+                ],
+                post: [
+                    M("Вампир", "Rat_Boss.png", "Ты даже не понимаешь… — Он хотел, чтобы ты победил.", "gold"),
+                    A("Вампир рассыпается в чёрный пепел."),
+                    E("Кто — «он»?"),
+                    A("Ответа нет."),
+                    A("Первая печать разрушена. Но теперь ясно главное. Кто-то ожидал появления Странника.")
+                ]
+            },
+            3: {
+                pre: [
+                    A("За пещерами начинается древний город. Его жители умерли сотни лет назад. По крайней мере, должны были. Из тумана появляется первый вооружённый скелет. За ним второй. Потом ещё десятки."),
+                    E("Они не бродят бесцельно. Посмотри. Это армия."),
+                    S("Тогда найдём её командира.")
+                ],
+                post: [
+                    A("Последний скелет рассыпается. Но никто не пытался убежать."),
+                    E("Даже мёртвые обычно боятся уничтожения. — Кто-то заставляет их сражаться."),
+                    A("Вдалеке слышится тяжёлый удар металла.")
+                ]
+            },
+            4: {
+                pre: [
+                    A("В центре огромного зала стоит скелет в древних доспехах. Вокруг него — сотни неподвижных воинов."),
+                    M("Командир скелетов", "Skelet_Boss.png", "Живой. — Ты далеко зашёл.", "gold"),
+                    S("Освободи их."),
+                    M("Командир скелетов", "Skelet_Boss.png", "Они уже были мертвы. — Я дал им цель.", "gold"),
+                    E("Кто поднял тебя?"),
+                    A("Командир молчит. Затем медленно вытаскивает меч."),
+                    M("Командир скелетов", "Skelet_Boss.png", "Победи меня. — И, возможно, узнаешь.", "gold")
+                ],
+                post: [
+                    M("Командир скелетов", "Skelet_Boss.png", "Сила есть… — Посмотрим, хватит ли её, когда враг окажется сильнее тебя.", "gold"),
+                    A("Его тело рассыпается. На полу остаётся металлический знак. Тот же символ, который был в пещере вампира."),
+                    E("Один хозяин. — Разные армии."),
+                    A("Теперь сомнений нет. Кто-то намеренно собирает существ, которых обычно невозможно заставить сражаться вместе. Но зачем?")
+                ]
+            },
+            5: {
+                pre: [
+                    A("Дорога приводит в горы. Здесь исчезли караваны. На дороге лежат разбитые телеги и огромные следы."),
+                    A("Из-за скалы выходит огромный тролль. Он тащит за собой цепь. На цепи висит тот же символ."),
+                    E("Стой. — Посмотри на его шею."),
+                    S("Он прикован."),
+                    A("Тролль замечает героя. Его глаза вспыхивают красным."),
+                    M("Тролль", "Troll.png", "УБИТЬ!")
+                ],
+                post: [
+                    A("Тролль падает. Красный свет в его глазах исчезает. На мгновение чудовище выглядит почти спокойным."),
+                    M("Тролль", "Troll.png", "Брат… — Беги…"),
+                    A("Он умирает."),
+                    E("Брат?"),
+                    A("Земля начинает дрожать.")
+                ]
+            },
+            6: {
+                pre: [
+                    A("Огромные ворота в скале разлетаются. Из крепости выходит двухголовый тролль. Одна голова покрыта шрамами. Вторая украшена костями и металлическими кольцами."),
+                    M("Первая голова", "Troll_Boss.png", "Ты убил его.", "gold"),
+                    M("Вторая голова", "Troll_Boss.png", "Он был слаб.", "gold"),
+                    M("Первая голова", "Troll_Boss.png", "Заткнись.", "gold"),
+                    M("Вторая голова", "Troll_Boss.png", "Сам заткнись.", "gold"),
+                    A("Обе головы смотрят на Странника."),
+                    M("Двухголовый тролль", "Troll_Boss.png", "А ТЕПЕРЬ УБЬЁМ ТЕБЯ!", "gold"),
+                    E("С этим переговоры будут короткими.")
+                ],
+                post: [
+                    M("Первая голова", "Troll_Boss.png", "Неплохо… маленький человек.", "gold"),
+                    A("Вторая неожиданно смотрит куда-то за спину героя."),
+                    M("Вторая голова", "Troll_Boss.png", "Он смотрит.", "gold"),
+                    E("Кто?"),
+                    M("Вторая голова", "Troll_Boss.png", "Хозяин.", "gold"),
+                    A("Глаза тролля гаснут. Третий командир повержен. Но впервые появляется ощущение, что победы Странника — часть чьего-то плана. Будто враги не пытаются остановить его. Будто они проверяют его.")
+                ]
+            },
+            7: {
+                pre: [
+                    A("Здесь нет птиц. Нет насекомых. Нет даже ветра. Между деревьями движутся бледные силуэты."),
+                    E("Не слушай их."),
+                    S("Почему?"),
+                    E("Потому что они говорят голосами тех, кого ты хочешь услышать."),
+                    A("Из тумана появляется призрак."),
+                    M("Призрак", "Ghost.png", "Странник… — Вернись."),
+                    A("За ним появляются другие."),
+                    M("Призраки", "Ghost.png", "Вернись… — Пока ещё можешь.")
+                ],
+                post: [
+                    A("Призраки исчезают. На несколько секунд лес становится совершенно тихим. А затем сотни голосов одновременно произносят:"),
+                    M("Голоса леса", "Ghost.png", "МЫ ТЕБЯ ВИДИМ.")
+                ]
+            },
+            8: {
+                pre: [
+                    A("Из тумана появляются десятки призраков. Они больше не пытаются выглядеть людьми. Их тела вытягиваются в поток бледного дыма и летят прямо к Страннику."),
+                    E("Это не один противник. — Это сотни душ, связанные вместе."),
+                    M("Рой", "Ghost_Boss.png", "ОСТАНЬСЯ С НАМИ. — ЗАБУДЬ БОЛЬ. — ЗАБУДЬ ПУТЬ.", "gold"),
+                    S("Нет.")
+                ],
+                post: [
+                    A("Вой постепенно стихает. Из исчезающего тумана появляется один призрак. Он выглядит иначе. Спокойнее."),
+                    M("Призрак", "Ghost_Boss.png", "Спасибо.", "gold"),
+                    E("Кто сделал это с вами?"),
+                    A("Призрак поднимает руку и показывает вперёд."),
+                    M("Призрак", "Ghost_Boss.png", "Тот… — кого ты ищешь.", "gold"),
+                    A("Призрак исчезает."),
+                    A("Где-то далеко от Странника. В огромном тёмном зале загорается огонь. Перед человеком на троне лежат четыре разбитые печати."),
+                    U("Летучие мыши. — Мёртвые. — Тролли. — Души."),
+                    A("Он медленно поднимается."),
+                    U("И всё ещё жив."),
+                    A("Рядом появляется неизвестное существо."),
+                    V("Приказать уничтожить его?"),
+                    A("Пауза."),
+                    U("Нет. — Откройте следующую дверь.")
+                ]
+            },
+            9: {
+                pre: [
+                    A("С каждым шагом воздух становится тяжелее. Вода вокруг дороги начинает двигаться, хотя ветра нет. Из болота поднимается нечто огромное."),
+                    E("Оно не родилось таким. — Посмотри на его тело. В нём слишком много чужого."),
+                    A("Тварь поворачивает голову. В её глазах вспыхивает зелёный свет."),
+                    M("Болотная тварь", "Swamp.png", "ЖИВОЕ… — ОТДАЙ…", "green"),
+                    S("Что именно?"),
+                    M("Болотная тварь", "Swamp.png", "ВСЁ.", "green")
+                ],
+                post: [
+                    A("Чудовище падает в воду. Его тело начинает распадаться на грязь, корни и кости. Эйра замечает металлический обруч среди останков."),
+                    E("Его тоже подчинили."),
+                    A("Из глубины болот раздаётся протяжный гул. Будто кто-то только что узнал о смерти своего слуги.")
+                ]
+            },
+            10: {
+                pre: [
+                    A("За болотами находится разрушенный дворец. Половина его стен давно ушла под воду. Но внутри всё ещё горят зелёные огни. В огромном зале на троне сидит Король болот."),
+                    M("Король болот", "Swamp_Boss.png", "Ещё один живой пришёл в моё царство.", "gold"),
+                    E("Мы не хотим твоего царства."),
+                    M("Король болот", "Swamp_Boss.png", "Ложь. — Живые всегда хотят чужого. — Землю. — Власть. — Бессмертие.", "gold"),
+                    S("Мне нужен проход."),
+                    M("Король болот", "Swamp_Boss.png", "Тогда возьми его. — Если сможешь.", "gold")
+                ],
+                post: [
+                    M("Король болот", "Swamp_Boss.png", "Значит… правда.", "gold"),
+                    E("Что правда?"),
+                    M("Король болот", "Swamp_Boss.png", "Ты именно тот, кого он ждал.", "gold"),
+                    E("Кто?"),
+                    M("Король болот", "Swamp_Boss.png", "Его посланник уже здесь.", "gold"),
+                    A("Король рассыпается в болотную жижу. В конце зала стоит высокий силуэт. Светлые волосы. Тёмная кожа. Острые уши. Чёрные доспехи. Он медленно хлопает в ладоши."),
+                    V("Наконец-то. — Я уже начал думать, что слухи о тебе преувеличены."),
+                    E("Кто ты?"),
+                    V("Я разговариваю со Странником."),
+                    V("Можешь называть меня Варен."),
+                    S("Ты служишь ему?"),
+                    V("Служу? — Нет. — Я нахожусь рядом с тем, кто однажды будет править всем этим миром."),
+                    E("Тогда передай своему хозяину, что мы идём за ним."),
+                    V("Он знает. — В этом и смысл."),
+                    A("Варен исчезает в клубах чёрного дыма."),
+                    A("Теперь враг впервые обрёл лицо. Но вопросов стало только больше. Почему тот, кто управляет армиями чудовищ, не пытается остановить Странника? Почему его слуга позволяет ему идти дальше? И почему каждый поверженный командир говорит одно и то же: ТЕБЯ ЖДАЛИ.")
+                ]
+            },
+            11: {
+                pre: [
+                    A("Ворота открыты. Внутри десятки рыцарей стоят неподвижно. Их доспехи покрыты ржавчиной. Но когда Странник делает первый шаг, все шлемы одновременно поворачиваются в его сторону."),
+                    E("Они были защитниками этих земель."),
+                    M("Голос из строя", "Fallen_knight.png", "Были."),
+                    A("Первый рыцарь вытаскивает меч."),
+                    M("Павший рыцарь", "Fallen_knight.png", "Теперь мы защищаем нового господина."),
+                    S("Тогда вы выбрали не ту сторону."),
+                    M("Павший рыцарь", "Fallen_knight.png", "Мы не выбирали.")
+                ],
+                post: [
+                    A("Последний рыцарь падает. Под его шлемом нет лица. Только чёрный дым."),
+                    E("Они уже давно мертвы. — Кто-то просто заставляет доспехи продолжать сражаться."),
+                    A("На стене появляется надпись, словно кто-то только что выжег её огнём: ЕЩЁ СИЛЬНЕЕ.")
+                ]
+            },
+            12: {
+                pre: [
+                    A("В центре крепости находится огромный круглый зал. Там ждёт последний защитник крепости — Чёрный рыцарь. Его доспехи выглядят новыми."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Странник. — Я ждал тебя.", "gold"),
+                    E("Разумеется. — Теперь нас везде ждут."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Не меня недооценивай.", "gold"),
+                    A("Он поднимает меч."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Остальные были мертвы. — Я служу добровольно.", "gold"),
+                    S("Почему?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Потому что видел, что приближается.", "gold"),
+                    E("И что же?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Конец.", "gold")
+                ],
+                post: [
+                    A("Рыцарь снимает шлем. Под ним оказывается обычный человек. Старый. Уставший."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Он не собирает армию ради войны.", "gold"),
+                    E("Тогда ради чего?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Ради того, кто сможет открыть дверь.", "gold"),
+                    S("Какую дверь?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Ту, к которой ты сейчас идёшь.", "gold"),
+                    A("Он умирает."),
+                    E("Мне это не нравится."),
+                    S("Что именно?"),
+                    E("Мы думали, что разрушаем его армию. — А что, если именно этого он и хочет?")
+                ]
+            },
+            13: {
+                pre: [
+                    A("Земля раскалывается прямо под ногами. Из трещин поднимаются существа, тела которых словно состоят из камня и огня."),
+                    E("Это уже не создания нашего мира."),
+                    V("Наконец-то догадалась."),
+                    A("Он стоит на высокой скале."),
+                    V("Дальше начинаются настоящие земли моего господина."),
+                    S("Спускайся."),
+                    V("Зачем? — Пока ты ещё развлекаешь меня."),
+                    A("Он исчезает. Из разлома поднимается чудовище.")
+                ],
+                post: [
+                    A("После смерти твари разлом не закрывается. Наоборот. Становится шире."),
+                    E("Странник… — Каждый раз, когда мы побеждаем, происходит одно и то же."),
+                    S("Печати становятся слабее."),
+                    E("Да.")
+                ]
+            },
+            14: {
+                pre: [
+                    A("Перед огромными воротами стоит демон. На его теле выгравированы несколько символов печатей."),
+                    M("Демон", "Flame_Master.png", "Наконец. — Последняя живая печать.", "gold"),
+                    E("Что он сказал?"),
+                    M("Демон", "Flame_Master.png", "Ты всё ещё не понимаешь, человек? — ПЕЧАТЬ — ЭТО ТЫ.", "gold"),
+                    A("Тишина."),
+                    S("Тогда попробуй сломать меня."),
+                    M("Демон", "Flame_Master.png", "С удовольствием.", "gold")
+                ],
+                post: [
+                    A("Демон падает. Из его груди выходит поток энергии и входит в тело Странника. На мгновение весь экран темнеет. Странник видит огромную дверь. За ней что-то движется."),
+                    M("Голос", "Main_Boss.png", "Ещё немного.", "gold"),
+                    A("Видение исчезает."),
+                    E("Что ты видел?"),
+                    S("Дверь.")
+                ]
+            },
+            15: {
+                pre: [
+                    A("Теперь путь невозможно повернуть назад. Странник и Эйра входят в огромный разлом. Здесь нет привычного неба. Нет земли. Лишь бесконечные разрушенные мосты и острова камня. Здесь появляются знакомые враги, но изменённые."),
+                    E("Он собирал их не просто так."),
+                    S("Он изучал их."),
+                    E("И улучшал."),
+                    V("Наконец-то ты начинаешь понимать. — Всё, что ты победил… — стало материалом для следующего поколения."),
+                    S("Значит, теперь твоя очередь."),
+                    V("Не сегодня.")
+                ],
+                post: [
+                    A("Вдали появляется огромная цитадель. Она висит прямо над бездной."),
+                    E("Вот куда нас вели."),
+                    A("Где-то внутри цитадели открываются огромные глаза.")
+                ]
+            },
+            16: {
+                pre: [
+                    A("Перед мостом стоит гигантское существо. На его теле находятся фрагменты всех предыдущих врагов: кости, крылья, шкура тролля, призрачный дым, демонический огонь."),
+                    E("Он собрал его из всего, что мы победили."),
+                    M("Страж", "Abyss_Guardian.png", "СТРАННИК. — ПОСЛЕДНЯЯ ПРОВЕРКА.", "gold"),
+                    S("Я уже устал от ваших проверок."),
+                    M("Страж", "Abyss_Guardian.png", "ТОГДА УМРИ.", "gold")
+                ],
+                post: [
+                    A("Страж падает. Мост к цитадели открывается. Но одновременно раздаётся голос Варена."),
+                    V("Прекрасно. — Ты прошёл дальше, чем любой до тебя."),
+                    E("До него были другие?"),
+                    V("Конечно."),
+                    S("Где они?"),
+                    V("Ты только что сражался с ними."),
+                    A("Пауза."),
+                    E("Страж…"),
+                    V("Именно.")
+                ]
+            },
+            17: {
+                pre: [
+                    A("Странник входит в крепость неизвестного властителя. Вместо армии здесь находятся статуи — каждая изображает одного из предыдущих Странников."),
+                    E("Сколько их было?"),
+                    V("Много. — Некоторые были сильнее тебя. — Некоторые умнее. — Один почти добрался до трона."),
+                    S("А ты убил его?"),
+                    V("Конечно. — Это было великолепно."),
+                    E("Ты больной."),
+                    V("Нет. — Я просто люблю честные вещи. — Страх. — Боль. — Победу. — И смерть."),
+                    S("Тогда заканчиваем."),
+                    V("Пока нет."),
+                    A("Он выпускает элитных стражей.")
+                ],
+                post: [
+                    A("Странник подходит к Варену. Но тот не убегает."),
+                    V("Теперь да."),
+                    A("Он вытаскивает два клинка.")
+                ]
+            },
+            18: {
+                pre: [
+                    V("Знаешь, что мне в тебе нравится?"),
+                    S("Ничего не приходит в голову."),
+                    V("Ты всё ещё думаешь, что выбираешь путь сам."),
+                    A("Он медленно обходит героя."),
+                    V("Летучие мыши. — Мертвецы. — Тролли. — Призраки. — Болота. — Крепость. — Бездна."),
+                    V("Каждый твой шаг был предусмотрен."),
+                    E("Тогда зачем мы здесь?"),
+                    V("Чтобы открыть дверь."),
+                    S("Как?"),
+                    V("Победив меня."),
+                    V("Так что постарайся.")
+                ],
+                post: [
+                    A("Варен лежит на полу. Один из его клинков сломан. Но он смеётся."),
+                    S("Что смешного?"),
+                    V("Ты."),
+                    A("Он кашляет кровью."),
+                    V("Ты всё ещё не понял."),
+                    A("За его спиной начинает открываться огромная дверь."),
+                    E("Нет…"),
+                    V("Именно. — Моя смерть была последним ключом."),
+                    S("Ты знал?"),
+                    V("Я ждал этого дня много лет."),
+                    A("Дверь полностью открывается. Из темноты доносится голос."),
+                    U("Войди."),
+                    A("Варен закрывает глаза."),
+                    V("Наконец-то…")
+                ]
+            },
+            19: {
+                pre: [
+                    A("За дверью находится огромный пустой зал. В конце стоит трон. На нём сидит тот самый силуэт, которого Странник видел в видениях. Когда Странник делает первый шаг, все двери позади закрываются. Эйра пытается пройти следом. Но между ними возникает стена чёрного огня."),
+                    E("Странник!"),
+                    U("Она больше не нужна."),
+                    S("А я?"),
+                    A("Фигура поднимается с трона."),
+                    U("Ты был нужен с самого начала."),
+                    A("Он выходит из тени."),
+                    MR("Меня называли многими именами. — Королём. — Проклятым. — Разрушителем."),
+                    A("Он подходит ближе."),
+                    MR("Но ты можешь называть меня Морвен."),
+                    S("Зачем ты привёл меня сюда?"),
+                    A("Морвен раскрывает ладонь. В ней появляется изображение мира. По нему проходят трещины."),
+                    MR("Ты думаешь, печати удерживали меня внутри?"),
+                    S("А разве нет?"),
+                    MR("Нет. — Они удерживали это."),
+                    A("За троном появляется огромная дверь. Гораздо больше предыдущей. Из-за неё доносится тяжёлый удар."),
+                    MR("Ты разрушал их одну за другой."),
+                    S("Потому что ты заставлял своих существ нападать."),
+                    MR("Именно. — Мне был нужен тот, кто достаточно силён, чтобы пройти весь путь. — И достаточно упрям, чтобы никогда не остановиться."),
+                    E("Не слушай его!"),
+                    MR("Почему? — Разве я хоть раз солгал?"),
+                    A("Он смотрит на Странника."),
+                    MR("Я никогда не обещал остановить тебя. — Никогда не скрывал дорогу. — Никогда не мешал тебе становиться сильнее."),
+                    MR("Потому что мне нужен был не слуга."),
+                    A("Пауза."),
+                    MR("Мне нужен был ПРЕЕМНИК.")
+                ],
+                post: [
+                    A("Странник остаётся стоять. Морвен впервые выглядит впечатлённым."),
+                    MR("Вот теперь я уверен."),
+                    S("В чём?"),
+                    MR("Что ты способен пережить мою силу."),
+                    A("Он протягивает руку."),
+                    MR("Встань рядом со мной. — И мир больше никогда не сможет заставить тебя склониться."),
+                    E("Странник!")
+                ]
+            },
+            20: {
+                pre: [
+                    A("Странник смотрит на протянутую руку. А затем сжимает кулак."),
+                    S("Я не прошёл весь этот путь, чтобы кому-то служить."),
+                    A("Морвен медленно опускает руку."),
+                    MO("Хорошо."),
+                    A("На его лице появляется улыбка."),
+                    MO("Именно этот ответ я и надеялся услышать."),
+                    A("Тронный зал начинает разрушаться."),
+                    MO("Тогда докажи, что достоин собственной воли.")
+                ],
+                post: [
+                    A("Морвен лежит у трона. Его силуэт начинает распадаться. Но он не выглядит разгневанным."),
+                    MO("Значит… — всё-таки ты."),
+                    S("Закрой дверь."),
+                    MO("Я уже не могу."),
+                    A("Странник смотрит на огромную печать за троном. Она расколота."),
+                    MO("Именно поэтому мне был нужен ты."),
+                    E("Что находится там?"),
+                    A("Морвен смотрит на дверь. Впервые в его голосе слышен страх."),
+                    MO("То, чего боялся даже я."),
+                    A("Тишина."),
+                    S("Как её закрыть?"),
+                    MO("Никак."),
+                    A("Пауза."),
+                    MO("Но теперь…"),
+                    A("Он смотрит на Странника."),
+                    MO("есть тот, кто сможет удержать её."),
+                    A("Морвен исчезает."),
+                    A("Странник и Эйра выходят из разрушающейся цитадели. Позади Бездна начинает закрываться."),
+                    E("Всё закончилось?"),
+                    A("Странник долго смотрит на затихающий разлом."),
+                    S("Нет."),
+                    E("Я тоже так думаю."),
+                    A("Проходит несколько дней. По всему миру исчезает красное свечение. Мёртвые снова становятся мёртвыми. Призраки покидают леса. Тролли уходят обратно в горы. Но далеко на севере происходит другое. В древней горе появляется трещина. Из неё выходит рука."),
+                    A("МОРВЕН БЫЛ НЕ ПРИЧИНОЙ ПРОИСХОДЯЩЕГО. ОН БЫЛ ПЕРВОЙ ЛИНИЕЙ ОБОРОНЫ."),
+                    E("Ты ведь понимаешь, что теперь можешь уйти?"),
+                    S("Могу."),
+                    E("И?"),
+                    A("Странник смотрит на дорогу впереди."),
+                    S("Показывай путь."),
+                    A("КОНЕЦ ПЕРВОЙ КАМПАНИИ")
+                ]
+            }
+        };
+
+        // ===== ДВИЖОК ПОКАЗА СЦЕН =====
+        let storyLines = [], storyLineIndex = 0, storyTypingInterval = null, storyIsTyping = false, storyOnComplete = null;
+
+        function showStoryScene(lines, onComplete) {
+            if (!storyEnabled || !lines || lines.length === 0) { onComplete(); return; }
+            storyLines = lines; storyLineIndex = 0; storyOnComplete = onComplete;
+            document.getElementById('story-overlay').classList.add('active');
+            renderStoryLine();
+        }
+
+        function renderStoryLine() {
+            const line = storyLines[storyLineIndex];
+            const card = document.getElementById('story-card');
+            const header = document.getElementById('story-header');
+            const avatarEl = document.getElementById('story-avatar');
+            const nameEl = document.getElementById('story-name');
+            const textEl = document.getElementById('story-text');
+            const finalBtn = document.getElementById('story-final-btn');
+            const tapHint = document.getElementById('story-tap-hint');
+
+            card.className = 'story-card speaker-' + line.speaker;
+            const isLast = storyLineIndex === storyLines.length - 1;
+            finalBtn.style.display = isLast ? 'block' : 'none';
+            finalBtn.innerText = isLast ? 'Дальше' : 'Дальше';
+            tapHint.style.display = isLast ? 'none' : 'block';
+
+            if (line.speaker === 'author') {
+                header.style.display = 'none';
+                textEl.className = 'story-text author-text';
+            } else {
+                header.style.display = 'flex';
+                textEl.className = 'story-text';
+                nameEl.innerText = line.name || '';
+                avatarEl.innerHTML = line.avatar ? `<img src="${line.avatar}" alt="${line.name}">` : (line.speaker === 'player' ? '⚔️' : '👤');
+            }
+
+            typeText(textEl, line.text);
+        }
+
+        function typeText(el, fullText) {
+            el.innerText = '';
+            storyIsTyping = true;
+            let i = 0;
+            if (storyTypingInterval) clearInterval(storyTypingInterval);
+            storyTypingInterval = setInterval(() => {
+                el.innerText = fullText.slice(0, i + 1);
+                if (i % 2 === 0) playTypeTick();
+                i++;
+                if (i >= fullText.length) { clearInterval(storyTypingInterval); storyIsTyping = false; }
+            }, 28);
+        }
+
+        function handleStoryTap() {
+            if (storyIsTyping) {
+                if (storyTypingInterval) clearInterval(storyTypingInterval);
+                storyIsTyping = false;
+                const line = storyLines[storyLineIndex];
+                document.getElementById('story-text').innerText = line.text;
+                return;
+            }
+            if (storyLineIndex < storyLines.length - 1) { storyLineIndex++; renderStoryLine(); }
+        }
+
+        function finishStoryScene() {
+            if (storyIsTyping) { handleStoryTap(); return; }
+            document.getElementById('story-overlay').classList.remove('active');
+            const cb = storyOnComplete; storyOnComplete = null;
+            if (cb) cb();
+        }
+
+        function skipStoryScene() {
+            if (storyTypingInterval) clearInterval(storyTypingInterval);
+            document.getElementById('story-overlay').classList.remove('active');
+            const cb = storyOnComplete; storyOnComplete = null;
+            if (cb) cb();
+        }
         checkUserStatus();
     </script>
 </body>
