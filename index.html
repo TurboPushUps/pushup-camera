@@ -111,14 +111,10 @@
         .bottom-nav-item.active .bottom-nav-icon { filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95); }
 
         /* ===== СТАМИНА ===== */
-        .stamina-bar {
-            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 20px;
-            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px;
-            display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;
-        }
-        .stamina-bar .stamina-label { font-size: var(--fs-caption); color: var(--text-dim); text-align: left; }
+        .stamina-bar { width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+        .stamina-bar .stamina-label { font-size: var(--fs-body); color: var(--text-main); text-align: left; }
         .stamina-dots { display: flex; gap: 6px; }
-        .stamina-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--border-main); }
+        .stamina-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--border-main); }
         .stamina-dot.filled { background: var(--accent); }
         .stamina-bar .premium-badge { font-size: var(--fs-caption); color: var(--accent-bright); font-weight: 600; margin-left: 8px; }
 
@@ -160,17 +156,10 @@
         .free-card:active { border-color: var(--accent); }
 
         /* ===== ПРЕМИУМ ===== */
-        .premium-card {
-            max-width: 784px; margin: 0 auto var(--block-gap); padding: 24px; text-align: left;
-            background: linear-gradient(135deg, rgba(124,92,255,0.15), rgba(245,158,11,0.1));
-            border: 1px solid #7c5cff; border-radius: 16px; box-sizing: border-box;
-        }
-        .premium-card h3 { color: #a78bfa; margin-bottom: 10px; }
+        .premium-card { max-width: 784px; margin: 0 auto var(--block-gap); padding: 24px; text-align: left; background: linear-gradient(135deg, rgba(124,92,255,0.15), rgba(245,158,11,0.1)); border: 1px solid #7c5cff; border-radius: 16px; box-sizing: border-box; }
+        .premium-card h3 { color: #a78bfa; margin-bottom: 10px; font-size: var(--fs-body); }
         .premium-card ul { margin: 10px 0; padding-left: 20px; font-size: var(--fs-caption); color: var(--text-dim); line-height: 1.7; }
-        .premium-card .btn-premium {
-            background: linear-gradient(90deg, #7c5cff, #a78bfa); color: #fff; border: none;
-            width: 100%; padding: 18px; border-radius: 10px; font-weight: 600; font-size: var(--fs-body); cursor: pointer; margin-top: 8px;
-        }
+        .premium-card .btn-premium { background: linear-gradient(90deg, #7c5cff, #a78bfa); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 10px; font-weight: 600; font-size: var(--fs-body); cursor: pointer; margin-top: 8px; }
         .premium-active-badge { display: inline-block; padding: 6px 14px; background: rgba(124,92,255,0.2); color: #a78bfa; border-radius: 20px; font-size: var(--fs-caption); font-weight: 600; }
 
         /* ===== ЭКРАН БОЯ — КАМЕРА ===== */
@@ -199,15 +188,17 @@
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
         .rep-circle { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent); font-size: 1.75rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums; }
 
-        .saving-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; z-index: 2000; background: rgba(8,9,12,0.97); align-items: center; justify-content: center; flex-direction: column; padding: 0 20px; box-sizing: border-box; }
-        .saving-overlay.active { display: flex; }
-        .saving-spinner { width: 56px; height: 56px; border: 4px solid var(--border-main); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .saving-text { font-size: var(--fs-body); color: var(--text-main); max-width: 90vw; white-space: nowrap; font-weight: 500; }
-        .saving-subtext { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; white-space: nowrap; }
-
-        .retry-button { display: none; margin: 14px auto 0; padding: 16px 26px; font-size: var(--fs-caption); font-weight: 500; background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer; }
-        .retry-button.active { display: inline-block; }
+        /* ===== ТИХОЕ СОХРАНЕНИЕ ===== */
+        .save-toast {
+            position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%) translateY(-140%);
+            z-index: 4000; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 24px;
+            padding: 12px 20px; display: flex; align-items: center; gap: 10px; font-size: var(--fs-caption);
+            color: var(--text-main); box-shadow: 0 4px 14px rgba(0,0,0,0.3); transition: transform 0.25s ease;
+        }
+        .save-toast.visible { transform: translateX(-50%) translateY(0); }
+        .save-toast-spinner { width: 14px; height: 14px; border: 2px solid var(--border-main); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+        .save-toast.success .save-toast-spinner { display: none; }
+        .save-toast.success::before { content: "✅"; }
 
         .overlay-panel { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(8,9,12,0.95); z-index: 999; align-items: center; justify-content: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
         .overlay-panel.active { display: flex; }
@@ -220,46 +211,31 @@
         .overlay-box .btn { max-width: 320px; }
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
         .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
-        /* ===== СЮЖЕТНЫЕ СЦЕНЫ ===== */
-        .story-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000;
-            background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; justify-content: flex-end;
-            padding: 20px; box-sizing: border-box; cursor: pointer;
-        }
+
+        /* ===== СЮЖЕТ ===== */
+        .story-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
         .story-overlay.active { display: flex; }
-        .story-skip-btn {
-            position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; z-index: 3001;
-            background: rgba(255,255,255,0.1); color: var(--text-dim); border: 1px solid var(--border-main);
-            border-radius: 20px; padding: 8px 16px; font-size: var(--fs-caption); cursor: pointer;
-        }
-        .story-card {
-            width: 100%; max-width: 684px; background: var(--bg-card); border-radius: 18px;
-            padding: 24px; box-sizing: border-box; margin-bottom: 20px;
-            border: 2px solid var(--border-main); transition: border-color 0.2s;
-        }
+        .story-skip-btn { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; z-index: 3001; background: rgba(255,255,255,0.1); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 20px; padding: 8px 16px; font-size: var(--fs-caption); cursor: pointer; }
+        .story-scroll { width: 100%; max-width: 684px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-top: 70px; padding-bottom: 10px; scroll-behavior: smooth; }
+        .story-card { width: 100%; background: var(--bg-card); border-radius: 18px; padding: 22px; box-sizing: border-box; border: 2px solid var(--border-main); flex-shrink: 0; cursor: pointer; }
         .story-card.speaker-ally { border-color: #7dd3fc; box-shadow: 0 0 18px rgba(125,211,252,0.15); }
         .story-card.speaker-enemy { border-color: var(--danger); }
         .story-card.speaker-boss { border-color: var(--accent); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
         .story-card.speaker-swamp { border-color: #4ade80; }
         .story-card.speaker-author { border-color: var(--border-main); background: rgba(0,0,0,0.2); }
         .story-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-        .story-avatar {
-            width: 58px; height: 58px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
-            border: 2px solid var(--border-main); background: var(--bg-main); display: flex; align-items: center; justify-content: center;
-        }
+        .story-avatar { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid var(--border-main); background: var(--bg-main); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
         .story-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .story-name { font-weight: 600; font-size: var(--fs-body); text-align: left; }
+        .story-name { font-weight: 600; font-size: 1.05rem; text-align: left; }
         .story-card.speaker-ally .story-name { color: #7dd3fc; }
         .story-card.speaker-enemy .story-name { color: var(--danger); }
         .story-card.speaker-boss .story-name { color: var(--accent-bright); }
         .story-card.speaker-swamp .story-name { color: #4ade80; }
-        .story-text { text-align: left; font-size: var(--fs-body); line-height: 1.55; color: var(--text-main); min-height: 2.4em; }
-        .story-text.author-text { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); font-style: normal; }
-        .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); margin-top: 10px; opacity: 0.6; }
-        .story-continue-btn {
-            width: 100%; max-width: 684px; padding: 22px; background: var(--bg-card); color: var(--accent-bright);
-            border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer;
-        }
+        .story-text { text-align: left; font-size: 1.05rem; line-height: 1.55; color: var(--text-main); }
+        .story-text.author-text { text-align: center; font-size: 0.95rem; color: var(--text-dim); }
+        .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; }
+        .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); opacity: 0.6; }
+        .story-continue-btn { display: none; width: 100%; padding: 22px; background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -469,7 +445,7 @@
 
     <div id="overlay-warmup-tip" class="overlay-panel"><div class="overlay-box"><h3>🧘 Разомнись перед стартом</h3><p id="warmup-tip-text" style="text-align:center;">Совет</p><button class="btn btn-primary" onclick="proceedAfterWarmup()">Пропустить</button></div></div>
 
-    <div id="overlay-dungeon-loading" class="overlay-panel"><div class="overlay-box"><div class="saving-spinner" style="margin: 0 auto 20px;"></div><h3 style="margin-bottom:0;">Загружаем подземелье...</h3></div></div>
+    <div id="overlay-dungeon-loading" class="overlay-panel"><div class="overlay-box"><div class="save-toast-spinner" style="margin: 0 auto 20px; width:40px; height:40px; border-width:4px;"></div><h3 style="margin-bottom:0;">Загружаем подземелье...</h3></div></div>
 
     <div id="overlay-no-stamina" class="overlay-panel">
         <div class="overlay-box">
@@ -488,25 +464,20 @@
             <button class="btn" onclick="document.getElementById('overlay-zone-locked').classList.remove('active')">Позже</button>
         </div>
     </div>
+
     <!-- ===== СЮЖЕТНАЯ СЦЕНА ===== -->
-    <div id="story-overlay" class="story-overlay" onclick="handleStoryTap()">
-        <button class="story-skip-btn" onclick="event.stopPropagation(); skipStoryScene();">Пропустить сцену</button>
-        <div class="story-card" id="story-card">
-            <div class="story-header" id="story-header" style="display:none;">
-                <div class="story-avatar" id="story-avatar"></div>
-                <div class="story-name" id="story-name"></div>
-            </div>
-            <div class="story-text" id="story-text"></div>
+    <div id="story-overlay" class="story-overlay">
+        <button class="story-skip-btn" onclick="skipStoryScene();">Пропустить сцену</button>
+        <div class="story-scroll" id="story-scroll"></div>
+        <div class="story-footer">
+            <div class="story-tap-hint" id="story-tap-hint">Нажми на реплику, чтобы продолжить</div>
+            <button class="story-continue-btn" id="story-final-btn" onclick="finishStoryScene();">Дальше</button>
         </div>
-        <div class="story-tap-hint" id="story-tap-hint">Нажми, чтобы продолжить</div>
-        <button class="story-continue-btn" id="story-final-btn" style="display:none;" onclick="event.stopPropagation(); finishStoryScene();">Дальше</button>
     </div>
 
-    <div id="saving-overlay" class="saving-overlay">
-        <div class="saving-spinner"></div>
-        <div class="saving-text" id="saving-text">Сохраняем результат...</div>
-        <div class="saving-subtext" id="saving-subtext"></div>
-        <button id="retryBtn" class="retry-button" onclick="retrySave()">Попробовать сохранить снова</button>
+    <div class="save-toast" id="save-toast">
+        <div class="save-toast-spinner" id="save-toast-spinner"></div>
+        <span id="save-toast-text">Сохраняем...</span>
     </div>
 
     <div class="bottom-nav" id="bottom-nav">
@@ -714,6 +685,24 @@
         function playMinuteBeep() { playBeep(880, 200); }
         function playVictorySound() { playBeep(660,150); setTimeout(()=>playBeep(880,150),150); setTimeout(()=>playBeep(1100,300),300); }
         function playDefeatSound() { playBeep(300,300,'sawtooth'); setTimeout(()=>playBeep(180,400,'sawtooth'),250); }
+        function playTypeTick() {
+            if (!soundEnabled) return;
+            try {
+                const ctxA = getAudioCtx();
+                const bufferSize = Math.floor(ctxA.sampleRate * 0.02);
+                const buffer = ctxA.createBuffer(1, bufferSize, ctxA.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.25;
+                const noise = ctxA.createBufferSource(); noise.buffer = buffer;
+                const filter = ctxA.createBiquadFilter();
+                filter.type = 'bandpass'; filter.frequency.value = 2200 + Math.random() * 1600; filter.Q.value = 5;
+                const gain = ctxA.createGain();
+                gain.gain.setValueAtTime(0.14, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.035);
+                noise.connect(filter); filter.connect(gain); gain.connect(ctxA.destination);
+                noise.start();
+            } catch (e) {}
+        }
         function vibrate(style) {
             if (!vibrationEnabled) return;
             try { const h = window.Telegram.WebApp.HapticFeedback; if (!h) return;
@@ -754,7 +743,8 @@
             if (!userId) { document.getElementById('screen-register').classList.add('active'); document.getElementById('nickname-error').innerText = "Не удалось определить пользователя"; return; }
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
-                if (data.has_nickname) showScreen('adventure'); else document.getElementById('screen-register').classList.add('active');
+                if (data.has_nickname) { showScreen('adventure'); prefetchAllData(); }
+                else document.getElementById('screen-register').classList.add('active');
             } catch(e) {
                 document.getElementById('screen-register').classList.add('active');
                 document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
@@ -768,8 +758,43 @@
             try {
                 const response = await fetch(`${API_BASE}/api/register_nickname`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, nickname})});
                 const data = await response.json();
-                if (data.success) showScreen('adventure'); else errorEl.innerText = data.error || "Не удалось сохранить имя";
+                if (data.success) { showScreen('adventure'); prefetchAllData(); } else errorEl.innerText = data.error || "Не удалось сохранить имя";
             } catch(e) { errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз."; }
+        }
+
+        // ===== ПРЕДЗАГРУЗКА ВСЕХ ДАННЫХ =====
+        const dataCache = { profile: null, dungeonInfo: {}, leaderboard: {} };
+
+        async function prefetchAllData() {
+            const userId = getUserId();
+            if (!userId) return;
+            const activities = ['pushup', 'plank', 'squat', 'wallsit'];
+            const tasks = [
+                fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
+                    .then(d => { dataCache.profile = d; }).catch(()=>{}),
+                fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=pushup&period=today`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
+                    .then(d => { dataCache.leaderboard['pushup_today'] = d; }).catch(()=>{}),
+                fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1})
+                    .then(d => { staminaCache = d; }).catch(()=>{}),
+            ];
+            activities.forEach(activity => {
+                tasks.push(
+                    fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
+                        .then(d => { dataCache.dungeonInfo[activity] = d; }).catch(()=>{})
+                );
+            });
+            await Promise.all(tasks);
+            if (document.getElementById('screen-adventure').classList.contains('active')) {
+                renderStaminaDots('stamina-dots', staminaCache.remaining, staminaCache.max);
+                document.getElementById('premium-badge').style.display = staminaCache.max > 4 ? 'inline' : 'none';
+                if (currentAdventureMode === 'campaign') renderChaptersFromCache(currentAdventureTab);
+            }
+        }
+
+        function invalidateCache(...keys) {
+            if (keys.includes('profile')) dataCache.profile = null;
+            keys.filter(k => k !== 'profile' && k !== 'leaderboard').forEach(activity => { dataCache.dungeonInfo[activity] = null; });
+            if (keys.includes('leaderboard')) dataCache.leaderboard = {};
         }
 
         // ===== СТАМИНА =====
@@ -785,6 +810,7 @@
             }
         }
         async function loadStamina() {
+            if (staminaCache) renderStaminaDots('stamina-dots', staminaCache.remaining, staminaCache.max);
             const userId = getUserId(); if (!userId) return;
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
@@ -824,7 +850,7 @@
                 const data = await res.json();
                 if (!data.url) { alert("Не удалось создать счёт. Попробуйте позже."); return; }
                 window.Telegram.WebApp.openInvoice(data.url, (status) => {
-                    if (status === 'paid') { loadProfile(); loadStamina(); }
+                    if (status === 'paid') { invalidateCache('profile'); loadProfile(); loadStamina(); }
                 });
             } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
@@ -841,7 +867,7 @@
                 if (!data.url) { alert(data.error || "Не удалось создать счёт."); return; }
                 document.getElementById('overlay-zone-locked').classList.remove('active');
                 window.Telegram.WebApp.openInvoice(data.url, (status) => {
-                    if (status === 'paid') loadDungeonPath(activity);
+                    if (status === 'paid') { invalidateCache(activity); refreshDungeonInfoSilently(activity); }
                 });
             } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
@@ -864,18 +890,26 @@
         async function loadProfile() {
             const userId = getUserId();
             const loadingEl = document.getElementById('profile-loading'); const contentEl = document.getElementById('profile-content');
-            loadingEl.style.display = 'block'; contentEl.style.display = 'none';
-            if (!userId) { loadingEl.innerText = "Не удалось определить пользователя"; return; }
+            if (dataCache.profile) {
+                profileDataCache = dataCache.profile;
+                loadingEl.style.display = 'none'; contentEl.style.display = 'block';
+                renderProfileValues();
+                renderStaminaDots('profile-stamina-dots', profileDataCache.stamina.remaining, profileDataCache.stamina.max);
+                document.getElementById('profile-premium-badge').style.display = profileDataCache.premium_active ? 'inline' : 'none';
+                renderPremiumCard('profile-premium-card');
+            } else {
+                loadingEl.style.display = 'block'; contentEl.style.display = 'none';
+            }
+            if (!userId) { if (!dataCache.profile) loadingEl.innerText = "Не удалось определить пользователя"; return; }
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
-                profileDataCache = data;
+                dataCache.profile = data; profileDataCache = data;
                 loadingEl.style.display = 'none'; contentEl.style.display = 'block';
                 renderProfileValues();
                 renderStaminaDots('profile-stamina-dots', data.stamina.remaining, data.stamina.max);
                 document.getElementById('profile-premium-badge').style.display = data.premium_active ? 'inline' : 'none';
                 renderPremiumCard('profile-premium-card');
-                document.getElementById('story-checkbox') && (storyEnabled = data.story_enabled ?? storyEnabled);
-            } catch(e) { loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже."; }
+            } catch(e) { if (!dataCache.profile) loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже."; }
         }
         function renderProfileValues() {
             if (!profileDataCache) return;
@@ -922,59 +956,68 @@
         async function loadLeaderboard() {
             const requestId = ++leaderboardRequestId;
             const list = document.getElementById('leaderboard-list'); const loading = document.getElementById('leaderboard-loading');
-            loading.style.display = 'block';
+            const cacheKey = `${lbActivity}_${lbPeriod}`;
+            if (dataCache.leaderboard[cacheKey]) { loading.style.display = 'none'; renderLeaderboardList(dataCache.leaderboard[cacheKey]); }
+            else loading.style.display = 'block';
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 if (requestId !== leaderboardRequestId) return;
-                loading.style.display = 'none'; list.innerHTML = "";
-                if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
-                data.leaderboard.forEach((user, index) => {
-                    const row = document.createElement('div'); row.className = 'leader-row';
-                    row.innerHTML = `<span class="rank">${index+1}</span><span style="flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${user.name}</span><span class="mono">${formatLeaderboardValue(user.value, lbActivity)}</span>`;
-                    list.appendChild(row);
-                });
-            } catch(e) { if (requestId === leaderboardRequestId) loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже."; }
+                dataCache.leaderboard[cacheKey] = data;
+                loading.style.display = 'none';
+                renderLeaderboardList(data);
+            } catch(e) { if (requestId === leaderboardRequestId && !dataCache.leaderboard[cacheKey]) loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже."; }
+        }
+        function renderLeaderboardList(data) {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = "";
+            if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
+            data.leaderboard.forEach((user, index) => {
+                const row = document.createElement('div'); row.className = 'leader-row';
+                row.innerHTML = `<span class="rank">${index+1}</span><span style="flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${user.name}</span><span class="mono">${formatLeaderboardValue(user.value, lbActivity)}</span>`;
+                list.appendChild(row);
+            });
         }
 
         // ===== ДОСТИЖЕНИЯ =====
         async function loadAchievements() {
             const userId = getUserId();
             const list = document.getElementById('achievements-list');
-            list.innerHTML = '<div class="loading">Загрузка...</div>';
-            try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
-                const a = data.achievements;
-                list.innerHTML = '';
+            const data = dataCache.profile;
+            if (!data) list.innerHTML = '<div class="loading">Загрузка...</div>';
+            const source = data || await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}).catch(()=>null);
+            if (!source) { list.innerHTML = '<p>Не удалось загрузить достижения.</p>'; return; }
+            const a = source.achievements;
+            list.innerHTML = '';
 
-                function achvRow(title, level, today, nextThreshold) {
-                    const row = document.createElement('div'); row.className = 'achievement-row';
-                    const currentThreshold = level > 0 ? (10 + 10*level) : 0;
-                    const span = nextThreshold - currentThreshold;
-                    const progressInLevel = Math.max(0, Math.min(span, today - currentThreshold));
-                    const pct = span > 0 ? (progressInLevel/span*100) : 100;
-                    row.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;">
-                            <span>${title} — уровень ${level}</span>
-                            <span class="mono">${today} / ${nextThreshold}</span>
-                        </div>
-                        <div class="achv-progress-bg"><div class="achv-progress-fill" style="width:${pct}%;"></div></div>
-                    `;
-                    return row;
-                }
+            function achvRow(title, level, today, nextThreshold) {
+                const row = document.createElement('div'); row.className = 'achievement-row';
+                const currentThreshold = level > 0 ? (10 + 10*level) : 0;
+                const span = nextThreshold - currentThreshold;
+                const progressInLevel = Math.max(0, Math.min(span, today - currentThreshold));
+                const pct = span > 0 ? (progressInLevel/span*100) : 100;
+                row.innerHTML = `
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>${title} — уровень ${level}</span>
+                        <span class="mono">${today} / ${nextThreshold}</span>
+                    </div>
+                    <div class="achv-progress-bg"><div class="achv-progress-fill" style="width:${pct}%;"></div></div>
+                `;
+                return row;
+            }
 
-                list.appendChild(achvRow("🏋️ Мастер отжиманий (за день)", a.pushup_level, a.pushup_today, a.pushup_next_threshold));
-                list.appendChild(achvRow("🦵 Мастер приседаний (за день)", a.squat_level, a.squat_today, a.squat_next_threshold));
+            list.appendChild(achvRow("🏋️ Мастер отжиманий (за день)", a.pushup_level, a.pushup_today, a.pushup_next_threshold));
+            list.appendChild(achvRow("🦵 Мастер приседаний (за день)", a.squat_level, a.squat_today, a.squat_next_threshold));
 
-                const staticRow = document.createElement('div'); staticRow.className = 'achievement-row';
-                staticRow.innerText = '🥉 Первые 10 отжиманий ✅';
-                list.appendChild(staticRow);
-            } catch(e) { list.innerHTML = '<p>Не удалось загрузить достижения.</p>'; }
+            const staticRow = document.createElement('div'); staticRow.className = 'achievement-row';
+            staticRow.innerText = '🥉 Первые 10 отжиманий ✅';
+            list.appendChild(staticRow);
         }
 
         // ===== АККОРДЕОН ГЛАВ =====
         let currentAdventureTab = 'pushup';
         let currentAdventureMode = 'campaign';
         let openChapterId = null;
+        let currentDungeonGlobalCache = 1;
 
         function switchAdventureMode(mode) {
             currentAdventureMode = mode;
@@ -989,28 +1032,47 @@
             ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('adv-tab-'+t).classList.toggle('active', t===tab));
             document.getElementById('camera-tip').classList.toggle('active', cameraTipEnabled);
             openChapterId = null;
-            loadDungeonPath(tab);
+            renderChaptersFromCache(tab);
         }
 
-        async function loadDungeonPath(activity) {
+        async function renderChaptersFromCache(activity) {
+            if (dataCache.dungeonInfo[activity]) {
+                document.getElementById('dungeon-select-loading').style.display = 'none';
+                const d = dataCache.dungeonInfo[activity];
+                renderChapters(activity, d.current_dungeon, d.purchased_pairs || [], d.premium_active);
+                refreshDungeonInfoSilently(activity);
+                return;
+            }
             document.getElementById('dungeon-select-loading').style.display = 'block';
             document.getElementById('chapters-container').innerHTML = '';
             const userId = getUserId();
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                dataCache.dungeonInfo[activity] = data;
+                document.getElementById('dungeon-select-loading').style.display = 'none';
                 renderChapters(activity, data.current_dungeon, data.purchased_pairs || [], data.premium_active);
             } catch(e) {
                 document.getElementById('dungeon-select-loading').innerText = "Не удалось загрузить список приключений.";
             }
         }
 
+        async function refreshDungeonInfoSilently(activity) {
+            const userId = getUserId();
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
+                dataCache.dungeonInfo[activity] = data;
+                if (currentAdventureTab === activity && currentAdventureMode === 'campaign') {
+                    renderChapters(activity, data.current_dungeon, data.purchased_pairs || [], data.premium_active);
+                }
+            } catch(e) {}
+        }
+
         function renderChapters(activity, currentDungeon, purchasedPairs, premiumActive) {
-            document.getElementById('dungeon-select-loading').style.display = 'none';
+            currentDungeonGlobalCache = currentDungeon;
             const container = document.getElementById('chapters-container');
             container.innerHTML = '';
 
             CHAPTERS.forEach(chapter => {
-                const chapterUnlocked = chapter.start <= currentDungeon || (chapter.start > currentDungeon && false);
                 const isChapterCurrent = currentDungeon >= chapter.start && currentDungeon <= chapter.end;
                 const isChapterDone = currentDungeon > chapter.end;
                 const isChapterLocked = currentDungeon < chapter.start;
@@ -1043,17 +1105,13 @@
 
         function toggleChapter(chapterNum, activity) {
             const chapter = CHAPTERS.find(c => c.chapter === chapterNum);
-            if (currentDungeonGlobalCache && currentDungeonGlobalCache < chapter.start) return; // заблокировано
-
-            if (openChapterId === chapterNum) { openChapterId = null; }
-            else { openChapterId = chapterNum; }
-            loadDungeonPath(activity);
+            if (currentDungeonGlobalCache < chapter.start) return;
+            openChapterId = (openChapterId === chapterNum) ? null : chapterNum;
+            const d = dataCache.dungeonInfo[activity];
+            renderChapters(activity, d.current_dungeon, d.purchased_pairs || [], d.premium_active);
         }
 
-        let currentDungeonGlobalCache = 1;
-
         function renderChapterZones(chapter, activity, currentDungeon, purchasedPairs, premiumActive) {
-            currentDungeonGlobalCache = currentDungeon;
             const body = document.getElementById('chapter-body-' + chapter.chapter);
             if (!body) return;
             body.innerHTML = '';
@@ -1061,7 +1119,6 @@
             for (let n = chapter.start; n <= chapter.end; n++) {
                 const zone = getZoneForDungeon(n);
                 let status, subtitle, btnText, extraClass = '';
-
                 const pairStart = PAID_PAIR_STARTS.includes(n) ? n : (PAID_PAIR_STARTS.includes(n-1) ? n-1 : null);
                 const needsPayment = pairStart !== null && !premiumActive && !purchasedPairs.includes(pairStart);
 
@@ -1095,402 +1152,6 @@
             document.getElementById('zone-locked-desc').innerText = `Откроет «${zone.name}» и следующий уровень (босс) для дисциплины «${ACTIVITY_NAMES[activity]}» за ${PAIR_PRICE_STARS} ⭐. Можно также оформить премиум — он открывает все главы сразу.`;
             document.getElementById('zone-buy-btn').onclick = () => buyZone(activity, pairStart);
             document.getElementById('overlay-zone-locked').classList.add('active');
-        }
-
-        // ===== СОСТОЯНИЕ БОЯ =====
-        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
-        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
-
-        function startDungeonActivity(activity, dungeonN) {
-            if (staminaCache.remaining <= 0) { document.getElementById('overlay-no-stamina').classList.add('active'); return; }
-            showWarmupTip(activity, () => {
-                const scene = STORY_SCENES[dungeonN];
-                showStoryScene(scene ? scene.pre : null, () => doStartDungeonActivity(activity, dungeonN));
-            });
-        }
-
-        async function doStartDungeonActivity(activity, dungeonN) {
-            document.getElementById('overlay-dungeon-loading').classList.add('active');
-            const userId = getUserId();
-            try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, {cache:'no-store'}, {timeoutMs:20000, retries:1});
-
-                if (data.requires_payment) {
-                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
-                    showZoneLockedOverlay(activity, data.pair_start);
-                    return;
-                }
-
-                const consumeRes = await fetch(`${API_BASE}/api/consume_stamina`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
-                const consumeData = await consumeRes.json();
-                if (!consumeData.success) {
-                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
-                    document.getElementById('overlay-no-stamina').classList.add('active');
-                    return;
-                }
-                staminaCache = { remaining: consumeData.remaining, max: consumeData.max };
-                renderStaminaDots('stamina-dots', consumeData.remaining, consumeData.max);
-
-                inDungeonMode = true; dungeonJustWon = false; dungeonActivityType = activity; dungeonNumber = data.requested_dungeon;
-                dungeonEnemies = data.enemies; dungeonEnemyIndex = 0; dungeonEnemyMaxHP = dungeonEnemies[0]; dungeonEnemyRemainingHP = dungeonEnemies[0];
-                dungeonIsReplay = data.is_replay; dungeonPaused = false;
-
-                document.getElementById('battle-header').style.display = 'block';
-                updateMonsterPortrait(); updateDungeonHUD();
-                document.getElementById('overlay-dungeon-loading').classList.remove('active');
-                startActivity(activity, true);
-            } catch(e) {
-                document.getElementById('overlay-dungeon-loading').classList.remove('active');
-                alert("Не удалось загрузить приключение. Попробуйте позже.");
-            }
-        }
-
-        function updateMonsterPortrait() { const zone = getZoneForDungeon(dungeonNumber); document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone); }
-        function updateDungeonHUD() {
-            const zone = getZoneForDungeon(dungeonNumber);
-            document.getElementById('monster-name').innerText = `${zone.name} — Враг ${dungeonEnemyIndex+1} из ${dungeonEnemies.length}`;
-            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP/dungeonEnemyMaxHP)*100));
-            document.getElementById('hp-bar-fill').style.width = pct + '%';
-            document.getElementById('hp-bar-text').innerText = `HP ${Math.max(0,Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
-        }
-        function applyDungeonDamage(amount) {
-            if (!inDungeonMode || dungeonPaused) return;
-            dungeonEnemyRemainingHP -= amount;
-            if (dungeonEnemyRemainingHP <= 0) handleEnemyDefeated(-dungeonEnemyRemainingHP); else updateDungeonHUD();
-        }
-        function handleEnemyDefeated(overflow) {
-            if (dungeonEnemyIndex === dungeonEnemies.length - 1) { finishDungeonVictory(); return; }
-            dungeonEnemyIndex++; dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex]; dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
-            updateDungeonHUD();
-            const isRepBased = (dungeonActivityType === 'pushup' || dungeonActivityType === 'squat');
-            if (isRepBased && !assaultModeEnabled) startEnemyPause();
-        }
-        function startEnemyPause() {
-            dungeonPaused = true;
-            const overlay = document.getElementById('overlay-enemy-pause'); const countdownEl = document.getElementById('pause-countdown');
-            overlay.classList.add('active'); let secondsLeft = 5; countdownEl.innerText = secondsLeft;
-            const interval = setInterval(() => { secondsLeft--; countdownEl.innerText = secondsLeft; if (secondsLeft<=0){clearInterval(interval); overlay.classList.remove('active'); dungeonPaused=false;} }, 1000);
-        }
-        async function finishDungeonVictory() {
-            dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
-
-            const savePromise = saveDungeonCompletionWithRetry();
-            const scene = STORY_SCENES[dungeonNumber];
-
-            const showReward = async () => {
-                const xp = await savePromise;
-                document.getElementById('dungeon-complete-xp').innerText = `+${xp} XP ⭐`;
-                document.getElementById('overlay-dungeon-complete').classList.add('active');
-            };
-
-            if (scene && scene.post) {
-                showStoryScene(scene.post, showReward);
-            } else {
-                await showReward();
-            }
-        }
-        async function saveDungeonCompletionWithRetry() {
-            const userId = getUserId(); const activity = dungeonActivityType; const dungeonN = dungeonNumber; let attempt = 0;
-            while (true) {
-                attempt++;
-                const timeoutMs = Math.min(15000 + (attempt-1)*10000, 45000);
-                try {
-                    const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
-                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, dungeon: dungeonN}), signal: controller.signal});
-                    clearTimeout(timeoutId);
-                    if (!response.ok) throw new Error("Сервер ответил ошибкой");
-                    const data = await response.json();
-                    return data.xp_earned || 0;
-                } catch(e) {
-                    await new Promise(r=>setTimeout(r,500));
-                }
-            }
-        }
-        function continueDungeon() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); dungeonPaused=false; doStartDungeonActivity(dungeonActivityType, dungeonNumber+1); }
-        function finishDungeonSession() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); attemptSave(); }
-
-        // ===== КАМЕРА =====
-        const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
-        const skeletonCanvas = document.getElementById('skeletonCanvas'), skeletonCtx = skeletonCanvas.getContext('2d');
-        const statusEl = document.getElementById('status'), counterEl = document.getElementById('counter');
-
-        let currentMode = null, cameraStarted = false, cameraObj = null, keepAliveInterval = null;
-        let repCount = 0, stage = "up", inPosition = false, lastRepTimestamp = 0, shoulderYAtUp = null, expectedShoulderDirection = null;
-        let holdSeconds = 0, holdLastTimestamp = null, lastHoldMinuteMarked = 0;
-
-        function calculateAngle(a,b,c) {
-            const radians = Math.atan2(c.y-b.y, c.x-b.x) - Math.atan2(a.y-b.y, a.x-b.x);
-            let angle = Math.abs(radians*180.0/Math.PI); if (angle>180.0) angle = 360-angle; return angle;
-        }
-        const LEFT_SHOULDER=11, RIGHT_SHOULDER=12, LEFT_ELBOW=13, RIGHT_ELBOW=14, LEFT_WRIST=15, RIGHT_WRIST=16;
-        const LEFT_HIP=23, RIGHT_HIP=24, LEFT_KNEE=25, RIGHT_KNEE=26, LEFT_ANKLE=27, RIGHT_ANKLE=28;
-
-        const PUSHUP_POINTS = [LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_ELBOW,RIGHT_ELBOW,LEFT_WRIST,RIGHT_WRIST];
-        const PUSHUP_CONNECTIONS = [[LEFT_SHOULDER,LEFT_ELBOW],[LEFT_ELBOW,LEFT_WRIST],[RIGHT_SHOULDER,RIGHT_ELBOW],[RIGHT_ELBOW,RIGHT_WRIST],[LEFT_SHOULDER,RIGHT_SHOULDER]];
-        const SQUAT_POINTS = [LEFT_HIP,RIGHT_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ANKLE,RIGHT_ANKLE];
-        const SQUAT_CONNECTIONS = [[LEFT_HIP,LEFT_KNEE],[LEFT_KNEE,LEFT_ANKLE],[RIGHT_HIP,RIGHT_KNEE],[RIGHT_KNEE,RIGHT_ANKLE],[LEFT_HIP,RIGHT_HIP]];
-        const WALLSIT_POINTS = [LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_HIP,RIGHT_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ANKLE,RIGHT_ANKLE];
-        const WALLSIT_CONNECTIONS = [[LEFT_SHOULDER,LEFT_HIP],[LEFT_HIP,LEFT_KNEE],[LEFT_KNEE,LEFT_ANKLE],[RIGHT_SHOULDER,RIGHT_HIP],[RIGHT_HIP,RIGHT_KNEE],[RIGHT_KNEE,RIGHT_ANKLE]];
-
-        // --- Отжимания ---
-        function checkPushupPosition(landmarks) {
-            const armsVisible = PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
-            if (!armsVisible) return false;
-            const leftHipVisible = landmarks[LEFT_HIP].visibility>0.5 && landmarks[LEFT_KNEE].visibility>0.5;
-            const rightHipVisible = landmarks[RIGHT_HIP].visibility>0.5 && landmarks[RIGHT_KNEE].visibility>0.5;
-            if (!leftHipVisible && !rightHipVisible) return true;
-            if (leftHipVisible && calculateAngle(landmarks[LEFT_SHOULDER],landmarks[LEFT_HIP],landmarks[LEFT_KNEE])>140) return true;
-            if (rightHipVisible && calculateAngle(landmarks[RIGHT_SHOULDER],landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE])>140) return true;
-            return false;
-        }
-        const MIN_MOVEMENT = 0.02;
-        function countPushups(landmarks) {
-            const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER],landmarks[LEFT_ELBOW],landmarks[LEFT_WRIST]);
-            const rightAngle = calculateAngle(landmarks[RIGHT_SHOULDER],landmarks[RIGHT_ELBOW],landmarks[RIGHT_WRIST]);
-            const shoulderY = (landmarks[LEFT_SHOULDER].y + landmarks[RIGHT_SHOULDER].y)/2;
-            const bothUp = leftAngle>150 && rightAngle>150, bothDown = leftAngle<75 && rightAngle<75;
-            if (bothUp) { stage="up"; shoulderYAtUp = shoulderY; }
-            if (bothDown && stage==="up") {
-                const delta = shoulderYAtUp===null?0:(shoulderY-shoulderYAtUp);
-                if (Math.abs(delta) < MIN_MOVEMENT) return;
-                const direction = delta>0?1:-1;
-                if (expectedShoulderDirection===null) expectedShoulderDirection=direction; else if (direction!==expectedShoulderDirection) return;
-                const now = Date.now();
-                if (now-lastRepTimestamp>500) { stage="down"; lastRepTimestamp=now; countRepGeneric(); }
-            }
-        }
-
-        // --- Приседания ---
-        function checkSquatPosition(landmarks) {
-            return SQUAT_POINTS.every(idx => landmarks[idx].visibility > 0.55);
-        }
-        function countSquats(landmarks) {
-            const leftAngle = calculateAngle(landmarks[LEFT_HIP],landmarks[LEFT_KNEE],landmarks[LEFT_ANKLE]);
-            const rightAngle = calculateAngle(landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE],landmarks[RIGHT_ANKLE]);
-            const hipY = (landmarks[LEFT_HIP].y + landmarks[RIGHT_HIP].y)/2;
-            const bothUp = leftAngle>160 && rightAngle>160, bothDown = leftAngle<100 && rightAngle<100;
-            if (bothUp) { stage="up"; shoulderYAtUp = hipY; }
-            if (bothDown && stage==="up") {
-                const delta = shoulderYAtUp===null?0:(hipY-shoulderYAtUp);
-                if (Math.abs(delta) < MIN_MOVEMENT) return;
-                const direction = delta>0?1:-1;
-                if (expectedShoulderDirection===null) expectedShoulderDirection=direction; else if (direction!==expectedShoulderDirection) return;
-                const now = Date.now();
-                if (now-lastRepTimestamp>500) { stage="down"; lastRepTimestamp=now; countRepGeneric(); }
-            }
-        }
-        function countRepGeneric() {
-            repCount++; counterEl.innerText = repCount; playHitSound(); triggerHitShake(); vibrate('light');
-            if (inDungeonMode) applyDungeonDamage(1);
-        }
-
-        // --- Планка (сбоку) ---
-        function avgVisibility(indices, landmarks) { return indices.reduce((s,idx)=>s+landmarks[idx].visibility,0)/indices.length; }
-        function getPlankSidePoints(landmarks) {
-            const leftIndices=[LEFT_SHOULDER,LEFT_ELBOW,LEFT_WRIST,LEFT_HIP,LEFT_KNEE,LEFT_ANKLE];
-            const rightIndices=[RIGHT_SHOULDER,RIGHT_ELBOW,RIGHT_WRIST,RIGHT_HIP,RIGHT_KNEE,RIGHT_ANKLE];
-            return avgVisibility(leftIndices,landmarks) >= avgVisibility(rightIndices,landmarks)
-                ? {shoulder:LEFT_SHOULDER,elbow:LEFT_ELBOW,wrist:LEFT_WRIST,hip:LEFT_HIP,knee:LEFT_KNEE,ankle:LEFT_ANKLE}
-                : {shoulder:RIGHT_SHOULDER,elbow:RIGHT_ELBOW,wrist:RIGHT_WRIST,hip:RIGHT_HIP,knee:RIGHT_KNEE,ankle:RIGHT_ANKLE};
-        }
-        function checkPlankPosition(landmarks) {
-            const p = getPlankSidePoints(landmarks);
-            const required = [p.shoulder,p.elbow,p.wrist,p.hip,p.knee,p.ankle];
-            if (!required.every(idx=>landmarks[idx].visibility>0.6)) return {valid:false, reason:"not_visible", points:p};
-            const bodyAngle = calculateAngle(landmarks[p.shoulder],landmarks[p.hip],landmarks[p.knee]);
-            const legAngle = calculateAngle(landmarks[p.hip],landmarks[p.knee],landmarks[p.ankle]);
-            const isStraight = bodyAngle>150 && legAngle>150;
-            return {valid:isStraight, reason:isStraight?"ok":"not_straight", points:p};
-        }
-
-        // --- Стульчик (лицом к камере, статика) ---
-        function checkWallsitPosition(landmarks) {
-            if (!WALLSIT_POINTS.every(idx => landmarks[idx].visibility > 0.55)) return {valid:false, reason:"not_visible"};
-            const leftKneeAngle = calculateAngle(landmarks[LEFT_HIP],landmarks[LEFT_KNEE],landmarks[LEFT_ANKLE]);
-            const rightKneeAngle = calculateAngle(landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE],landmarks[RIGHT_ANKLE]);
-            const kneeOk = (leftKneeAngle>60 && leftKneeAngle<120) || (rightKneeAngle>60 && rightKneeAngle<120);
-            const shoulderMidX = (landmarks[LEFT_SHOULDER].x+landmarks[RIGHT_SHOULDER].x)/2;
-            const hipMidX = (landmarks[LEFT_HIP].x+landmarks[RIGHT_HIP].x)/2;
-            const shoulderMidY = (landmarks[LEFT_SHOULDER].y+landmarks[RIGHT_SHOULDER].y)/2;
-            const hipMidY = (landmarks[LEFT_HIP].y+landmarks[RIGHT_HIP].y)/2;
-            const torsoAngleFromVertical = Math.abs(Math.atan2(hipMidX-shoulderMidX, hipMidY-shoulderMidY) * 180/Math.PI);
-            const torsoUpright = torsoAngleFromVertical < 25;
-            const isValid = kneeOk && torsoUpright;
-            return {valid: isValid, reason: isValid ? "ok" : "not_straight"};
-        }
-
-        function drawPoints(landmarks, points, connections) {
-            skeletonCtx.strokeStyle = '#F59E0B'; skeletonCtx.lineWidth = 3;
-            for (const [a,b] of connections) {
-                const s=landmarks[a], e=landmarks[b];
-                skeletonCtx.beginPath(); skeletonCtx.moveTo(s.x*skeletonCanvas.width, s.y*skeletonCanvas.height);
-                skeletonCtx.lineTo(e.x*skeletonCanvas.width, e.y*skeletonCanvas.height); skeletonCtx.stroke();
-            }
-            skeletonCtx.fillStyle = '#EF4444';
-            for (const idx of points) { const p=landmarks[idx]; skeletonCtx.beginPath(); skeletonCtx.arc(p.x*skeletonCanvas.width, p.y*skeletonCanvas.height, 6, 0, 2*Math.PI); skeletonCtx.fill(); }
-        }
-        function formatTime(s) { const m=Math.floor(s/60); const sec=Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
-        function updateHoldTimer(isInPosition) {
-            const now = Date.now();
-            if (isInPosition) {
-                if (holdLastTimestamp !== null) {
-                    const delta = (now-holdLastTimestamp)/1000; holdSeconds += delta;
-                    if (inDungeonMode) applyDungeonDamage(delta);
-                    const currentMinute = Math.floor(holdSeconds/60);
-                    if (currentMinute > lastHoldMinuteMarked) { lastHoldMinuteMarked = currentMinute; playMinuteBeep(); vibrate('light'); }
-                }
-                holdLastTimestamp = now;
-            } else holdLastTimestamp = null;
-            counterEl.innerText = formatTime(holdSeconds);
-        }
-
-        const pose = new Pose({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
-        pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-        pose.onResults(onResults);
-
-        function onResults(results) {
-            if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
-                canvas.width = results.image.width; canvas.height = results.image.height;
-                skeletonCanvas.width = results.image.width; skeletonCanvas.height = results.image.height;
-            }
-            ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1); ctx.clearRect(0,0,canvas.width,canvas.height);
-            ctx.drawImage(results.image,0,0,canvas.width,canvas.height); ctx.restore();
-
-            skeletonCtx.save(); skeletonCtx.clearRect(0,0,skeletonCanvas.width,skeletonCanvas.height);
-            skeletonCtx.translate(skeletonCanvas.width,0); skeletonCtx.scale(-1,1);
-
-            if (results.poseLandmarks) {
-                const lm = results.poseLandmarks;
-                if (currentMode === 'pushup') {
-                    drawPoints(lm, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
-                    inPosition = checkPushupPosition(lm);
-                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 💪") : "Займите позицию для отжиманий 🧎";
-                    if (inPosition && !dungeonPaused) countPushups(lm);
-                } else if (currentMode === 'squat') {
-                    drawPoints(lm, SQUAT_POINTS, SQUAT_CONNECTIONS);
-                    inPosition = checkSquatPosition(lm);
-                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🚶";
-                    if (inPosition && !dungeonPaused) countSquats(lm);
-                } else if (currentMode === 'plank') {
-                    const result = checkPlankPosition(lm);
-                    drawPoints(lm, [result.points.shoulder,result.points.elbow,result.points.wrist,result.points.hip,result.points.knee,result.points.ankle],
-                        [[result.points.shoulder,result.points.elbow],[result.points.elbow,result.points.wrist],[result.points.shoulder,result.points.hip],[result.points.hip,result.points.knee],[result.points.knee,result.points.ankle]]);
-                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                    else if (result.reason==="not_straight") statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
-                    else statusEl.innerText = "Отлично держите планку! 🔥";
-                    updateHoldTimer(result.valid && !dungeonPaused);
-                } else if (currentMode === 'wallsit') {
-                    drawPoints(lm, WALLSIT_POINTS, WALLSIT_CONNECTIONS);
-                    const result = checkWallsitPosition(lm);
-                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте лицом к камере, покажите всё тело 🚶";
-                    else if (result.reason==="not_straight") statusEl.innerText = "Держите спину прямой, угол в колене — прямой угол 📏";
-                    else statusEl.innerText = "Отлично держите стульчик! 🔥";
-                    updateHoldTimer(result.valid && !dungeonPaused);
-                }
-            } else {
-                inPosition = false; statusEl.innerText = "Не вижу тело в кадре 👀";
-                if (currentMode==='plank' || currentMode==='wallsit') updateHoldTimer(false);
-            }
-            skeletonCtx.restore();
-        }
-
-        function startKeepAlivePing() { if (keepAliveInterval) return; keepAliveInterval = setInterval(()=>{fetch(`${API_BASE}/`).catch(()=>{});}, 60000); }
-        function stopKeepAlivePing() { if (keepAliveInterval) { clearInterval(keepAliveInterval); keepAliveInterval=null; } }
-        function stopCameraCompletely() {
-            if (cameraObj) { try{cameraObj.stop();}catch(e){} cameraObj=null; }
-            if (video.srcObject) { video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject=null; }
-            cameraStarted = false; stopKeepAlivePing();
-        }
-        function startCameraIfNeeded() {
-            if (cameraStarted) return;
-            cameraObj = new Camera(video, { onFrame: async () => { if (dungeonPaused) return; await pose.send({image:video}); }, width:480, height:640 });
-            cameraObj.start(); cameraStarted = true;
-        }
-
-        function startActivity(mode, isDungeon) {
-            fetch(`${API_BASE}/`).catch(()=>{}); startKeepAlivePing(); applyTelegramViewportHeight();
-            currentMode = mode; repCount = 0; stage = "up"; shoulderYAtUp = null; expectedShoulderDirection = null;
-            holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0;
-
-            document.getElementById('finishBtn').style.display = 'block';
-            document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
-            if (!isDungeon) inDungeonMode = false;
-
-            const isTimeBased = (mode==='plank' || mode==='wallsit');
-            statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий 🧎"
-                : mode==='squat' ? "Встаньте лицом к камере 🚶"
-                : mode==='plank' ? "Встаньте боком к камере, покажите всё тело 🚶"
-                : "Встаньте лицом к камере, покажите всё тело 🚶";
-            counterEl.innerText = isTimeBased ? "00:00" : "0";
-
-            showScreen('activity'); startCameraIfNeeded();
-            setTimeout(applyTelegramViewportHeight,150); setTimeout(applyTelegramViewportHeight,500);
-        }
-
-        const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); applyTelegramViewportHeight();
-        tg.onEvent('viewportChanged', applyTelegramViewportHeight);
-        window.addEventListener('resize', applyTelegramViewportHeight);
-
-        // ===== СОХРАНЕНИЕ =====
-        let saveAttempts = 0;
-        function showSavingOverlay(text, subtext) { document.getElementById('saving-text').innerText=text; document.getElementById('saving-subtext').innerText=subtext||''; document.getElementById('saving-overlay').classList.add('active'); }
-        function hideSavingOverlay() { document.getElementById('saving-overlay').classList.remove('active'); document.getElementById('retryBtn').classList.remove('active'); }
-
-        const SAVE_ENDPOINT = { pushup:'save_pushups', squat:'save_squats', plank:'save_plank', wallsit:'save_wallsit' };
-        const SAVE_KEY = { pushup:'count', squat:'count', plank:'seconds', wallsit:'seconds' };
-
-        async function attemptSave(isRetry=false) {
-            const userId = getUserId(); const mode = currentMode;
-            if (!isRetry) saveAttempts = 0;
-            showSavingOverlay(saveAttempts>0?`Сохраняем результат... (попытка ${saveAttempts+1})`:"Сохраняем результат...", "Не закрывайте приложение");
-
-            let success = false;
-            const timeoutMs = Math.min(15000 + saveAttempts*10000, 45000);
-            const value = (mode==='plank'||mode==='wallsit') ? Math.floor(holdSeconds) : repCount;
-            const minValue = (mode==='plank'||mode==='wallsit') ? 1 : 1;
-
-            try {
-                const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
-                if (userId && value >= minValue) {
-                    const body = {user_id:userId}; body[SAVE_KEY[mode]] = value;
-                    const response = await fetch(`${API_BASE}/api/${SAVE_ENDPOINT[mode]}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body), signal: controller.signal});
-                    success = response.ok;
-                } else success = true;
-                clearTimeout(timeoutId);
-            } catch(e) { success = false; }
-
-            if (success) { stopCameraCompletely(); inDungeonMode=false; currentMode=null; hideSavingOverlay(); showScreen('adventure'); return; }
-
-            saveAttempts++;
-            document.getElementById('retryBtn').classList.add('active');
-            showSavingOverlay(`Соединение медленное — продолжаем пытаться сохранить`, `Попытка ${saveAttempts}. Можно подождать или нажать кнопку ниже`);
-            setTimeout(()=>attemptSave(true), 500);
-        }
-        function retrySave() { attemptSave(true); }
-
-        document.getElementById('finishBtn').addEventListener('click', () => {
-            if (inDungeonMode && !dungeonJustWon) { playDefeatSound(); vibrate('error'); }
-            attemptSave();
-        });
-        // ===== ЗВУК ПЕЧАТИ (шелест пера, не клавиатура) =====
-        function playTypeTick() {
-            if (!soundEnabled) return;
-            try {
-                const ctxA = getAudioCtx();
-                const bufferSize = Math.floor(ctxA.sampleRate * 0.02);
-                const buffer = ctxA.createBuffer(1, bufferSize, ctxA.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.25;
-                const noise = ctxA.createBufferSource(); noise.buffer = buffer;
-                const filter = ctxA.createBiquadFilter();
-                filter.type = 'bandpass'; filter.frequency.value = 2200 + Math.random() * 1600; filter.Q.value = 5;
-                const gain = ctxA.createGain();
-                gain.gain.setValueAtTime(0.14, ctxA.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.035);
-                noise.connect(filter); filter.connect(gain); gain.connect(ctxA.destination);
-                noise.start();
-            } catch (e) {}
         }
 
         // ===== ДАННЫЕ СЮЖЕТА =====
@@ -1934,52 +1595,56 @@
         };
 
         // ===== ДВИЖОК ПОКАЗА СЦЕН =====
-        let storyLines = [], storyLineIndex = 0, storyTypingInterval = null, storyIsTyping = false, storyOnComplete = null;
+        let storyLines = [], storyLineIndex = -1, storyTypingInterval = null, storyIsTyping = false, storyOnComplete = null;
 
         function showStoryScene(lines, onComplete) {
             if (!storyEnabled || !lines || lines.length === 0) { onComplete(); return; }
-            storyLines = lines; storyLineIndex = 0; storyOnComplete = onComplete;
+            storyLines = lines; storyLineIndex = -1; storyOnComplete = onComplete;
+            document.getElementById('story-scroll').innerHTML = '';
+            document.getElementById('story-final-btn').style.display = 'none';
+            document.getElementById('story-tap-hint').style.display = 'block';
             document.getElementById('story-overlay').classList.add('active');
-            renderStoryLine();
+            appendNextStoryLine();
         }
 
-        function renderStoryLine() {
+        function appendNextStoryLine() {
+            storyLineIndex++;
             const line = storyLines[storyLineIndex];
-            const card = document.getElementById('story-card');
-            const header = document.getElementById('story-header');
-            const avatarEl = document.getElementById('story-avatar');
-            const nameEl = document.getElementById('story-name');
-            const textEl = document.getElementById('story-text');
-            const finalBtn = document.getElementById('story-final-btn');
-            const tapHint = document.getElementById('story-tap-hint');
+            const scroll = document.getElementById('story-scroll');
 
+            const card = document.createElement('div');
             card.className = 'story-card speaker-' + line.speaker;
-            const isLast = storyLineIndex === storyLines.length - 1;
-            finalBtn.style.display = isLast ? 'block' : 'none';
-            finalBtn.innerText = isLast ? 'Дальше' : 'Дальше';
-            tapHint.style.display = isLast ? 'none' : 'block';
+            card.onclick = handleStoryTap;
 
             if (line.speaker === 'author') {
-                header.style.display = 'none';
-                textEl.className = 'story-text author-text';
+                card.innerHTML = `<div class="story-text author-text"></div>`;
             } else {
-                header.style.display = 'flex';
-                textEl.className = 'story-text';
-                nameEl.innerText = line.name || '';
-                avatarEl.innerHTML = line.avatar ? `<img src="${line.avatar}" alt="${line.name}">` : (line.speaker === 'player' ? '⚔️' : '👤');
+                const avatarHtml = line.avatar ? `<img src="${line.avatar}" alt="${line.name}">` : (line.speaker==='player' ? '⚔️' : '👤');
+                card.innerHTML = `
+                    <div class="story-header">
+                        <div class="story-avatar">${avatarHtml}</div>
+                        <div class="story-name">${line.name || ''}</div>
+                    </div>
+                    <div class="story-text"></div>
+                `;
             }
+            scroll.appendChild(card);
+            scroll.scrollTop = scroll.scrollHeight;
 
-            typeText(textEl, line.text);
+            const isLast = storyLineIndex === storyLines.length - 1;
+            document.getElementById('story-final-btn').style.display = isLast ? 'block' : 'none';
+            document.getElementById('story-tap-hint').style.display = isLast ? 'none' : 'block';
+
+            typeText(card.querySelector('.story-text'), line.text, () => { scroll.scrollTop = scroll.scrollHeight; });
         }
 
-        function typeText(el, fullText) {
-            el.innerText = '';
-            storyIsTyping = true;
-            let i = 0;
+        function typeText(el, fullText, onTick) {
+            el.innerText = ''; storyIsTyping = true; let i = 0;
             if (storyTypingInterval) clearInterval(storyTypingInterval);
             storyTypingInterval = setInterval(() => {
                 el.innerText = fullText.slice(0, i + 1);
                 if (i % 2 === 0) playTypeTick();
+                if (onTick) onTick();
                 i++;
                 if (i >= fullText.length) { clearInterval(storyTypingInterval); storyIsTyping = false; }
             }, 28);
@@ -1989,11 +1654,12 @@
             if (storyIsTyping) {
                 if (storyTypingInterval) clearInterval(storyTypingInterval);
                 storyIsTyping = false;
-                const line = storyLines[storyLineIndex];
-                document.getElementById('story-text').innerText = line.text;
+                const scroll = document.getElementById('story-scroll');
+                const lastCard = scroll.lastElementChild;
+                lastCard.querySelector('.story-text').innerText = storyLines[storyLineIndex].text;
                 return;
             }
-            if (storyLineIndex < storyLines.length - 1) { storyLineIndex++; renderStoryLine(); }
+            if (storyLineIndex < storyLines.length - 1) appendNextStoryLine();
         }
 
         function finishStoryScene() {
@@ -2009,6 +1675,397 @@
             const cb = storyOnComplete; storyOnComplete = null;
             if (cb) cb();
         }
+
+        // ===== СОСТОЯНИЕ БОЯ =====
+        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
+        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
+        let dungeonXpEstimate = 0;
+
+        function startDungeonActivity(activity, dungeonN) {
+            if (staminaCache.remaining <= 0) { document.getElementById('overlay-no-stamina').classList.add('active'); return; }
+            showWarmupTip(activity, () => {
+                const scene = STORY_SCENES[dungeonN];
+                showStoryScene(scene ? scene.pre : null, () => doStartDungeonActivity(activity, dungeonN));
+            });
+        }
+
+        async function doStartDungeonActivity(activity, dungeonN) {
+            document.getElementById('overlay-dungeon-loading').classList.add('active');
+            const userId = getUserId();
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, {cache:'no-store'}, {timeoutMs:20000, retries:1});
+
+                if (data.requires_payment) {
+                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    showZoneLockedOverlay(activity, data.pair_start);
+                    return;
+                }
+
+                const consumeRes = await fetch(`${API_BASE}/api/consume_stamina`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const consumeData = await consumeRes.json();
+                if (!consumeData.success) {
+                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    document.getElementById('overlay-no-stamina').classList.add('active');
+                    return;
+                }
+                staminaCache = { remaining: consumeData.remaining, max: consumeData.max };
+                renderStaminaDots('stamina-dots', consumeData.remaining, consumeData.max);
+
+                inDungeonMode = true; dungeonJustWon = false; dungeonActivityType = activity; dungeonNumber = data.requested_dungeon;
+                dungeonXpEstimate = data.xp_reward;
+                dungeonEnemies = data.enemies; dungeonEnemyIndex = 0; dungeonEnemyMaxHP = dungeonEnemies[0]; dungeonEnemyRemainingHP = dungeonEnemies[0];
+                dungeonIsReplay = data.is_replay; dungeonPaused = false;
+
+                document.getElementById('battle-header').style.display = 'block';
+                updateMonsterPortrait(); updateDungeonHUD();
+                document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                startActivity(activity, true);
+            } catch(e) {
+                document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                alert("Не удалось загрузить приключение. Попробуйте позже.");
+            }
+        }
+
+        function updateMonsterPortrait() { const zone = getZoneForDungeon(dungeonNumber); document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone); }
+        function updateDungeonHUD() {
+            const zone = getZoneForDungeon(dungeonNumber);
+            document.getElementById('monster-name').innerText = `${zone.name} — Враг ${dungeonEnemyIndex+1} из ${dungeonEnemies.length}`;
+            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP/dungeonEnemyMaxHP)*100));
+            document.getElementById('hp-bar-fill').style.width = pct + '%';
+            document.getElementById('hp-bar-text').innerText = `HP ${Math.max(0,Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
+        }
+        function applyDungeonDamage(amount) {
+            if (!inDungeonMode || dungeonPaused) return;
+            dungeonEnemyRemainingHP -= amount;
+            if (dungeonEnemyRemainingHP <= 0) handleEnemyDefeated(-dungeonEnemyRemainingHP); else updateDungeonHUD();
+        }
+        function handleEnemyDefeated(overflow) {
+            if (dungeonEnemyIndex === dungeonEnemies.length - 1) { finishDungeonVictory(); return; }
+            dungeonEnemyIndex++; dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex]; dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
+            updateDungeonHUD();
+            const isRepBased = (dungeonActivityType === 'pushup' || dungeonActivityType === 'squat');
+            if (isRepBased && !assaultModeEnabled) startEnemyPause();
+        }
+        function startEnemyPause() {
+            dungeonPaused = true;
+            const overlay = document.getElementById('overlay-enemy-pause'); const countdownEl = document.getElementById('pause-countdown');
+            overlay.classList.add('active'); let secondsLeft = 5; countdownEl.innerText = secondsLeft;
+            const interval = setInterval(() => { secondsLeft--; countdownEl.innerText = secondsLeft; if (secondsLeft<=0){clearInterval(interval); overlay.classList.remove('active'); dungeonPaused=false;} }, 1000);
+        }
+
+        function finishDungeonVictory() {
+            dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
+            document.getElementById('dungeon-complete-xp').innerText = `+${dungeonXpEstimate} XP ⭐`;
+
+            const scene = STORY_SCENES[dungeonNumber];
+            const proceed = () => document.getElementById('overlay-dungeon-complete').classList.add('active');
+
+            saveDungeonCompletionInBackground(dungeonActivityType, dungeonNumber);
+
+            if (scene && scene.post) showStoryScene(scene.post, proceed);
+            else proceed();
+        }
+
+        async function saveDungeonCompletionInBackground(activity, dungeonN) {
+            const userId = getUserId();
+            showSaveToast('Сохраняем прогресс...');
+            let attempt = 0;
+            while (true) {
+                attempt++;
+                const timeoutMs = Math.min(15000 + (attempt-1)*10000, 45000);
+                try {
+                    const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
+                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, dungeon: dungeonN}), signal: controller.signal});
+                    clearTimeout(timeoutId);
+                    if (!response.ok) throw new Error("Сервер ответил ошибкой");
+                    invalidateCache('profile', activity);
+                    showSaveToast('Прогресс сохранён', true);
+                    return;
+                } catch(e) {
+                    if (attempt >= 5) { showSaveToast('Сохраним при следующем подключении к сети'); return; }
+                    await new Promise(r=>setTimeout(r,1500));
+                }
+            }
+        }
+
+        function continueDungeon() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); dungeonPaused=false; doStartDungeonActivity(dungeonActivityType, dungeonNumber+1); }
+        function finishDungeonSession() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); attemptSave(); }
+
+        // ===== КАМЕРА =====
+        const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        const skeletonCanvas = document.getElementById('skeletonCanvas'), skeletonCtx = skeletonCanvas.getContext('2d');
+        const statusEl = document.getElementById('status'), counterEl = document.getElementById('counter');
+
+        let currentMode = null, cameraStarted = false, cameraObj = null, keepAliveInterval = null;
+        let repCount = 0, stage = "up", inPosition = false, lastRepTimestamp = 0, shoulderYAtUp = null, expectedShoulderDirection = null;
+        let holdSeconds = 0, holdLastTimestamp = null, lastHoldMinuteMarked = 0;
+
+        function calculateAngle(a,b,c) {
+            const radians = Math.atan2(c.y-b.y, c.x-b.x) - Math.atan2(a.y-b.y, a.x-b.x);
+            let angle = Math.abs(radians*180.0/Math.PI); if (angle>180.0) angle = 360-angle; return angle;
+        }
+        const LEFT_SHOULDER=11, RIGHT_SHOULDER=12, LEFT_ELBOW=13, RIGHT_ELBOW=14, LEFT_WRIST=15, RIGHT_WRIST=16;
+        const LEFT_HIP=23, RIGHT_HIP=24, LEFT_KNEE=25, RIGHT_KNEE=26, LEFT_ANKLE=27, RIGHT_ANKLE=28;
+
+        const PUSHUP_POINTS = [LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_ELBOW,RIGHT_ELBOW,LEFT_WRIST,RIGHT_WRIST];
+        const PUSHUP_CONNECTIONS = [[LEFT_SHOULDER,LEFT_ELBOW],[LEFT_ELBOW,LEFT_WRIST],[RIGHT_SHOULDER,RIGHT_ELBOW],[RIGHT_ELBOW,RIGHT_WRIST],[LEFT_SHOULDER,RIGHT_SHOULDER]];
+        const SQUAT_POINTS = [LEFT_HIP,RIGHT_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ANKLE,RIGHT_ANKLE];
+        const SQUAT_CONNECTIONS = [[LEFT_HIP,LEFT_KNEE],[LEFT_KNEE,LEFT_ANKLE],[RIGHT_HIP,RIGHT_KNEE],[RIGHT_KNEE,RIGHT_ANKLE],[LEFT_HIP,RIGHT_HIP]];
+        const WALLSIT_POINTS = [LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_HIP,RIGHT_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ANKLE,RIGHT_ANKLE];
+        const WALLSIT_CONNECTIONS = [[LEFT_SHOULDER,LEFT_HIP],[LEFT_HIP,LEFT_KNEE],[LEFT_KNEE,LEFT_ANKLE],[RIGHT_SHOULDER,RIGHT_HIP],[RIGHT_HIP,RIGHT_KNEE],[RIGHT_KNEE,RIGHT_ANKLE]];
+
+        function checkPushupPosition(landmarks) {
+            const armsVisible = PUSHUP_POINTS.every(idx => landmarks[idx].visibility > 0.6);
+            if (!armsVisible) return false;
+            const leftHipVisible = landmarks[LEFT_HIP].visibility>0.5 && landmarks[LEFT_KNEE].visibility>0.5;
+            const rightHipVisible = landmarks[RIGHT_HIP].visibility>0.5 && landmarks[RIGHT_KNEE].visibility>0.5;
+            if (!leftHipVisible && !rightHipVisible) return true;
+            if (leftHipVisible && calculateAngle(landmarks[LEFT_SHOULDER],landmarks[LEFT_HIP],landmarks[LEFT_KNEE])>140) return true;
+            if (rightHipVisible && calculateAngle(landmarks[RIGHT_SHOULDER],landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE])>140) return true;
+            return false;
+        }
+        const MIN_MOVEMENT = 0.02;
+        function countPushups(landmarks) {
+            const leftAngle = calculateAngle(landmarks[LEFT_SHOULDER],landmarks[LEFT_ELBOW],landmarks[LEFT_WRIST]);
+            const rightAngle = calculateAngle(landmarks[RIGHT_SHOULDER],landmarks[RIGHT_ELBOW],landmarks[RIGHT_WRIST]);
+            const shoulderY = (landmarks[LEFT_SHOULDER].y + landmarks[RIGHT_SHOULDER].y)/2;
+            const bothUp = leftAngle>150 && rightAngle>150, bothDown = leftAngle<75 && rightAngle<75;
+            if (bothUp) { stage="up"; shoulderYAtUp = shoulderY; }
+            if (bothDown && stage==="up") {
+                const delta = shoulderYAtUp===null?0:(shoulderY-shoulderYAtUp);
+                if (Math.abs(delta) < MIN_MOVEMENT) return;
+                const direction = delta>0?1:-1;
+                if (expectedShoulderDirection===null) expectedShoulderDirection=direction; else if (direction!==expectedShoulderDirection) return;
+                const now = Date.now();
+                if (now-lastRepTimestamp>500) { stage="down"; lastRepTimestamp=now; countRepGeneric(); }
+            }
+        }
+
+        function checkSquatPosition(landmarks) {
+            return SQUAT_POINTS.every(idx => landmarks[idx].visibility > 0.55);
+        }
+        function countSquats(landmarks) {
+            const leftAngle = calculateAngle(landmarks[LEFT_HIP],landmarks[LEFT_KNEE],landmarks[LEFT_ANKLE]);
+            const rightAngle = calculateAngle(landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE],landmarks[RIGHT_ANKLE]);
+            const hipY = (landmarks[LEFT_HIP].y + landmarks[RIGHT_HIP].y)/2;
+            const bothUp = leftAngle>160 && rightAngle>160, bothDown = leftAngle<100 && rightAngle<100;
+            if (bothUp) { stage="up"; shoulderYAtUp = hipY; }
+            if (bothDown && stage==="up") {
+                const delta = shoulderYAtUp===null?0:(hipY-shoulderYAtUp);
+                if (Math.abs(delta) < MIN_MOVEMENT) return;
+                const direction = delta>0?1:-1;
+                if (expectedShoulderDirection===null) expectedShoulderDirection=direction; else if (direction!==expectedShoulderDirection) return;
+                const now = Date.now();
+                if (now-lastRepTimestamp>500) { stage="down"; lastRepTimestamp=now; countRepGeneric(); }
+            }
+        }
+        function countRepGeneric() {
+            repCount++; counterEl.innerText = repCount; playHitSound(); triggerHitShake(); vibrate('light');
+            if (inDungeonMode) applyDungeonDamage(1);
+        }
+
+        function avgVisibility(indices, landmarks) { return indices.reduce((s,idx)=>s+landmarks[idx].visibility,0)/indices.length; }
+        function getPlankSidePoints(landmarks) {
+            const leftIndices=[LEFT_SHOULDER,LEFT_ELBOW,LEFT_WRIST,LEFT_HIP,LEFT_KNEE,LEFT_ANKLE];
+            const rightIndices=[RIGHT_SHOULDER,RIGHT_ELBOW,RIGHT_WRIST,RIGHT_HIP,RIGHT_KNEE,RIGHT_ANKLE];
+            return avgVisibility(leftIndices,landmarks) >= avgVisibility(rightIndices,landmarks)
+                ? {shoulder:LEFT_SHOULDER,elbow:LEFT_ELBOW,wrist:LEFT_WRIST,hip:LEFT_HIP,knee:LEFT_KNEE,ankle:LEFT_ANKLE}
+                : {shoulder:RIGHT_SHOULDER,elbow:RIGHT_ELBOW,wrist:RIGHT_WRIST,hip:RIGHT_HIP,knee:RIGHT_KNEE,ankle:RIGHT_ANKLE};
+        }
+        function checkPlankPosition(landmarks) {
+            const p = getPlankSidePoints(landmarks);
+            const required = [p.shoulder,p.elbow,p.wrist,p.hip,p.knee,p.ankle];
+            if (!required.every(idx=>landmarks[idx].visibility>0.6)) return {valid:false, reason:"not_visible", points:p};
+            const bodyAngle = calculateAngle(landmarks[p.shoulder],landmarks[p.hip],landmarks[p.knee]);
+            const legAngle = calculateAngle(landmarks[p.hip],landmarks[p.knee],landmarks[p.ankle]);
+            const isStraight = bodyAngle>150 && legAngle>150;
+            return {valid:isStraight, reason:isStraight?"ok":"not_straight", points:p};
+        }
+
+        function checkWallsitPosition(landmarks) {
+            if (!WALLSIT_POINTS.every(idx => landmarks[idx].visibility > 0.55)) return {valid:false, reason:"not_visible"};
+            const leftKneeAngle = calculateAngle(landmarks[LEFT_HIP],landmarks[LEFT_KNEE],landmarks[LEFT_ANKLE]);
+            const rightKneeAngle = calculateAngle(landmarks[RIGHT_HIP],landmarks[RIGHT_KNEE],landmarks[RIGHT_ANKLE]);
+            const kneeOk = (leftKneeAngle>60 && leftKneeAngle<120) || (rightKneeAngle>60 && rightKneeAngle<120);
+            const shoulderMidX = (landmarks[LEFT_SHOULDER].x+landmarks[RIGHT_SHOULDER].x)/2;
+            const hipMidX = (landmarks[LEFT_HIP].x+landmarks[RIGHT_HIP].x)/2;
+            const shoulderMidY = (landmarks[LEFT_SHOULDER].y+landmarks[RIGHT_SHOULDER].y)/2;
+            const hipMidY = (landmarks[LEFT_HIP].y+landmarks[RIGHT_HIP].y)/2;
+            const torsoAngleFromVertical = Math.abs(Math.atan2(hipMidX-shoulderMidX, hipMidY-shoulderMidY) * 180/Math.PI);
+            const torsoUpright = torsoAngleFromVertical < 25;
+            const isValid = kneeOk && torsoUpright;
+            return {valid: isValid, reason: isValid ? "ok" : "not_straight"};
+        }
+
+        function drawPoints(landmarks, points, connections) {
+            skeletonCtx.strokeStyle = '#F59E0B'; skeletonCtx.lineWidth = 3;
+            for (const [a,b] of connections) {
+                const s=landmarks[a], e=landmarks[b];
+                skeletonCtx.beginPath(); skeletonCtx.moveTo(s.x*skeletonCanvas.width, s.y*skeletonCanvas.height);
+                skeletonCtx.lineTo(e.x*skeletonCanvas.width, e.y*skeletonCanvas.height); skeletonCtx.stroke();
+            }
+            skeletonCtx.fillStyle = '#EF4444';
+            for (const idx of points) { const p=landmarks[idx]; skeletonCtx.beginPath(); skeletonCtx.arc(p.x*skeletonCanvas.width, p.y*skeletonCanvas.height, 6, 0, 2*Math.PI); skeletonCtx.fill(); }
+        }
+        function formatTime(s) { const m=Math.floor(s/60); const sec=Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+        function updateHoldTimer(isInPosition) {
+            const now = Date.now();
+            if (isInPosition) {
+                if (holdLastTimestamp !== null) {
+                    const delta = (now-holdLastTimestamp)/1000; holdSeconds += delta;
+                    if (inDungeonMode) applyDungeonDamage(delta);
+                    const currentMinute = Math.floor(holdSeconds/60);
+                    if (currentMinute > lastHoldMinuteMarked) { lastHoldMinuteMarked = currentMinute; playMinuteBeep(); vibrate('light'); }
+                }
+                holdLastTimestamp = now;
+            } else holdLastTimestamp = null;
+            counterEl.innerText = formatTime(holdSeconds);
+        }
+
+        const pose = new Pose({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}` });
+        pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+        pose.onResults(onResults);
+
+        function onResults(results) {
+            if (canvas.width !== results.image.width || canvas.height !== results.image.height) {
+                canvas.width = results.image.width; canvas.height = results.image.height;
+                skeletonCanvas.width = results.image.width; skeletonCanvas.height = results.image.height;
+            }
+            ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1); ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(results.image,0,0,canvas.width,canvas.height); ctx.restore();
+
+            skeletonCtx.save(); skeletonCtx.clearRect(0,0,skeletonCanvas.width,skeletonCanvas.height);
+            skeletonCtx.translate(skeletonCanvas.width,0); skeletonCtx.scale(-1,1);
+
+            if (results.poseLandmarks) {
+                const lm = results.poseLandmarks;
+                if (currentMode === 'pushup') {
+                    drawPoints(lm, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
+                    inPosition = checkPushupPosition(lm);
+                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 💪") : "Займите позицию для отжиманий 🧎";
+                    if (inPosition && !dungeonPaused) countPushups(lm);
+                } else if (currentMode === 'squat') {
+                    drawPoints(lm, SQUAT_POINTS, SQUAT_CONNECTIONS);
+                    inPosition = checkSquatPosition(lm);
+                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🚶";
+                    if (inPosition && !dungeonPaused) countSquats(lm);
+                } else if (currentMode === 'plank') {
+                    const result = checkPlankPosition(lm);
+                    drawPoints(lm, [result.points.shoulder,result.points.elbow,result.points.wrist,result.points.hip,result.points.knee,result.points.ankle],
+                        [[result.points.shoulder,result.points.elbow],[result.points.elbow,result.points.wrist],[result.points.shoulder,result.points.hip],[result.points.hip,result.points.knee],[result.points.knee,result.points.ankle]]);
+                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
+                    else if (result.reason==="not_straight") statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
+                    else statusEl.innerText = "Отлично держите планку! 🔥";
+                    updateHoldTimer(result.valid && !dungeonPaused);
+                } else if (currentMode === 'wallsit') {
+                    drawPoints(lm, WALLSIT_POINTS, WALLSIT_CONNECTIONS);
+                    const result = checkWallsitPosition(lm);
+                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте лицом к камере, покажите всё тело 🚶";
+                    else if (result.reason==="not_straight") statusEl.innerText = "Держите спину прямой, угол в колене — прямой угол 📏";
+                    else statusEl.innerText = "Отлично держите стульчик! 🔥";
+                    updateHoldTimer(result.valid && !dungeonPaused);
+                }
+            } else {
+                inPosition = false; statusEl.innerText = "Не вижу тело в кадре 👀";
+                if (currentMode==='plank' || currentMode==='wallsit') updateHoldTimer(false);
+            }
+            skeletonCtx.restore();
+        }
+
+        function startKeepAlivePing() { if (keepAliveInterval) return; keepAliveInterval = setInterval(()=>{fetch(`${API_BASE}/`).catch(()=>{});}, 60000); }
+        function stopKeepAlivePing() { if (keepAliveInterval) { clearInterval(keepAliveInterval); keepAliveInterval=null; } }
+        function stopCameraCompletely() {
+            if (cameraObj) { try{cameraObj.stop();}catch(e){} cameraObj=null; }
+            if (video.srcObject) { video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject=null; }
+            cameraStarted = false; stopKeepAlivePing();
+        }
+        function startCameraIfNeeded() {
+            if (cameraStarted) return;
+            cameraObj = new Camera(video, { onFrame: async () => { if (dungeonPaused) return; await pose.send({image:video}); }, width:480, height:640 });
+            cameraObj.start(); cameraStarted = true;
+        }
+
+        function startActivity(mode, isDungeon) {
+            fetch(`${API_BASE}/`).catch(()=>{}); startKeepAlivePing(); applyTelegramViewportHeight();
+            currentMode = mode; repCount = 0; stage = "up"; shoulderYAtUp = null; expectedShoulderDirection = null;
+            holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0;
+
+            document.getElementById('finishBtn').style.display = 'block';
+            document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
+            if (!isDungeon) inDungeonMode = false;
+
+            const isTimeBased = (mode==='plank' || mode==='wallsit');
+            statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий 🧎"
+                : mode==='squat' ? "Встаньте лицом к камере 🚶"
+                : mode==='plank' ? "Встаньте боком к камере, покажите всё тело 🚶"
+                : "Встаньте лицом к камере, покажите всё тело 🚶";
+            counterEl.innerText = isTimeBased ? "00:00" : "0";
+
+            showScreen('activity'); startCameraIfNeeded();
+            setTimeout(applyTelegramViewportHeight,150); setTimeout(applyTelegramViewportHeight,500);
+        }
+
+        const tg = window.Telegram.WebApp;
+
+        // ===== ТИХОЕ СОХРАНЕНИЕ =====
+        let saveToastTimeout = null;
+        function showSaveToast(text, isSuccess = false) {
+            const toast = document.getElementById('save-toast');
+            document.getElementById('save-toast-text').innerText = text;
+            toast.classList.toggle('success', isSuccess);
+            toast.classList.add('visible');
+            if (saveToastTimeout) clearTimeout(saveToastTimeout);
+            saveToastTimeout = setTimeout(() => toast.classList.remove('visible'), isSuccess ? 1800 : 4000);
+        }
+
+        tg.ready(); tg.expand(); applyTelegramViewportHeight();
+        tg.onEvent('viewportChanged', applyTelegramViewportHeight);
+        window.addEventListener('resize', applyTelegramViewportHeight);
+
+        // ===== СОХРАНЕНИЕ — ТИХОЕ, В ФОНЕ =====
+        const SAVE_ENDPOINT = { pushup:'save_pushups', squat:'save_squats', plank:'save_plank', wallsit:'save_wallsit' };
+        const SAVE_KEY = { pushup:'count', squat:'count', plank:'seconds', wallsit:'seconds' };
+
+        function attemptSave() {
+            const userId = getUserId(); const mode = currentMode;
+            const value = (mode==='plank'||mode==='wallsit') ? Math.floor(holdSeconds) : repCount;
+
+            stopCameraCompletely();
+            inDungeonMode = false; currentMode = null;
+            showScreen('adventure');
+
+            if (!userId || value < 1) return;
+
+            showSaveToast('Сохраняем результат...');
+            saveResultInBackground(mode, userId, value);
+        }
+
+        async function saveResultInBackground(mode, userId, value) {
+            const body = {user_id:userId}; body[SAVE_KEY[mode]] = value;
+            let attempt = 0;
+            while (true) {
+                attempt++;
+                const timeoutMs = Math.min(15000 + (attempt-1)*10000, 45000);
+                try {
+                    const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
+                    const response = await fetch(`${API_BASE}/api/${SAVE_ENDPOINT[mode]}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body), signal: controller.signal});
+                    clearTimeout(timeoutId);
+                    if (!response.ok) throw new Error("bad status");
+                    invalidateCache('profile', 'leaderboard');
+                    showSaveToast('Результат сохранён', true);
+                    return;
+                } catch(e) {
+                    if (attempt >= 5) { showSaveToast('Сохраним при следующем подключении к сети'); return; }
+                    await new Promise(r=>setTimeout(r,1500));
+                }
+            }
+        }
+
+        document.getElementById('finishBtn').addEventListener('click', () => {
+            if (inDungeonMode && !dungeonJustWon) { playDefeatSound(); vibrate('error'); }
+            attemptSave();
+        });
+
         checkUserStatus();
     </script>
 </body>
