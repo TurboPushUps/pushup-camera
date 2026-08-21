@@ -236,6 +236,22 @@
         .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; }
         .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); opacity: 0.6; }
         .story-continue-btn { display: none; width: 100%; padding: 22px; background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
+        /* ===== МАГАЗИН ЗЕЛИЙ ===== */
+        .wallet-row {
+            display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 784px;
+            margin: 0 auto var(--block-gap); padding: 16px 20px; background: var(--bg-card); border: 1px solid var(--border-main);
+            border-radius: 12px; box-sizing: border-box;
+        }
+        .wallet-label { font-size: var(--fs-body); color: var(--text-main); text-align: left; }
+        .wallet-value { font-size: var(--fs-body); font-weight: 600; color: var(--accent-bright); }
+        .potion-btn {
+            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 20px;
+            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 12px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+        }
+        .potion-btn:disabled, .potion-btn.disabled { opacity: 0.4; cursor: default; }
+        .potion-btn-text { text-align: left; font-size: var(--fs-body); font-weight: 600; color: var(--text-main); }
+        .potion-btn-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -328,6 +344,14 @@
             </div>
 
             <div id="profile-premium-card"></div>
+            <div class="wallet-row">
+                <span class="wallet-label">✦ Эссенция (тратится на зелья)</span>
+                <span class="wallet-value" id="wallet-spendable">0</span>
+            </div>
+            <button class="potion-btn" id="profile-potion-btn" onclick="buyPotionFromProfile()">
+                <span class="potion-btn-text">🧪 Купить зелье выносливости<div class="potion-btn-sub" id="profile-potion-sub">Осталось на этой неделе: —</div></span>
+                <span class="wallet-value" id="profile-potion-price">300 ✦</span>
+            </button>
 
             <div class="card" style="text-align:left;">
                 <div id="profile-next" style="font-size:var(--fs-caption); color: var(--text-dim); margin-bottom:10px;">—</div>
@@ -450,9 +474,13 @@
     <div id="overlay-no-stamina" class="overlay-panel">
         <div class="overlay-box">
             <h3>Выносливость закончилась 😮‍💨</h3>
-            <p style="text-align:center;">Все подходы на сегодня использованы. Возвращайся завтра, либо оформи премиум — он даёт 8 подходов в день вместо 4.</p>
+            <p style="text-align:center;">Все подходы на сегодня использованы.</p>
+            <button class="potion-btn" id="potion-buy-btn" onclick="buyPotionFromOverlay()">
+                <span class="potion-btn-text">🧪 Зелье выносливости<div class="potion-btn-sub" id="potion-btn-sub">+1 подход</div></span>
+                <span class="wallet-value" id="potion-price-label">300 ✦</span>
+            </button>
             <button class="btn btn-primary" onclick="openPremiumFromNoStamina()">Узнать о премиуме</button>
-            <button class="btn" onclick="document.getElementById('overlay-no-stamina').classList.remove('active')">Понятно</button>
+            <button class="btn" onclick="document.getElementById('overlay-no-stamina').classList.remove('active')">Позже</button>
         </div>
     </div>
 
@@ -819,6 +847,56 @@
                 document.getElementById('premium-badge').style.display = data.max > 4 ? 'inline' : 'none';
             } catch(e) {}
         }
+        // ===== МАГАЗИН ЗЕЛИЙ =====
+        function renderWalletUI() {
+            if (!profileDataCache || !profileDataCache.wallet) return;
+            const w = profileDataCache.wallet;
+            const spendEl = document.getElementById('wallet-spendable');
+            if (spendEl) spendEl.innerText = w.spendable_points;
+
+            const canBuy = w.potions_left_this_week > 0 && w.spendable_points >= w.potion_price;
+
+            const priceLabel = document.getElementById('profile-potion-price');
+            if (priceLabel) priceLabel.innerText = `${w.potion_price} ✦`;
+            const priceLabel2 = document.getElementById('potion-price-label');
+            if (priceLabel2) priceLabel2.innerText = `${w.potion_price} ✦`;
+
+            const subText = w.potions_left_this_week > 0
+                ? `Осталось на этой неделе: ${w.potions_left_this_week} из ${w.max_potions_per_week}`
+                : `Лимит на эту неделю исчерпан`;
+
+            const sub1 = document.getElementById('profile-potion-sub'); if (sub1) sub1.innerText = subText;
+            const sub2 = document.getElementById('potion-btn-sub'); if (sub2) sub2.innerText = '+1 подход · ' + subText;
+
+            const btn1 = document.getElementById('profile-potion-btn'); if (btn1) btn1.classList.toggle('disabled', !canBuy);
+            const btn2 = document.getElementById('potion-buy-btn'); if (btn2) btn2.classList.toggle('disabled', !canBuy);
+        }
+
+        async function buyPotion(fromOverlay) {
+            const userId = getUserId();
+            if (!userId) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/buy_potion`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const data = await res.json();
+                if (!data.success) { alert(data.error || "Не удалось купить зелье."); return; }
+
+                staminaCache = { remaining: data.stamina_remaining, max: data.stamina_max };
+                renderStaminaDots('stamina-dots', data.stamina_remaining, data.stamina_max);
+                renderStaminaDots('profile-stamina-dots', data.stamina_remaining, data.stamina_max);
+                if (profileDataCache) {
+                    profileDataCache.wallet.spendable_points = data.spendable_points;
+                    profileDataCache.wallet.potions_left_this_week = data.potions_left_this_week;
+                }
+                invalidateCache('profile');
+                renderWalletUI();
+                vibrate('success');
+
+                if (fromOverlay) document.getElementById('overlay-no-stamina').classList.remove('active');
+                showSaveToast('Зелье использовано, +1 подход', true);
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
+        }
+        function buyPotionFromOverlay() { buyPotion(true); }
+        function buyPotionFromProfile() { buyPotion(false); }
 
         // ===== ПРЕМИУМ =====
         function renderPremiumCard(containerId) {
@@ -897,6 +975,7 @@
                 renderStaminaDots('profile-stamina-dots', profileDataCache.stamina.remaining, profileDataCache.stamina.max);
                 document.getElementById('profile-premium-badge').style.display = profileDataCache.premium_active ? 'inline' : 'none';
                 renderPremiumCard('profile-premium-card');
+                renderWalletUI();
             } else {
                 loadingEl.style.display = 'block'; contentEl.style.display = 'none';
             }
@@ -909,6 +988,7 @@
                 renderStaminaDots('profile-stamina-dots', data.stamina.remaining, data.stamina.max);
                 document.getElementById('profile-premium-badge').style.display = data.premium_active ? 'inline' : 'none';
                 renderPremiumCard('profile-premium-card');
+                renderWalletUI();
             } catch(e) { if (!dataCache.profile) loadingEl.innerText = "Не удалось загрузить профиль. Попробуйте позже."; }
         }
         function renderProfileValues() {
