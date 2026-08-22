@@ -212,28 +212,41 @@
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
         .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-        /* ===== СЮЖЕТ ===== */
-        .story-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
+        /* ===== СЮЖЕТ — СТИЛЬ ЧАТА ===== */
+        .story-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; cursor: pointer; }
         .story-overlay.active { display: flex; }
         .story-skip-btn { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; z-index: 3001; background: rgba(255,255,255,0.1); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 20px; padding: 8px 16px; font-size: var(--fs-caption); cursor: pointer; }
-        .story-scroll { width: 100%; max-width: 684px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-top: 70px; padding-bottom: 10px; scroll-behavior: smooth; }
-        .story-card { width: 100%; background: var(--bg-card); border-radius: 18px; padding: 22px; box-sizing: border-box; border: 2px solid var(--border-main); flex-shrink: 0; cursor: pointer; }
+        .story-scroll { width: 100%; max-width: 684px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding-top: 70px; padding-bottom: 10px; scroll-behavior: smooth; cursor: default; }
+        .story-row { display: flex; width: 100%; }
+        .story-row.align-center { justify-content: center; }
+        .story-row.align-right { justify-content: flex-end; }
+        .story-row.align-left { justify-content: flex-start; }
+        .story-card { background: var(--bg-card); border-radius: 18px; padding: 22px; box-sizing: border-box; border: 2px solid var(--border-main); flex-shrink: 0; }
+        .story-card.speaker-author { max-width: 94%; border-color: var(--border-main); background: rgba(0,0,0,0.2); }
+        .story-row.align-right .story-card, .story-row.align-left .story-card { max-width: 82%; }
         .story-card.speaker-ally { border-color: #7dd3fc; box-shadow: 0 0 18px rgba(125,211,252,0.15); }
+        .story-card.speaker-player { border-color: var(--accent); box-shadow: 0 0 18px rgba(245,158,11,0.15); }
         .story-card.speaker-enemy { border-color: var(--danger); }
         .story-card.speaker-boss { border-color: var(--accent); box-shadow: 0 0 18px rgba(245,158,11,0.2); }
         .story-card.speaker-swamp { border-color: #4ade80; }
-        .story-card.speaker-author { border-color: var(--border-main); background: rgba(0,0,0,0.2); }
         .story-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-        .story-avatar { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid var(--border-main); background: var(--bg-main); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+        .story-row.align-right .story-header { flex-direction: row-reverse; }
+        .story-avatar { width: 76px; height: 76px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 2px solid var(--border-main); background: var(--bg-main); display: flex; align-items: center; justify-content: center; font-size: 1.9rem; }
+        .story-avatar.size-sm { width: 56px; height: 56px; font-size: 1.5rem; }
+        .story-avatar.size-md { width: 76px; height: 76px; font-size: 1.9rem; }
+        .story-avatar.size-lg { width: 96px; height: 96px; font-size: 2.3rem; }
         .story-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .story-name { font-weight: 600; font-size: 1.05rem; text-align: left; }
+        .story-row.align-right .story-name { text-align: right; }
         .story-card.speaker-ally .story-name { color: #7dd3fc; }
+        .story-card.speaker-player .story-name { color: var(--accent-bright); }
         .story-card.speaker-enemy .story-name { color: var(--danger); }
         .story-card.speaker-boss .story-name { color: var(--accent-bright); }
         .story-card.speaker-swamp .story-name { color: #4ade80; }
         .story-text { text-align: left; font-size: 1.05rem; line-height: 1.55; color: var(--text-main); }
+        .story-row.align-right .story-text { text-align: right; }
         .story-text.author-text { text-align: center; font-size: 0.95rem; color: var(--text-dim); }
-        .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; }
+        .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; cursor: default; }
         .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); opacity: 0.6; }
         .story-continue-btn { display: none; width: 100%; padding: 22px; background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
         /* ===== МАГАЗИН ЗЕЛИЙ ===== */
@@ -501,12 +514,12 @@
     </div>
 
     <!-- ===== СЮЖЕТНАЯ СЦЕНА ===== -->
-    <div id="story-overlay" class="story-overlay">
-        <button class="story-skip-btn" onclick="skipStoryScene();">Пропустить сцену</button>
+    <div id="story-overlay" class="story-overlay" onclick="handleStoryTap()">
+        <button class="story-skip-btn" onclick="event.stopPropagation(); skipStoryScene();">Пропустить сцену</button>
         <div class="story-scroll" id="story-scroll"></div>
         <div class="story-footer">
-            <div class="story-tap-hint" id="story-tap-hint">Нажми на реплику, чтобы продолжить</div>
-            <button class="story-continue-btn" id="story-final-btn" onclick="finishStoryScene();">Дальше</button>
+            <div class="story-tap-hint" id="story-tap-hint">Нажми в любое место, чтобы продолжить</div>
+            <button class="story-continue-btn" id="story-final-btn" onclick="event.stopPropagation(); finishStoryScene();">Дальше</button>
         </div>
     </div>
 
@@ -1744,9 +1757,12 @@
             const line = storyLines[storyLineIndex];
             const scroll = document.getElementById('story-scroll');
 
+            const align = line.speaker === 'author' ? 'center' : (line.speaker === 'ally' || line.speaker === 'player' ? 'right' : 'left');
+            const row = document.createElement('div');
+            row.className = 'story-row align-' + align;
+
             const card = document.createElement('div');
             card.className = 'story-card speaker-' + line.speaker;
-            card.onclick = handleStoryTap;
 
             if (line.speaker === 'author') {
                 card.innerHTML = `<div class="story-text author-text"></div>`;
@@ -1762,7 +1778,8 @@
                     <div class="story-text"></div>
                 `;
             }
-            scroll.appendChild(card);
+            row.appendChild(card);
+            scroll.appendChild(row);
             scroll.scrollTop = scroll.scrollHeight;
 
             const isLast = storyLineIndex === storyLines.length - 1;
@@ -1789,8 +1806,8 @@
                 if (storyTypingInterval) clearInterval(storyTypingInterval);
                 storyIsTyping = false;
                 const scroll = document.getElementById('story-scroll');
-                const lastCard = scroll.lastElementChild;
-                lastCard.querySelector('.story-text').innerText = storyLines[storyLineIndex].text;
+                const lastRow = scroll.lastElementChild;
+                if (lastRow) lastRow.querySelector('.story-text').innerText = storyLines[storyLineIndex].text;
                 return;
             }
             if (storyLineIndex < storyLines.length - 1) appendNextStoryLine();
@@ -1811,8 +1828,8 @@
         }
 
         // ===== СОСТОЯНИЕ БОЯ =====
-        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
-        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
+        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null, let dungeonStartTokens = {};
+        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false; 
         let dungeonXpEstimate = 0;
 
         function startDungeonActivity(activity, dungeonN) {
@@ -1823,9 +1840,15 @@
             });
         }
 
-        async function doStartDungeonActivity(activity, dungeonN) {
+        async function doStartDungeonActivity(activity, dungeonN, attempt = 1) {
             document.getElementById('overlay-dungeon-loading').classList.add('active');
             const userId = getUserId();
+            const tokenKey = `${activity}_${dungeonN}`;
+            if (!dungeonStartTokens[tokenKey]) {
+                dungeonStartTokens[tokenKey] = `${userId}_${dungeonN}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            }
+            const token = dungeonStartTokens[tokenKey];
+
             try {
                 let data = dataCache.dungeonDetail[activity] && dataCache.dungeonDetail[activity][dungeonN];
                 if (!data) {
@@ -1835,19 +1858,23 @@
 
                 if (data.requires_payment) {
                     document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    delete dungeonStartTokens[tokenKey];
                     showZoneLockedOverlay(activity, data.pair_start);
                     return;
                 }
 
                 const consumeData = await fetchJsonWithRetry(`${API_BASE}/api/consume_stamina`, {
-                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, token})
                 }, {timeoutMs:15000, retries:2});
 
                 if (!consumeData.success) {
                     document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    delete dungeonStartTokens[tokenKey];
                     document.getElementById('overlay-no-stamina').classList.add('active');
                     return;
                 }
+                delete dungeonStartTokens[tokenKey];
+
                 staminaCache = { remaining: consumeData.remaining, max: consumeData.max };
                 renderStaminaDots('stamina-dots', consumeData.remaining, consumeData.max);
 
@@ -1863,9 +1890,21 @@
 
                 prefetchDungeonDetail(activity, dungeonN + 1);
             } catch(e) {
+                if (attempt < 3) {
+                    await new Promise(r => setTimeout(r, 1200 * attempt));
+                    return doStartDungeonActivity(activity, dungeonN, attempt + 1);
+                }
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
-                alert("Не удалось загрузить приключение. Попробуйте ещё раз — сервер мог временно спать.");
+                showDungeonLoadFailedOverlay(activity, dungeonN);
             }
+        }
+
+        function showDungeonLoadFailedOverlay(activity, dungeonN) {
+            document.getElementById('dungeon-fail-retry-btn').onclick = () => {
+                document.getElementById('overlay-dungeon-load-failed').classList.remove('active');
+                doStartDungeonActivity(activity, dungeonN);
+            };
+            document.getElementById('overlay-dungeon-load-failed').classList.add('active');
         }
 
         function updateMonsterPortrait() { const zone = getZoneForDungeon(dungeonNumber); document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone); }
