@@ -252,6 +252,13 @@
         .potion-btn:disabled, .potion-btn.disabled { opacity: 0.4; cursor: default; }
         .potion-btn-text { text-align: left; font-size: var(--fs-body); font-weight: 600; color: var(--text-main); }
         .potion-btn-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
+        /* ===== ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ ЭКРАНАМИ ===== */
+        .screen { transition: opacity 0.22s ease, transform 0.22s ease; }
+        .screen.anim-enter { opacity: 0; transform: translateX(14px); }
+        .screen.anim-exit { opacity: 0; transform: translateX(-14px); pointer-events: none; }
+        .story-avatar.size-sm { width: 56px; height: 56px; font-size: 1.5rem; }
+        .story-avatar.size-md { width: 76px; height: 76px; font-size: 1.9rem; }
+        .story-avatar.size-lg { width: 96px; height: 96px; font-size: 2.3rem; }
     </style>
 </head>
 <body>
@@ -584,9 +591,30 @@
 
         function showScreen(name) {
             applyTelegramViewportHeight();
+            const skipAnim = (name === 'activity' || name === 'register');
             document.body.classList.toggle('no-scroll', name === 'activity');
-            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-            document.getElementById('screen-' + name).classList.add('active');
+
+            const currentActiveEl = document.querySelector('.screen.active');
+            const nextEl = document.getElementById('screen-' + name);
+
+            if (!skipAnim && currentActiveEl && currentActiveEl !== nextEl) {
+                currentActiveEl.style.position = 'fixed'; currentActiveEl.style.top = '0'; currentActiveEl.style.left = '0'; currentActiveEl.style.right = '0';
+                nextEl.style.position = 'fixed'; nextEl.style.top = '0'; nextEl.style.left = '0'; nextEl.style.right = '0';
+
+                nextEl.classList.add('active', 'anim-enter');
+                void nextEl.offsetWidth;
+                requestAnimationFrame(() => nextEl.classList.remove('anim-enter'));
+
+                currentActiveEl.classList.add('anim-exit');
+                setTimeout(() => {
+                    currentActiveEl.classList.remove('active', 'anim-exit');
+                    currentActiveEl.style.position = ''; currentActiveEl.style.top = ''; currentActiveEl.style.left = ''; currentActiveEl.style.right = '';
+                    nextEl.style.position = ''; nextEl.style.top = ''; nextEl.style.left = ''; nextEl.style.right = '';
+                }, 230);
+            } else {
+                document.querySelectorAll('.screen').forEach(el => el.classList.remove('active', 'anim-exit', 'anim-enter'));
+                nextEl.classList.add('active');
+            }
 
             if (name === 'profile') loadProfile();
             if (name === 'leaderboard') loadLeaderboard();
@@ -791,7 +819,7 @@
         }
 
         // ===== ПРЕДЗАГРУЗКА ВСЕХ ДАННЫХ =====
-        const dataCache = { profile: null, dungeonInfo: {}, leaderboard: {} };
+        const dataCache = { profile: null, dungeonInfo: {}, dungeonDetail: { pushup: {}, plank: {}, squat: {}, wallsit: {} }, leaderboard: {} };
 
         async function prefetchAllData() {
             const userId = getUserId();
@@ -808,15 +836,37 @@
             activities.forEach(activity => {
                 tasks.push(
                     fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
-                        .then(d => { dataCache.dungeonInfo[activity] = d; }).catch(()=>{})
+                        .then(d => {
+                            dataCache.dungeonInfo[activity] = d;
+                            dataCache.dungeonDetail[activity][d.requested_dungeon] = d;
+                        }).catch(()=>{})
                 );
             });
             await Promise.all(tasks);
+
+            // Предзагружаем СЛЕДУЮЩЕЕ подземелье — так у нас всегда готовы «два ближайших» на каждую дисциплину
+            const nextLevelTasks = activities.map(activity => {
+                const info = dataCache.dungeonInfo[activity];
+                if (!info) return Promise.resolve();
+                return prefetchDungeonDetail(activity, info.current_dungeon + 1);
+            });
+            await Promise.all(nextLevelTasks);
+
             if (document.getElementById('screen-adventure').classList.contains('active')) {
                 renderStaminaDots('stamina-dots', staminaCache.remaining, staminaCache.max);
                 document.getElementById('premium-badge').style.display = staminaCache.max > 4 ? 'inline' : 'none';
                 if (currentAdventureMode === 'campaign') renderChaptersFromCache(currentAdventureTab);
             }
+        }
+
+        async function prefetchDungeonDetail(activity, n) {
+            if (dataCache.dungeonDetail[activity][n]) return dataCache.dungeonDetail[activity][n];
+            const userId = getUserId();
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${n}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                dataCache.dungeonDetail[activity][n] = data;
+                return data;
+            } catch(e) { return null; }
         }
 
         function invalidateCache(...keys) {
@@ -1141,6 +1191,8 @@
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
                 dataCache.dungeonInfo[activity] = data;
+                dataCache.dungeonDetail[activity][data.requested_dungeon] = data;
+                prefetchDungeonDetail(activity, data.current_dungeon + 1);
                 if (currentAdventureTab === activity && currentAdventureMode === 'campaign') {
                     renderChapters(activity, data.current_dungeon, data.purchased_pairs || [], data.premium_active);
                 }
@@ -1700,9 +1752,11 @@
                 card.innerHTML = `<div class="story-text author-text"></div>`;
             } else {
                 const avatarHtml = line.avatar ? `<img src="${line.avatar}" alt="${line.name}">` : (line.speaker==='player' ? '⚔️' : '👤');
+                const len = line.text.length;
+                const sizeClass = len > 90 ? 'size-lg' : (len > 40 ? 'size-md' : 'size-sm');
                 card.innerHTML = `
                     <div class="story-header">
-                        <div class="story-avatar">${avatarHtml}</div>
+                        <div class="story-avatar ${sizeClass}">${avatarHtml}</div>
                         <div class="story-name">${line.name || ''}</div>
                     </div>
                     <div class="story-text"></div>
@@ -1773,7 +1827,11 @@
             document.getElementById('overlay-dungeon-loading').classList.add('active');
             const userId = getUserId();
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, {cache:'no-store'}, {timeoutMs:20000, retries:1});
+                let data = dataCache.dungeonDetail[activity] && dataCache.dungeonDetail[activity][dungeonN];
+                if (!data) {
+                    data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, {cache:'no-store'}, {timeoutMs:20000, retries:2});
+                    dataCache.dungeonDetail[activity][dungeonN] = data;
+                }
 
                 if (data.requires_payment) {
                     document.getElementById('overlay-dungeon-loading').classList.remove('active');
@@ -1781,8 +1839,10 @@
                     return;
                 }
 
-                const consumeRes = await fetch(`${API_BASE}/api/consume_stamina`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
-                const consumeData = await consumeRes.json();
+                const consumeData = await fetchJsonWithRetry(`${API_BASE}/api/consume_stamina`, {
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})
+                }, {timeoutMs:15000, retries:2});
+
                 if (!consumeData.success) {
                     document.getElementById('overlay-dungeon-loading').classList.remove('active');
                     document.getElementById('overlay-no-stamina').classList.add('active');
@@ -1800,9 +1860,11 @@
                 updateMonsterPortrait(); updateDungeonHUD();
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
                 startActivity(activity, true);
+
+                prefetchDungeonDetail(activity, dungeonN + 1);
             } catch(e) {
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
-                alert("Не удалось загрузить приключение. Попробуйте позже.");
+                alert("Не удалось загрузить приключение. Попробуйте ещё раз — сервер мог временно спать.");
             }
         }
 
@@ -1858,8 +1920,9 @@
                     const response = await fetch(`${API_BASE}/api/dungeon_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, dungeon: dungeonN}), signal: controller.signal});
                     clearTimeout(timeoutId);
                     if (!response.ok) throw new Error("Сервер ответил ошибкой");
-                    invalidateCache('profile', activity);
+                    invalidateCache('profile');
                     showSaveToast('Прогресс сохранён', true);
+                    refreshDungeonInfoSilently(activity);
                     return;
                 } catch(e) {
                     if (attempt >= 5) { showSaveToast('Сохраним при следующем подключении к сети'); return; }
