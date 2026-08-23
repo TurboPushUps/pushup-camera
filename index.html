@@ -327,6 +327,10 @@
             <div class="info-tip" id="camera-tip">
                 💡 Совет: для отжиманий и планки поставь телефон так, чтобы было видно плечи, локти и запястья (для планки — сбоку). Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
             </div>
+            
+            <div class="info-tip active" id="free-story-banner" style="border-color: #7c5cff; background: rgba(124,92,255,0.08);">
+                🎉 Сюжет полностью открыт и бесплатен для всех до 10 сентября!
+            </div>
 
             <div id="dungeon-select-loading" class="loading" style="display:none;">Загрузка...</div>
             <div class="chapters-container" id="chapters-container"></div>
@@ -560,6 +564,13 @@
         // ===== ТЕМА =====
         let currentTheme = localStorage.getItem('theme') || 'dark';
         function applyTheme() {
+            (function hideFreeStoryBannerIfExpired() {
+            const freeUntil = new Date('2026-09-10T23:59:59');
+            if (new Date() > freeUntil) {
+                const el = document.getElementById('free-story-banner');
+                if (el) el.style.display = 'none';
+            }
+        })();
             document.documentElement.setAttribute('data-theme', currentTheme);
             const cb = document.getElementById('theme-checkbox');
             if (cb) cb.checked = (currentTheme === 'light');
