@@ -481,6 +481,9 @@
 
         <div class="section-label">Данные</div>
         <button class="btn" style="border-color: var(--danger); color: var(--danger);" onclick="resetProgress()">Сбросить прогресс охотника</button>
+        <div style="max-width:784px; margin: 40px auto 0; text-align:center;">
+            <span onclick="supportWithStars()" style="font-size: var(--fs-caption); color: var(--text-dim); cursor:pointer; text-decoration: underline; opacity: 0.6;">Поддержать проект</span>
+        </div>
     </div>
 
     <!-- ===== ОВЕРЛЕИ ===== -->
@@ -1021,6 +1024,17 @@
                     </div>`;
             }
         }
+
+        async function supportWithStars() {
+            const userId = getUserId();
+            try {
+                const res = await fetch(`${API_BASE}/api/create_support_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, amount:150})});
+                const data = await res.json();
+                if (!data.url) { return; }
+                window.Telegram.WebApp.openInvoice(data.url, () => {});
+            } catch(e) {}
+        }
+        
         async function buyPremium() {
             const userId = getUserId();
             try {
