@@ -182,11 +182,17 @@
         .hp-bar-bg { width: 100%; max-width: 784px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.3); border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative; box-sizing: border-box; }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
         .hp-bar-label { position: absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size: var(--fs-body); font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums; }
-        #status { font-size: var(--fs-body); margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%; background: rgba(0,0,0,0.3); padding: 10px 18px; border-radius: 10px; display: block; font-weight: 500; box-sizing: border-box; }
+        #status { font-size: 1.6rem; margin: 14px auto 0; color: var(--text-main); max-width: 784px; width: 100%; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 10px; display: block; font-weight: 500; box-sizing: border-box; }
 
         .hud-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; padding: 14px 16px 26px; background: linear-gradient(rgba(8,9,12,0), rgba(8,9,12,0.94)); }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
-        .rep-circle { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent); font-size: 1.75rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums; }
+        .rep-circle {
+            display: flex; align-items: center; justify-content: center;
+            min-width: 160px; height: 160px; padding: 0 22px; box-sizing: border-box;
+            border-radius: 80px; /* «пилюля», сама подстраивается под ширину содержимого — не обрежется никогда */
+            background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
+            font-size: 3.2rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums;
+        }
 
         /* ===== ТИХОЕ СОХРАНЕНИЕ ===== */
         .save-toast {
@@ -285,6 +291,14 @@
         <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
+    <div id="overlay-dungeon-load-failed" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Не получилось загрузить приключение</h3>
+            <p style="text-align:center;">Сервер медленно просыпается после недавнего переезда на новую базу данных. Обычно повторная попытка помогает.</p>
+            <button class="btn btn-primary" id="dungeon-fail-retry-btn">Попробовать снова</button>
+        </div>
+    </div>
+
     <!-- ===== КАРТА ПРИКЛЮЧЕНИЙ ===== -->
     <div id="screen-adventure" class="screen">
         <h2 style="margin-top:20px;">Карта приключений</h2>
@@ -343,7 +357,7 @@
         </div>
         <div class="hud-bottom">
             <div class="rep-counter-row"><div class="rep-circle" id="counter">0</div></div>
-            <button id="finishBtn" class="btn btn-primary" style="max-width: 320px;">Завершить</button>
+            <button id="finishBtn" class="btn btn-primary" style="max-width: 420px; font-size: 2rem; padding: 40px;">Завершить</button>
         </div>
     </div>
 
@@ -752,6 +766,18 @@
             p.classList.remove('hit-shake'); void p.offsetWidth; p.classList.add('hit-shake');
         }
         function playMinuteBeep() { playBeep(880, 200); }
+        function playTickSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctxA = getAudioCtx();
+                const osc = ctxA.createOscillator(); const gain = ctxA.createGain();
+                osc.type = 'square'; osc.frequency.setValueAtTime(1000, ctxA.currentTime);
+                osc.connect(gain); gain.connect(ctxA.destination);
+                gain.gain.setValueAtTime(0.12, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.045);
+                osc.start(); osc.stop(ctxA.currentTime + 0.045);
+            } catch(e) {}
+        }
         function playVictorySound() { playBeep(660,150); setTimeout(()=>playBeep(880,150),150); setTimeout(()=>playBeep(1100,300),300); }
         function playDefeatSound() { playBeep(300,300,'sawtooth'); setTimeout(()=>playBeep(180,400,'sawtooth'),250); }
         function playTypeTick() {
@@ -1980,7 +2006,7 @@
 
         let currentMode = null, cameraStarted = false, cameraObj = null, keepAliveInterval = null;
         let repCount = 0, stage = "up", inPosition = false, lastRepTimestamp = 0, shoulderYAtUp = null, expectedShoulderDirection = null;
-        let holdSeconds = 0, holdLastTimestamp = null, lastHoldMinuteMarked = 0;
+        let holdSeconds = 0, holdLastTimestamp = null, lastHoldMinuteMarked = 0, lastHoldSecondMarked = 0;
 
         function calculateAngle(a,b,c) {
             const radians = Math.atan2(c.y-b.y, c.x-b.x) - Math.atan2(a.y-b.y, a.x-b.x);
@@ -2096,6 +2122,10 @@
                 if (holdLastTimestamp !== null) {
                     const delta = (now-holdLastTimestamp)/1000; holdSeconds += delta;
                     if (inDungeonMode) applyDungeonDamage(delta);
+
+                    const currentSecond = Math.floor(holdSeconds);
+                    if (currentSecond > lastHoldSecondMarked) { lastHoldSecondMarked = currentSecond; playTickSound(); }
+
                     const currentMinute = Math.floor(holdSeconds/60);
                     if (currentMinute > lastHoldMinuteMarked) { lastHoldMinuteMarked = currentMinute; playMinuteBeep(); vibrate('light'); }
                 }
@@ -2170,7 +2200,7 @@
         function startActivity(mode, isDungeon) {
             fetch(`${API_BASE}/`).catch(()=>{}); startKeepAlivePing(); applyTelegramViewportHeight();
             currentMode = mode; repCount = 0; stage = "up"; shoulderYAtUp = null; expectedShoulderDirection = null;
-            holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0;
+            holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0; lastHoldSecondMarked = 0;
 
             document.getElementById('finishBtn').style.display = 'block';
             document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
