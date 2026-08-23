@@ -41,9 +41,12 @@
         h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--accent); letter-spacing: 0.3px; margin: 0 0 18px; font-size: var(--fs-heading); }
         .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--fs-body); }
 
-        .screen { display: none; padding: 22px 16px 120px; min-height: 100dvh; min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; position: relative; }
+        /* ===== ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ ЭКРАНАМИ ===== */
+        .screen { display: none; padding: 22px 16px 120px; min-height: 100dvh; min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; position: relative; transition: opacity 0.22s ease, transform 0.22s ease; }
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 40px; }
+        .screen.anim-enter { opacity: 0; transform: translateX(14px); }
+        .screen.anim-exit { opacity: 0; transform: translateX(-14px); pointer-events: none; }
 
         .btn {
             display: block; width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 27px;
@@ -118,6 +121,23 @@
         .stamina-dot.filled { background: var(--accent); }
         .stamina-bar .premium-badge { font-size: var(--fs-caption); color: var(--accent-bright); font-weight: 600; margin-left: 8px; }
 
+        /* ===== МАГАЗИН ЗЕЛИЙ ===== */
+        .wallet-row {
+            display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 784px;
+            margin: 0 auto var(--block-gap); padding: 16px 20px; background: var(--bg-card); border: 1px solid var(--border-main);
+            border-radius: 12px; box-sizing: border-box;
+        }
+        .wallet-label { font-size: var(--fs-body); color: var(--text-main); text-align: left; }
+        .wallet-value { font-size: var(--fs-body); font-weight: 600; color: var(--accent-bright); }
+        .potion-btn {
+            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 20px;
+            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 12px; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+        }
+        .potion-btn:disabled, .potion-btn.disabled { opacity: 0.4; cursor: default; }
+        .potion-btn-text { text-align: left; font-size: var(--fs-body); font-weight: 600; color: var(--text-main); }
+        .potion-btn-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
+
         /* ===== ГЛАВЫ — АККОРДЕОН ===== */
         .chapters-container { max-width: 784px; margin: 0 auto; }
         .chapter-block { margin-bottom: 10px; border: 1px solid var(--border-main); border-radius: 14px; overflow: hidden; background: var(--bg-card); }
@@ -189,7 +209,7 @@
         .rep-circle {
             display: flex; align-items: center; justify-content: center;
             min-width: 160px; height: 160px; padding: 0 22px; box-sizing: border-box;
-            border-radius: 80px; /* «пилюля», сама подстраивается под ширину содержимого — не обрежется никогда */
+            border-radius: 80px;
             background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
             font-size: 3.2rem; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums;
         }
@@ -255,29 +275,6 @@
         .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; cursor: default; }
         .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); opacity: 0.6; }
         .story-continue-btn { display: none; width: 100%; padding: 22px; background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
-        /* ===== МАГАЗИН ЗЕЛИЙ ===== */
-        .wallet-row {
-            display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 784px;
-            margin: 0 auto var(--block-gap); padding: 16px 20px; background: var(--bg-card); border: 1px solid var(--border-main);
-            border-radius: 12px; box-sizing: border-box;
-        }
-        .wallet-label { font-size: var(--fs-body); color: var(--text-main); text-align: left; }
-        .wallet-value { font-size: var(--fs-body); font-weight: 600; color: var(--accent-bright); }
-        .potion-btn {
-            width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 20px;
-            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 12px; box-sizing: border-box;
-            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
-        }
-        .potion-btn:disabled, .potion-btn.disabled { opacity: 0.4; cursor: default; }
-        .potion-btn-text { text-align: left; font-size: var(--fs-body); font-weight: 600; color: var(--text-main); }
-        .potion-btn-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
-        /* ===== ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ ЭКРАНАМИ ===== */
-        .screen { transition: opacity 0.22s ease, transform 0.22s ease; }
-        .screen.anim-enter { opacity: 0; transform: translateX(14px); }
-        .screen.anim-exit { opacity: 0; transform: translateX(-14px); pointer-events: none; }
-        .story-avatar.size-sm { width: 56px; height: 56px; font-size: 1.5rem; }
-        .story-avatar.size-md { width: 76px; height: 76px; font-size: 1.9rem; }
-        .story-avatar.size-lg { width: 96px; height: 96px; font-size: 2.3rem; }
     </style>
 </head>
 <body>
@@ -289,14 +286,6 @@
         <input type="text" id="nickname-input" class="nickname-input" maxlength="20" placeholder="Например: TigerPower">
         <div id="nickname-error" class="nickname-error"></div>
         <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
-    </div>
-
-    <div id="overlay-dungeon-load-failed" class="overlay-panel">
-        <div class="overlay-box">
-            <h3>Не получилось загрузить приключение</h3>
-            <p style="text-align:center;">Сервер медленно просыпается после недавнего переезда на новую базу данных. Обычно повторная попытка помогает.</p>
-            <button class="btn btn-primary" id="dungeon-fail-retry-btn">Попробовать снова</button>
-        </div>
     </div>
 
     <!-- ===== КАРТА ПРИКЛЮЧЕНИЙ ===== -->
@@ -327,7 +316,7 @@
             <div class="info-tip" id="camera-tip">
                 💡 Совет: для отжиманий и планки поставь телефон так, чтобы было видно плечи, локти и запястья (для планки — сбоку). Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
             </div>
-            
+
             <div class="info-tip active" id="free-story-banner" style="border-color: #7c5cff; background: rgba(124,92,255,0.08);">
                 🎉 Сюжет полностью открыт и бесплатен для всех до 10 сентября!
             </div>
@@ -382,6 +371,7 @@
             </div>
 
             <div id="profile-premium-card"></div>
+
             <div class="wallet-row">
                 <span class="wallet-label">✦ Эссенция (тратится на зелья)</span>
                 <span class="wallet-value" id="wallet-spendable">0</span>
@@ -481,6 +471,7 @@
 
         <div class="section-label">Данные</div>
         <button class="btn" style="border-color: var(--danger); color: var(--danger);" onclick="resetProgress()">Сбросить прогресс охотника</button>
+
         <div style="max-width:784px; margin: 40px auto 0; text-align:center;">
             <span onclick="supportWithStars()" style="font-size: var(--fs-caption); color: var(--text-dim); cursor:pointer; text-decoration: underline; opacity: 0.6;">Поддержать проект</span>
         </div>
@@ -534,6 +525,14 @@
         </div>
     </div>
 
+    <div id="overlay-dungeon-load-failed" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Не получилось загрузить приключение</h3>
+            <p style="text-align:center;">Сервер медленно просыпается после недавнего переезда на новую базу данных. Обычно повторная попытка помогает.</p>
+            <button class="btn btn-primary" id="dungeon-fail-retry-btn">Попробовать снова</button>
+        </div>
+    </div>
+
     <!-- ===== СЮЖЕТНАЯ СЦЕНА ===== -->
     <div id="story-overlay" class="story-overlay" onclick="handleStoryTap()">
         <button class="story-skip-btn" onclick="event.stopPropagation(); skipStoryScene();">Пропустить сцену</button>
@@ -567,13 +566,6 @@
         // ===== ТЕМА =====
         let currentTheme = localStorage.getItem('theme') || 'dark';
         function applyTheme() {
-            (function hideFreeStoryBannerIfExpired() {
-            const freeUntil = new Date('2026-09-10T23:59:59');
-            if (new Date() > freeUntil) {
-                const el = document.getElementById('free-story-banner');
-                if (el) el.style.display = 'none';
-            }
-        })();
             document.documentElement.setAttribute('data-theme', currentTheme);
             const cb = document.getElementById('theme-checkbox');
             if (cb) cb.checked = (currentTheme === 'light');
@@ -584,6 +576,14 @@
             applyTheme();
         }
         applyTheme();
+
+        (function hideFreeStoryBannerIfExpired() {
+            const freeUntil = new Date('2026-09-10T23:59:59');
+            if (new Date() > freeUntil) {
+                const el = document.getElementById('free-story-banner');
+                if (el) el.style.display = 'none';
+            }
+        })();
 
         // ===== СЮЖЕТ ВКЛ/ВЫКЛ =====
         let storyEnabled = localStorage.getItem('storyEnabled') !== 'false';
@@ -846,6 +846,16 @@
             } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
 
+        async function supportWithStars() {
+            const userId = getUserId();
+            try {
+                const res = await fetch(`${API_BASE}/api/create_support_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, amount:150})});
+                const data = await res.json();
+                if (!data.url) { return; }
+                window.Telegram.WebApp.openInvoice(data.url, () => {});
+            } catch(e) {}
+        }
+
         // ===== РЕГИСТРАЦИЯ =====
         async function checkUserStatus() {
             const userId = getUserId();
@@ -897,7 +907,6 @@
             });
             await Promise.all(tasks);
 
-            // Предзагружаем СЛЕДУЮЩЕЕ подземелье — так у нас всегда готовы «два ближайших» на каждую дисциплину
             const nextLevelTasks = activities.map(activity => {
                 const info = dataCache.dungeonInfo[activity];
                 if (!info) return Promise.resolve();
@@ -924,7 +933,7 @@
 
         function invalidateCache(...keys) {
             if (keys.includes('profile')) dataCache.profile = null;
-            keys.filter(k => k !== 'profile' && k !== 'leaderboard').forEach(activity => { dataCache.dungeonInfo[activity] = null; });
+            keys.filter(k => k !== 'profile' && k !== 'leaderboard').forEach(activity => { dataCache.dungeonInfo[activity] = null; dataCache.dungeonDetail[activity] = {}; });
             if (keys.includes('leaderboard')) dataCache.leaderboard = {};
         }
 
@@ -950,6 +959,59 @@
                 document.getElementById('premium-badge').style.display = data.max > 4 ? 'inline' : 'none';
             } catch(e) {}
         }
+
+        // ===== ПРЕМИУМ =====
+        function renderPremiumCard(containerId) {
+            const el = document.getElementById(containerId);
+            if (!el || !profileDataCache) return;
+            if (profileDataCache.premium_active) {
+                el.innerHTML = `
+                    <div class="premium-card">
+                        <span class="premium-active-badge">👑 Премиум активен</span>
+                        <p style="margin-top:10px; font-size: var(--fs-caption); color: var(--text-dim);">Действует до ${profileDataCache.premium_until}. 8 подходов в день и все главы открыты.</p>
+                    </div>`;
+            } else {
+                el.innerHTML = `
+                    <div class="premium-card">
+                        <h3>👑 Премиум — 1000 ⭐ / 30 дней</h3>
+                        <ul>
+                            <li>8 подходов в день вместо 4</li>
+                            <li>Все платные подземелья открыты на весь срок</li>
+                            <li>Разовый платёж, автопродления нет</li>
+                        </ul>
+                        <button class="btn-premium" onclick="buyPremium()">Оформить премиум</button>
+                    </div>`;
+            }
+        }
+        async function buyPremium() {
+            const userId = getUserId();
+            try {
+                const res = await fetch(`${API_BASE}/api/create_premium_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const data = await res.json();
+                if (!data.url) { alert("Не удалось создать счёт. Попробуйте позже."); return; }
+                window.Telegram.WebApp.openInvoice(data.url, (status) => {
+                    if (status === 'paid') { invalidateCache('profile'); loadProfile(); loadStamina(); }
+                });
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
+        }
+        function openPremiumFromNoStamina() {
+            document.getElementById('overlay-no-stamina').classList.remove('active');
+            showScreen('settings');
+        }
+
+        async function buyZone(activity, pairStart) {
+            const userId = getUserId();
+            try {
+                const res = await fetch(`${API_BASE}/api/create_zone_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, pair_start: pairStart})});
+                const data = await res.json();
+                if (!data.url) { alert(data.error || "Не удалось создать счёт."); return; }
+                document.getElementById('overlay-zone-locked').classList.remove('active');
+                window.Telegram.WebApp.openInvoice(data.url, (status) => {
+                    if (status === 'paid') { invalidateCache(activity); refreshDungeonInfoSilently(activity); }
+                });
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
+        }
+
         // ===== МАГАЗИН ЗЕЛИЙ =====
         function renderWalletUI() {
             if (!profileDataCache || !profileDataCache.wallet) return;
@@ -1000,69 +1062,6 @@
         }
         function buyPotionFromOverlay() { buyPotion(true); }
         function buyPotionFromProfile() { buyPotion(false); }
-
-        // ===== ПРЕМИУМ =====
-        function renderPremiumCard(containerId) {
-            const el = document.getElementById(containerId);
-            if (!el || !profileDataCache) return;
-            if (profileDataCache.premium_active) {
-                el.innerHTML = `
-                    <div class="premium-card">
-                        <span class="premium-active-badge">👑 Премиум активен</span>
-                        <p style="margin-top:10px; font-size: var(--fs-caption); color: var(--text-dim);">Действует до ${profileDataCache.premium_until}. 8 подходов в день и все главы открыты.</p>
-                    </div>`;
-            } else {
-                el.innerHTML = `
-                    <div class="premium-card">
-                        <h3>👑 Премиум — 1000 ⭐ / 30 дней</h3>
-                        <ul>
-                            <li>8 подходов в день вместо 4</li>
-                            <li>Все платные подземелья открыты на весь срок</li>
-                            <li>Разовый платёж, автопродления нет</li>
-                        </ul>
-                        <button class="btn-premium" onclick="buyPremium()">Оформить премиум</button>
-                    </div>`;
-            }
-        }
-
-        async function supportWithStars() {
-            const userId = getUserId();
-            try {
-                const res = await fetch(`${API_BASE}/api/create_support_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, amount:150})});
-                const data = await res.json();
-                if (!data.url) { return; }
-                window.Telegram.WebApp.openInvoice(data.url, () => {});
-            } catch(e) {}
-        }
-        
-        async function buyPremium() {
-            const userId = getUserId();
-            try {
-                const res = await fetch(`${API_BASE}/api/create_premium_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
-                const data = await res.json();
-                if (!data.url) { alert("Не удалось создать счёт. Попробуйте позже."); return; }
-                window.Telegram.WebApp.openInvoice(data.url, (status) => {
-                    if (status === 'paid') { invalidateCache('profile'); loadProfile(); loadStamina(); }
-                });
-            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
-        }
-        function openPremiumFromNoStamina() {
-            document.getElementById('overlay-no-stamina').classList.remove('active');
-            showScreen('settings');
-        }
-
-        async function buyZone(activity, pairStart) {
-            const userId = getUserId();
-            try {
-                const res = await fetch(`${API_BASE}/api/create_zone_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, pair_start: pairStart})});
-                const data = await res.json();
-                if (!data.url) { alert(data.error || "Не удалось создать счёт."); return; }
-                document.getElementById('overlay-zone-locked').classList.remove('active');
-                window.Telegram.WebApp.openInvoice(data.url, (status) => {
-                    if (status === 'paid') { invalidateCache(activity); refreshDungeonInfoSilently(activity); }
-                });
-            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
-        }
 
         // ===== ПРОФИЛЬ =====
         let profileDataCache = null;
@@ -1879,9 +1878,10 @@
         }
 
         // ===== СОСТОЯНИЕ БОЯ =====
-        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null, let dungeonStartTokens = {};
-        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false; 
+        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
+        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
         let dungeonXpEstimate = 0;
+        let dungeonStartTokens = {};
 
         function startDungeonActivity(activity, dungeonN) {
             if (staminaCache.remaining <= 0) { document.getElementById('overlay-no-stamina').classList.add('active'); return; }
@@ -2015,8 +2015,8 @@
                     refreshDungeonInfoSilently(activity);
                     return;
                 } catch(e) {
-                    if (attempt >= 5) { showSaveToast('Сохраним при следующем подключении к сети'); return; }
-                    await new Promise(r=>setTimeout(r,1500));
+                    document.getElementById('dungeon-complete-xp').innerText = `Сохраняем награду... (попытка ${attempt}) ⏳`;
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 }
             }
         }
