@@ -279,6 +279,14 @@
 </head>
 <body>
 
+    <div id="boot-overlay" class="overlay-panel active" style="z-index: 5000; background: var(--bg-main);">
+        <div style="text-align:center; padding: 0 20px;">
+            <h1 style="margin-bottom: 24px;">⚔️ PushUp Hero</h1>
+            <div class="save-toast-spinner" style="width:48px; height:48px; border-width:4px; margin: 0 auto 20px;"></div>
+            <p style="color: var(--text-dim); font-size: var(--fs-caption); max-width: 500px;">Готовим твоё приключение...</p>
+        </div>
+    </div>
+
     <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
     <div id="screen-register" class="screen center-content">
         <h1>⚔️ PushUp Hero</h1>
@@ -859,12 +867,13 @@
         // ===== РЕГИСТРАЦИЯ =====
         async function checkUserStatus() {
             const userId = getUserId();
-            if (!userId) { document.getElementById('screen-register').classList.add('active'); document.getElementById('nickname-error').innerText = "Не удалось определить пользователя"; return; }
+            if (!userId) { hideBootOverlay(); document.getElementById('screen-register').classList.add('active'); document.getElementById('nickname-error').innerText = "Не удалось определить пользователя"; return; }
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 if (data.has_nickname) { showScreen('adventure'); prefetchAllData(); }
-                else document.getElementById('screen-register').classList.add('active');
+                else { hideBootOverlay(); document.getElementById('screen-register').classList.add('active'); }
             } catch(e) {
+                hideBootOverlay();
                 document.getElementById('screen-register').classList.add('active');
                 document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
             }
@@ -884,27 +893,66 @@
         // ===== ПРЕДЗАГРУЗКА ВСЕХ ДАННЫХ =====
         const dataCache = { profile: null, dungeonInfo: {}, dungeonDetail: { pushup: {}, plank: {}, squat: {}, wallsit: {} }, leaderboard: {} };
 
-        async function prefetchAllData() {
+        function hideBootOverlay() {
+            const el = document.getElementById('boot-overlay');
+            if (el) el.classList.remove('active');
+        }
+        // Подстраховка: даже если что-то пойдёт не так, экран загрузки не зависнет навсегда
+        setTimeout(hideBootOverlay, 15000);
+
+       async function prefetchAllData() {
             const userId = getUserId();
-            if (!userId) return;
+            if (!userId) { hideBootOverlay(); return; }
             const activities = ['pushup', 'plank', 'squat', 'wallsit'];
-            const tasks = [
-                fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
-                    .then(d => { dataCache.profile = d; }).catch(()=>{}),
-                fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=pushup&period=today`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
-                    .then(d => { dataCache.leaderboard['pushup_today'] = d; }).catch(()=>{}),
-                fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1})
-                    .then(d => { staminaCache = d; }).catch(()=>{}),
-            ];
-            activities.forEach(activity => {
-                tasks.push(
-                    fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
-                        .then(d => {
-                            dataCache.dungeonInfo[activity] = d;
-                            dataCache.dungeonDetail[activity][d.requested_dungeon] = d;
-                        }).catch(()=>{})
-                );
+
+            // ===== Первоочередное — блокирует экран загрузки =====
+            const essential = await Promise.allSettled([
+                fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
+                fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1}),
+                fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=pushup`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
+            ]);
+            if (essential[0].status === 'fulfilled') dataCache.profile = essential[0].value;
+            if (essential[1].status === 'fulfilled') staminaCache = essential[1].value;
+            if (essential[2].status === 'fulfilled') {
+                const d = essential[2].value;
+                dataCache.dungeonInfo['pushup'] = d;
+                dataCache.dungeonDetail['pushup'][d.requested_dungeon] = d;
+            }
+
+            // Прогружаем 4 подземелья вперёд (текущее + 3) для дисциплины по умолчанию
+            if (dataCache.dungeonInfo['pushup']) {
+                const cur = dataCache.dungeonInfo['pushup'].current_dungeon;
+                await Promise.allSettled([
+                    prefetchDungeonDetail('pushup', cur + 1),
+                    prefetchDungeonDetail('pushup', cur + 2),
+                    prefetchDungeonDetail('pushup', cur + 3),
+                ]);
+            }
+
+            hideBootOverlay();
+            if (document.getElementById('screen-adventure').classList.contains('active')) {
+                renderStaminaDots('stamina-dots', staminaCache.remaining, staminaCache.max);
+                document.getElementById('premium-badge').style.display = staminaCache.max > 4 ? 'inline' : 'none';
+                if (currentAdventureMode === 'campaign') renderChaptersFromCache(currentAdventureTab);
+            }
+
+            // ===== Остальное — тихо в фоне, уже не задерживая пользователя =====
+            fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=pushup&period=today`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
+                .then(d => { dataCache.leaderboard['pushup_today'] = d; }).catch(()=>{});
+
+            activities.filter(a => a !== 'pushup').forEach(activity => {
+                fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
+                    .then(async d => {
+                        dataCache.dungeonInfo[activity] = d;
+                        dataCache.dungeonDetail[activity][d.requested_dungeon] = d;
+                        await Promise.allSettled([
+                            prefetchDungeonDetail(activity, d.current_dungeon + 1),
+                            prefetchDungeonDetail(activity, d.current_dungeon + 2),
+                            prefetchDungeonDetail(activity, d.current_dungeon + 3),
+                        ]);
+                    }).catch(()=>{});
             });
+        }
             await Promise.all(tasks);
 
             const nextLevelTasks = activities.map(activity => {
@@ -2214,7 +2262,8 @@
         function stopCameraCompletely() {
             if (cameraObj) { try{cameraObj.stop();}catch(e){} cameraObj=null; }
             if (video.srcObject) { video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject=null; }
-            cameraStarted = false; stopKeepAlivePing();
+            cameraStarted = false;
+            // keep-alive больше не останавливаем — держим сервер тёплым всю сессию, а не только во время тренировки
         }
         function startCameraIfNeeded() {
             if (cameraStarted) return;
@@ -2309,6 +2358,7 @@
             attemptSave();
         });
 
+        startKeepAlivePing(); // держим соединение с сервером тёплым всё время, пока приложение открыто
         checkUserStatus();
     </script>
 </body>
