@@ -287,6 +287,15 @@
         </div>
     </div>
 
+    <script>
+        // Независимая подстраховка: даже если основной скрипт ниже сломается синтаксически,
+        // экран загрузки принудительно скроется через 8 секунд.
+        setTimeout(function() {
+            var el = document.getElementById('boot-overlay');
+            if (el) el.style.display = 'none';
+        }, 8000);
+    </script>
+
     <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
     <div id="screen-register" class="screen center-content">
         <h1>⚔️ PushUp Hero</h1>
