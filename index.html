@@ -195,7 +195,7 @@
             background: radial-gradient(circle, rgba(35,40,51,0.3), rgba(20,23,29,0.3)); border: 3px solid var(--accent);
             display: flex; align-items: center; justify-content: center; font-size: 5rem; overflow: hidden; transition: transform 0.1s;
         }
-        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
+        .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; }
         .monster-portrait.hit-shake { animation: hitShake 0.25s; }
         @keyframes hitShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px) rotate(-2deg);} 50%{transform:translateX(5px) rotate(2deg);} 75%{transform:translateX(-3px);} }
         .monster-name { font-weight: 600; font-size: 1.6rem; color: #fff; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; display: block; width: 100%; max-width: 784px; margin: 0 auto; box-sizing: border-box; }
@@ -275,6 +275,12 @@
         .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; cursor: default; }
         .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); opacity: 0.6; }
         .story-continue-btn { display: none; width: 100%; padding: 22px; background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
+        .camera-finish-btn {
+            display: block; width: auto; min-width: 240px; max-width: 90vw; margin: 0 auto;
+            padding: 26px 40px; border-radius: 80px; box-sizing: border-box;
+            background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
+            font-size: 1.6rem; font-weight: 600; color: #fff; cursor: pointer; white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -367,7 +373,7 @@
         </div>
         <div class="hud-bottom">
             <div class="rep-counter-row"><div class="rep-circle" id="counter">0</div></div>
-            <button id="finishBtn" class="btn btn-primary" style="width: auto; min-width: 240px; max-width: 90vw; margin-left: auto; margin-right: auto; font-size: 1.6rem; padding: 26px 40px; white-space: nowrap; color: #fff;">Завершить</button>
+            <button id="finishBtn" class="camera-finish-btn">Завершить</button>
         </div>
     </div>
 
@@ -2277,6 +2283,7 @@
             document.getElementById('overlay-dungeon-complete').classList.remove('active');
 
             document.getElementById('finishBtn').style.display = 'block';
+            document.getElementById('finishBtn').innerText = isDungeon ? 'Побег' : 'Завершить';
             document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
             if (!isDungeon) inDungeonMode = false;
 
