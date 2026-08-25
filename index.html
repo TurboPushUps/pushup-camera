@@ -960,22 +960,7 @@
                             prefetchDungeonDetail(activity, d.current_dungeon + 3),
                         ]);
                     }).catch(()=>{});
-            });
-        }
-            await Promise.all(tasks);
-
-            const nextLevelTasks = activities.map(activity => {
-                const info = dataCache.dungeonInfo[activity];
-                if (!info) return Promise.resolve();
-                return prefetchDungeonDetail(activity, info.current_dungeon + 1);
-            });
-            await Promise.all(nextLevelTasks);
-
-            if (document.getElementById('screen-adventure').classList.contains('active')) {
-                renderStaminaDots('stamina-dots', staminaCache.remaining, staminaCache.max);
-                document.getElementById('premium-badge').style.display = staminaCache.max > 4 ? 'inline' : 'none';
-                if (currentAdventureMode === 'campaign') renderChaptersFromCache(currentAdventureTab);
-            }
+           });
         }
 
         async function prefetchDungeonDetail(activity, n) {
