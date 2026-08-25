@@ -41,7 +41,6 @@
         h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--accent); letter-spacing: 0.3px; margin: 0 0 18px; font-size: var(--fs-heading); }
         .mono { font-family: 'Inter', sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--fs-body); }
 
-        /* ===== ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ ЭКРАНАМИ ===== */
         .screen { display: none; padding: 22px 16px 120px; min-height: 100dvh; min-height: var(--tg-viewport-height, 100dvh); box-sizing: border-box; position: relative; transition: opacity 0.22s ease, transform 0.22s ease; }
         .screen.active { display: block; }
         .screen.center-content.active { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 40px; }
@@ -144,7 +143,7 @@
         .chapter-header { display: flex; align-items: center; gap: 14px; padding: 18px; cursor: pointer; }
         .chapter-header.locked { opacity: 0.4; }
         .chapter-header.current { border-left: 3px solid var(--accent); }
-        .chapter-num { font-size: 1.1rem; font-weight: 600; color: var(--accent); flex-shrink: 0; width: 2rem; }
+        .chapter-num { font-size: var(--fs-body); font-weight: 600; color: var(--accent); flex-shrink: 0; width: 2rem; }
         .chapter-title-block { flex: 1; text-align: left; }
         .chapter-title { font-size: var(--fs-body); font-weight: 600; }
         .chapter-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 3px; }
@@ -163,7 +162,7 @@
         .path-icon:not(:has(img)) { filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95); }
         .boss-badge { position: absolute; top: -4px; left: -4px; background: var(--accent); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; border: 1px solid var(--bg-card); filter: none; z-index: 2; }
         .path-info { flex: 1; text-align: left; }
-        .path-info .title { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
+        .path-info .title { font-weight: 600; font-size: var(--fs-body); color: var(--text-main); }
         .path-info .subtitle { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
         .path-node button { padding: 12px 14px; font-size: var(--fs-caption); background: var(--accent); color: #14100a; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .path-node.locked button { background: var(--border-main); color: var(--text-dim); }
@@ -192,17 +191,17 @@
         .battle-header { max-width: 784px; margin: 0 auto; }
         .monster-portrait {
             width: 240px; height: 240px; max-width: 55vw; max-height: 55vw; border-radius: 50%; margin: 0 auto 14px;
-            background: radial-gradient(circle, rgba(35,40,51,0.3), rgba(20,23,29,0.3)); border: 3px solid var(--accent);
+            background: radial-gradient(circle, rgba(35,40,51,0.25), rgba(20,23,29,0.25)); border: 3px solid var(--accent);
             display: flex; align-items: center; justify-content: center; font-size: 5rem; overflow: hidden; transition: transform 0.1s;
         }
         .monster-portrait img { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; }
         .monster-portrait.hit-shake { animation: hitShake 0.25s; }
         @keyframes hitShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px) rotate(-2deg);} 50%{transform:translateX(5px) rotate(2deg);} 75%{transform:translateX(-3px);} }
-        .monster-name { font-weight: 600; font-size: 1.6rem; color: #fff; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; display: block; width: 100%; max-width: 784px; margin: 0 auto; box-sizing: border-box; }
-        .hp-bar-bg { width: 100%; max-width: 784px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.3); border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative; box-sizing: border-box; }
+        .monster-name { font-weight: 600; font-size: var(--fs-body); color: #fff; background: rgba(0,0,0,0.25); padding: 10px 20px; border-radius: 12px; display: block; width: 100%; max-width: 784px; margin: 0 auto; box-sizing: border-box; }
+        .hp-bar-bg { width: 100%; max-width: 784px; height: 48px; margin: 14px auto 0; background: rgba(24,27,34,0.25); border-radius: 22px; overflow: hidden; border: 1px solid var(--border-main); position: relative; box-sizing: border-box; }
         .hp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--danger), var(--accent)); transition: width 0.2s; }
-        .hp-bar-label { position: absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size: 1.6rem; font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums; }
-        #status { font-size: 1.6rem; margin: 14px auto 0; color: #fff; max-width: 784px; width: 100%; background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 10px; display: block; font-weight: 500; box-sizing: border-box; }
+        .hp-bar-label { position: absolute; top:0; left:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; font-size: var(--fs-body); font-weight: 600; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums; }
+        #status { font-size: var(--fs-body); margin: 14px auto 0; color: #fff; max-width: 784px; width: 100%; background: rgba(0,0,0,0.25); padding: 12px 20px; border-radius: 10px; display: block; font-weight: 500; box-sizing: border-box; }
 
         .hud-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; padding: 14px 16px 26px; background: linear-gradient(rgba(8,9,12,0), rgba(8,9,12,0.94)); }
         .rep-counter-row { display: flex; justify-content: center; align-items: center; gap: 26px; margin: 6px 0 14px; }
@@ -211,7 +210,13 @@
             min-width: 160px; height: 160px; padding: 0 22px; box-sizing: border-box;
             border-radius: 80px;
             background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
-            font-size: 1.6rem; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums;
+            font-size: var(--fs-body); font-weight: 600; color: #fff; font-variant-numeric: tabular-nums;
+        }
+        .camera-finish-btn {
+            display: block; width: auto; min-width: 240px; max-width: 90vw; margin: 0 auto;
+            padding: 26px 40px; border-radius: 80px; box-sizing: border-box;
+            background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
+            font-size: var(--fs-body); font-weight: 600; color: #fff; cursor: pointer; white-space: nowrap;
         }
 
         /* ===== ТИХОЕ СОХРАНЕНИЕ ===== */
@@ -230,13 +235,13 @@
         .overlay-panel.active { display: flex; }
         .overlay-box { background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 16px; padding: 32px 24px; max-width: 420px; text-align: center; max-height: 85vh; overflow-y: auto; }
         .overlay-box.overlay-box-large { max-width: 630px; padding: 48px 36px; }
-        .overlay-box.overlay-box-large h3 { font-size: 2.1rem; }
-        .overlay-box.overlay-box-large p { font-size: 1.1rem; }
-        .overlay-box.overlay-box-large .btn { padding: 34px; font-size: 1.2rem; }
+        .overlay-box.overlay-box-large h3 { font-size: var(--fs-heading); }
+        .overlay-box.overlay-box-large p { font-size: var(--fs-body); }
+        .overlay-box.overlay-box-large .btn { padding: 34px; font-size: var(--fs-body); }
         .overlay-box h3 { margin-top: 0; color: var(--accent); }
         .overlay-box .btn { max-width: 320px; }
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
-        .countdown-number { font-size: 2.6rem; color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+        .countdown-number { font-size: var(--fs-heading); color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
 
         /* ===== СЮЖЕТ — СТИЛЬ ЧАТА ===== */
         .story-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; cursor: pointer; }
@@ -262,25 +267,19 @@
         .story-avatar.size-md { width: 76px; height: 76px; font-size: 1.9rem; }
         .story-avatar.size-lg { width: 96px; height: 96px; font-size: 2.3rem; }
         .story-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .story-name { font-weight: 600; font-size: 1.05rem; text-align: left; }
+        .story-name { font-weight: 600; font-size: var(--fs-body); text-align: left; }
         .story-row.align-right .story-name { text-align: right; }
         .story-card.speaker-ally .story-name { color: #7dd3fc; }
         .story-card.speaker-player .story-name { color: var(--accent-bright); }
         .story-card.speaker-enemy .story-name { color: var(--danger); }
         .story-card.speaker-boss .story-name { color: var(--accent-bright); }
         .story-card.speaker-swamp .story-name { color: #4ade80; }
-        .story-text { text-align: left; font-size: 1.05rem; line-height: 1.55; color: var(--text-main); }
+        .story-text { text-align: left; font-size: var(--fs-body); line-height: 1.55; color: var(--text-main); }
         .story-row.align-right .story-text { text-align: right; }
-        .story-text.author-text { text-align: center; font-size: 0.95rem; color: var(--text-dim); }
+        .story-text.author-text { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); }
         .story-footer { width: 100%; max-width: 684px; padding-top: 14px; flex-shrink: 0; cursor: default; }
         .story-tap-hint { text-align: center; font-size: var(--fs-caption); color: var(--text-dim); opacity: 0.6; }
         .story-continue-btn { display: none; width: 100%; padding: 22px; background: var(--bg-card); color: var(--accent-bright); border: 1px solid var(--accent); border-radius: 12px; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
-        .camera-finish-btn {
-            display: block; width: auto; min-width: 240px; max-width: 90vw; margin: 0 auto;
-            padding: 26px 40px; border-radius: 80px; box-sizing: border-box;
-            background: radial-gradient(circle, #232833, #14171d); border: 2px solid var(--accent);
-            font-size: 1.6rem; font-weight: 600; color: #fff; cursor: pointer; white-space: nowrap;
-        }
     </style>
 </head>
 <body>
@@ -369,7 +368,7 @@
                 <div class="monster-name" id="monster-name">—</div>
                 <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp-bar-fill" style="width:100%;"></div><div class="hp-bar-label" id="hp-bar-text">HP 18 / 18</div></div>
             </div>
-            <div style="margin-top:10px;"><span id="status">Займите позицию 🧎</span></div>
+            <div style="margin-top:10px;"><span id="status">Займите позицию</span></div>
         </div>
         <div class="hud-bottom">
             <div class="rep-counter-row"><div class="rep-circle" id="counter">0</div></div>
@@ -392,8 +391,6 @@
                     <span class="premium-badge" id="profile-premium-badge" style="display:none;">👑</span>
                 </div>
             </div>
-
-            <div id="profile-premium-card"></div>
 
             <div class="wallet-row">
                 <span class="wallet-label">✦ Эссенция (тратится на зелья)</span>
@@ -428,6 +425,8 @@
                 <div class="stat-box"><div class="value mono" id="profile-stat-beststreak">—</div><div class="label">Рекорд серии</div></div>
                 <div class="stat-box"><div class="value mono" id="profile-stat-dungeon">—</div><div class="label">Уровень</div></div>
             </div>
+
+            <div id="profile-premium-card"></div>
         </div>
     </div>
 
@@ -458,10 +457,7 @@
     <div id="screen-settings" class="screen center-content">
         <h1>⚙️ Настройки</h1>
 
-        <div class="section-label" style="margin-top:0;">Премиум</div>
-        <div id="settings-premium-card"></div>
-
-        <div class="section-label">Оформление</div>
+        <div class="section-label" style="margin-top:0;">Оформление</div>
         <div class="stat-row"><span class="settings-row-text">☀️ Светлая тема</span><label class="toggle-switch"><input type="checkbox" id="theme-checkbox" onchange="toggleTheme()"><span class="toggle-slider"></span></label></div>
 
         <div class="section-label">Сюжет</div>
@@ -495,6 +491,9 @@
         <div class="section-label">Данные</div>
         <button class="btn" style="border-color: var(--danger); color: var(--danger);" onclick="resetProgress()">Сбросить прогресс охотника</button>
 
+        <div class="section-label">Премиум</div>
+        <div id="settings-premium-card"></div>
+
         <div style="max-width:784px; margin: 40px auto 0; text-align:center;">
             <span onclick="supportWithStars()" style="font-size: var(--fs-caption); color: var(--text-dim); cursor:pointer; text-decoration: underline; opacity: 0.6;">Поддержать проект</span>
         </div>
@@ -506,7 +505,7 @@
     <div id="overlay-dungeon-complete" class="overlay-panel">
         <div class="overlay-box overlay-box-large">
             <h3>Уровень пройден! 🎉</h3>
-            <p id="dungeon-complete-xp" style="text-align:center; font-size:1.1rem;">+0 XP</p>
+            <p id="dungeon-complete-xp" style="text-align:center;">+0 XP</p>
             <button class="btn btn-primary" onclick="continueDungeon()">Продолжить в следующее</button>
             <button class="btn" onclick="finishDungeonSession()">Закончить поход</button>
         </div>
@@ -551,7 +550,7 @@
     <div id="overlay-dungeon-load-failed" class="overlay-panel">
         <div class="overlay-box">
             <h3>Не получилось загрузить приключение</h3>
-            <p style="text-align:center;">Сервер медленно просыпается после недавнего переезда на новую базу данных. Обычно повторная попытка помогает.</p>
+            <p style="text-align:center;">Сервер медленно просыпается. Обычно повторная попытка помогает.</p>
             <button class="btn btn-primary" id="dungeon-fail-retry-btn">Попробовать снова</button>
         </div>
     </div>
@@ -912,10 +911,20 @@
             const el = document.getElementById('boot-overlay');
             if (el) el.classList.remove('active');
         }
-        // Подстраховка: даже если что-то пойдёт не так, экран загрузки не зависнет навсегда
-        setTimeout(hideBootOverlay, 15000);
 
-       async function prefetchAllData() {
+        let staminaCache = { remaining: 4, max: 4 };
+
+        async function prefetchDungeonDetail(activity, n) {
+            if (dataCache.dungeonDetail[activity][n]) return dataCache.dungeonDetail[activity][n];
+            const userId = getUserId();
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${n}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                dataCache.dungeonDetail[activity][n] = data;
+                return data;
+            } catch(e) { return null; }
+        }
+
+        async function prefetchAllData() {
             const userId = getUserId();
             if (!userId) { hideBootOverlay(); return; }
             const activities = ['pushup', 'plank', 'squat', 'wallsit'];
@@ -966,17 +975,7 @@
                             prefetchDungeonDetail(activity, d.current_dungeon + 3),
                         ]);
                     }).catch(()=>{});
-           });
-        }
-
-        async function prefetchDungeonDetail(activity, n) {
-            if (dataCache.dungeonDetail[activity][n]) return dataCache.dungeonDetail[activity][n];
-            const userId = getUserId();
-            try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${n}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
-                dataCache.dungeonDetail[activity][n] = data;
-                return data;
-            } catch(e) { return null; }
+            });
         }
 
         function invalidateCache(...keys) {
@@ -986,7 +985,6 @@
         }
 
         // ===== СТАМИНА =====
-        let staminaCache = { remaining: 4, max: 4 };
         function renderStaminaDots(containerId, remaining, max) {
             const el = document.getElementById(containerId);
             if (!el) return;
@@ -2063,7 +2061,6 @@
                     refreshDungeonInfoSilently(activity);
                     return;
                 } catch(e) {
-                    document.getElementById('dungeon-complete-xp').innerText = `Сохраняем награду... (попытка ${attempt}) ⏳`;
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
             }
@@ -2232,7 +2229,7 @@
                 } else if (currentMode === 'squat') {
                     drawPoints(lm, SQUAT_POINTS, SQUAT_CONNECTIONS);
                     inPosition = checkSquatPosition(lm);
-                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🚶";
+                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🧍";
                     if (inPosition && !dungeonPaused) countSquats(lm);
                 } else if (currentMode === 'plank') {
                     const result = checkPlankPosition(lm);
@@ -2263,7 +2260,6 @@
             if (cameraObj) { try{cameraObj.stop();}catch(e){} cameraObj=null; }
             if (video.srcObject) { video.srcObject.getTracks().forEach(t=>t.stop()); video.srcObject=null; }
             cameraStarted = false;
-            // keep-alive больше не останавливаем — держим сервер тёплым всю сессию, а не только во время тренировки
         }
         function startCameraIfNeeded() {
             if (cameraStarted) return;
@@ -2271,7 +2267,7 @@
             cameraObj.start(); cameraStarted = true;
         }
 
-      function startActivity(mode, isDungeon) {
+        function startActivity(mode, isDungeon) {
             fetch(`${API_BASE}/`).catch(()=>{}); startKeepAlivePing(); applyTelegramViewportHeight();
             currentMode = mode; repCount = 0; stage = "up"; shoulderYAtUp = null; expectedShoulderDirection = null;
             holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0; lastHoldSecondMarked = 0;
@@ -2289,7 +2285,7 @@
 
             const isTimeBased = (mode==='plank' || mode==='wallsit');
             statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий"
-                : mode==='squat' ? "Встаньте лицом к камере 🚶"
+                : mode==='squat' ? "Встаньте лицом к камере 🧍"
                 : mode==='plank' ? "Встаньте боком к камере, покажите всё тело 🚶"
                 : "Встаньте лицом к камере, покажите всё тело 🧍";
             counterEl.innerText = isTimeBased ? "00:00" : "0";
