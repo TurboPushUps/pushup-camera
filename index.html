@@ -585,6 +585,22 @@
     <script>
         const API_BASE = "https://pushup-bot-server.onrender.com";
 
+        // ===== АВТОРИЗАЦИЯ ЧЕРЕЗ TELEGRAM initData =====
+        // Единственный источник правды о личности пользователя — подписанная
+        // Telegram-ом строка initData. user_id из URL/локальных переменных больше нигде не используется.
+        function getInitData() {
+            return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '';
+        }
+        function withAuth(bodyObj) {
+            return { ...(bodyObj || {}), init_data: getInitData() };
+        }
+        function authQueryString(extra = '') {
+            const params = new URLSearchParams();
+            params.set('init_data', getInitData());
+            const extraStr = extra ? '&' + extra : '';
+            return `${params.toString()}${extraStr}`;
+        }
+
         // ===== ТЕМА =====
         let currentTheme = localStorage.getItem('theme') || 'dark';
         function applyTheme() {
@@ -688,14 +704,6 @@
             updateBottomNav(name);
             enforceScreenHeight(name);
             requestAnimationFrame(() => enforceScreenHeight(name));
-        }
-
-        function getUserId() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const idFromUrl = urlParams.get('user_id');
-            if (idFromUrl) return idFromUrl;
-            const tgUser = window.Telegram.WebApp.initDataUnsafe?.user;
-            return tgUser ? tgUser.id : null;
         }
 
         // ===== ГЛАВЫ / ЗОНЫ =====
@@ -860,18 +868,16 @@
 
         async function resetProgress() {
             if (!confirm("Точно сбросить весь прогресс? Это действие необратимо.")) return;
-            const userId = getUserId(); if (!userId) return;
             try {
-                const response = await fetch(`${API_BASE}/api/reset_progress`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId}) });
+                const response = await fetch(`${API_BASE}/api/reset_progress`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({})) });
                 const data = await response.json();
                 alert(data.success ? "Прогресс сброшен." : "Не удалось сбросить прогресс. Попробуйте позже.");
             } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
 
         async function supportWithStars() {
-            const userId = getUserId();
             try {
-                const res = await fetch(`${API_BASE}/api/create_support_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, amount:150})});
+                const res = await fetch(`${API_BASE}/api/create_support_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({amount:150}))});
                 const data = await res.json();
                 if (!data.url) { return; }
                 window.Telegram.WebApp.openInvoice(data.url, () => {});
@@ -880,10 +886,8 @@
 
         // ===== РЕГИСТРАЦИЯ =====
         async function checkUserStatus() {
-            const userId = getUserId();
-            if (!userId) { hideBootOverlay(); document.getElementById('screen-register').classList.add('active'); document.getElementById('nickname-error').innerText = "Не удалось определить пользователя"; return; }
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 if (data.has_nickname) { showScreen('adventure'); prefetchAllData(); }
                 else { hideBootOverlay(); document.getElementById('screen-register').classList.add('active'); }
             } catch(e) {
@@ -893,12 +897,11 @@
             }
         }
         async function submitNickname() {
-            const userId = getUserId(); const input = document.getElementById('nickname-input'); const errorEl = document.getElementById('nickname-error');
+            const input = document.getElementById('nickname-input'); const errorEl = document.getElementById('nickname-error');
             const nickname = input.value.trim(); errorEl.innerText = "";
-            if (!userId) { errorEl.innerText = "Не удалось определить пользователя"; return; }
             if (nickname.length < 2 || nickname.length > 20) { errorEl.innerText = "Имя должно быть от 2 до 20 символов"; return; }
             try {
-                const response = await fetch(`${API_BASE}/api/register_nickname`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, nickname})});
+                const response = await fetch(`${API_BASE}/api/register_nickname`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({nickname}))});
                 const data = await response.json();
                 if (data.success) { showScreen('adventure'); prefetchAllData(); } else errorEl.innerText = data.error || "Не удалось сохранить имя";
             } catch(e) { errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз."; }
@@ -916,24 +919,21 @@
 
         async function prefetchDungeonDetail(activity, n) {
             if (dataCache.dungeonDetail[activity][n]) return dataCache.dungeonDetail[activity][n];
-            const userId = getUserId();
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${n}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=' + activity + '&dungeon=' + n)}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 dataCache.dungeonDetail[activity][n] = data;
                 return data;
             } catch(e) { return null; }
         }
 
         async function prefetchAllData() {
-            const userId = getUserId();
-            if (!userId) { hideBootOverlay(); return; }
             const activities = ['pushup', 'plank', 'squat', 'wallsit'];
 
             // ===== Первоочередное — блокирует экран загрузки =====
             const essential = await Promise.allSettled([
-                fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
-                fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1}),
-                fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=pushup`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
+                fetchJsonWithRetry(`${API_BASE}/api/profile?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
+                fetchJsonWithRetry(`${API_BASE}/api/stamina?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:12000, retries:1}),
+                fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=pushup')}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
             ]);
             if (essential[0].status === 'fulfilled') dataCache.profile = essential[0].value;
             if (essential[1].status === 'fulfilled') staminaCache = essential[1].value;
@@ -965,7 +965,7 @@
                 .then(d => { dataCache.leaderboard['pushup_today'] = d; }).catch(()=>{});
 
             activities.filter(a => a !== 'pushup').forEach(activity => {
-                fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
+                fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
                     .then(async d => {
                         dataCache.dungeonInfo[activity] = d;
                         dataCache.dungeonDetail[activity][d.requested_dungeon] = d;
@@ -997,9 +997,8 @@
         }
         async function loadStamina() {
             if (staminaCache) renderStaminaDots('stamina-dots', staminaCache.remaining, staminaCache.max);
-            const userId = getUserId(); if (!userId) return;
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/stamina?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/stamina?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
                 staminaCache = data;
                 renderStaminaDots('stamina-dots', data.remaining, data.max);
                 document.getElementById('premium-badge').style.display = data.max > 4 ? 'inline' : 'none';
@@ -1030,9 +1029,8 @@
             }
         }
         async function buyPremium() {
-            const userId = getUserId();
             try {
-                const res = await fetch(`${API_BASE}/api/create_premium_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const res = await fetch(`${API_BASE}/api/create_premium_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({}))});
                 const data = await res.json();
                 if (!data.url) { alert("Не удалось создать счёт. Попробуйте позже."); return; }
                 window.Telegram.WebApp.openInvoice(data.url, (status) => {
@@ -1046,9 +1044,8 @@
         }
 
         async function buyZone(activity, pairStart) {
-            const userId = getUserId();
             try {
-                const res = await fetch(`${API_BASE}/api/create_zone_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, pair_start: pairStart})});
+                const res = await fetch(`${API_BASE}/api/create_zone_invoice`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({activity, pair_start: pairStart}))});
                 const data = await res.json();
                 if (!data.url) { alert(data.error || "Не удалось создать счёт."); return; }
                 document.getElementById('overlay-zone-locked').classList.remove('active');
@@ -1084,10 +1081,8 @@
         }
 
         async function buyPotion(fromOverlay) {
-            const userId = getUserId();
-            if (!userId) return;
             try {
-                const res = await fetch(`${API_BASE}/api/buy_potion`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId})});
+                const res = await fetch(`${API_BASE}/api/buy_potion`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({}))});
                 const data = await res.json();
                 if (!data.success) { alert(data.error || "Не удалось купить зелье."); return; }
 
@@ -1125,7 +1120,6 @@
         function formatSeconds(s) { const m = Math.floor(s/60); const sec = s%60; return `${m}м${sec}с`; }
 
         async function loadProfile() {
-            const userId = getUserId();
             const loadingEl = document.getElementById('profile-loading'); const contentEl = document.getElementById('profile-content');
             if (dataCache.profile) {
                 profileDataCache = dataCache.profile;
@@ -1138,9 +1132,8 @@
             } else {
                 loadingEl.style.display = 'block'; contentEl.style.display = 'none';
             }
-            if (!userId) { if (!dataCache.profile) loadingEl.innerText = "Не удалось определить пользователя"; return; }
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/profile?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 dataCache.profile = data; profileDataCache = data;
                 loadingEl.style.display = 'none'; contentEl.style.display = 'block';
                 renderProfileValues();
@@ -1212,18 +1205,25 @@
             if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
             data.leaderboard.forEach((user, index) => {
                 const row = document.createElement('div'); row.className = 'leader-row';
-                row.innerHTML = `<span class="rank">${index+1}</span><span style="flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${user.name}</span><span class="mono">${formatLeaderboardValue(user.value, lbActivity)}</span>`;
+
+                const rankSpan = document.createElement('span'); rankSpan.className = 'rank'; rankSpan.textContent = index + 1;
+                const nameSpan = document.createElement('span');
+                nameSpan.style.cssText = 'flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
+                nameSpan.textContent = user.name; // textContent — безопасно даже без валидации на сервере
+                const valueSpan = document.createElement('span'); valueSpan.className = 'mono';
+                valueSpan.textContent = formatLeaderboardValue(user.value, lbActivity);
+
+                row.appendChild(rankSpan); row.appendChild(nameSpan); row.appendChild(valueSpan);
                 list.appendChild(row);
             });
         }
 
         // ===== ДОСТИЖЕНИЯ =====
         async function loadAchievements() {
-            const userId = getUserId();
             const list = document.getElementById('achievements-list');
             const data = dataCache.profile;
             if (!data) list.innerHTML = '<div class="loading">Загрузка...</div>';
-            const source = data || await fetchJsonWithRetry(`${API_BASE}/api/profile?user_id=${userId}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}).catch(()=>null);
+            const source = data || await fetchJsonWithRetry(`${API_BASE}/api/profile?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}).catch(()=>null);
             if (!source) { list.innerHTML = '<p>Не удалось загрузить достижения.</p>'; return; }
             const a = source.achievements;
             list.innerHTML = '';
@@ -1284,9 +1284,8 @@
             }
             document.getElementById('dungeon-select-loading').style.display = 'block';
             document.getElementById('chapters-container').innerHTML = '';
-            const userId = getUserId();
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 dataCache.dungeonInfo[activity] = data;
                 document.getElementById('dungeon-select-loading').style.display = 'none';
                 renderChapters(activity, data.current_dungeon, data.purchased_pairs || [], data.premium_active);
@@ -1296,9 +1295,8 @@
         }
 
         async function refreshDungeonInfoSilently(activity) {
-            const userId = getUserId();
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:12000, retries:1});
                 dataCache.dungeonInfo[activity] = data;
                 dataCache.dungeonDetail[activity][data.requested_dungeon] = data;
                 prefetchDungeonDetail(activity, data.current_dungeon + 1);
@@ -1939,17 +1937,16 @@
 
         async function doStartDungeonActivity(activity, dungeonN, attempt = 1) {
             document.getElementById('overlay-dungeon-loading').classList.add('active');
-            const userId = getUserId();
             const tokenKey = `${activity}_${dungeonN}`;
             if (!dungeonStartTokens[tokenKey]) {
-                dungeonStartTokens[tokenKey] = `${userId}_${dungeonN}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+                dungeonStartTokens[tokenKey] = `${dungeonN}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
             }
             const token = dungeonStartTokens[tokenKey];
 
             try {
                 let data = dataCache.dungeonDetail[activity] && dataCache.dungeonDetail[activity][dungeonN];
                 if (!data) {
-                    data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?user_id=${userId}&activity=${activity}&dungeon=${dungeonN}`, {cache:'no-store'}, {timeoutMs:20000, retries:2});
+                    data = await fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=' + activity + '&dungeon=' + dungeonN)}`, {cache:'no-store'}, {timeoutMs:20000, retries:2});
                     dataCache.dungeonDetail[activity][dungeonN] = data;
                 }
 
@@ -1961,7 +1958,7 @@
                 }
 
                 const consumeData = await fetchJsonWithRetry(`${API_BASE}/api/consume_stamina`, {
-                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, token})
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({token}))
                 }, {timeoutMs:15000, retries:2});
 
                 if (!consumeData.success) {
@@ -2045,7 +2042,6 @@
         }
 
         async function saveDungeonCompletionInBackground(activity, dungeonN) {
-            const userId = getUserId();
             showSaveToast('Сохраняем прогресс...');
             let attempt = 0;
             while (true) {
@@ -2053,7 +2049,7 @@
                 const timeoutMs = Math.min(15000 + (attempt-1)*10000, 45000);
                 try {
                     const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), timeoutMs);
-                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_id:userId, activity, dungeon: dungeonN}), signal: controller.signal});
+                    const response = await fetch(`${API_BASE}/api/dungeon_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({activity, dungeon: dungeonN})), signal: controller.signal});
                     clearTimeout(timeoutId);
                     if (!response.ok) throw new Error("Сервер ответил ошибкой");
                     invalidateCache('profile');
@@ -2316,21 +2312,21 @@
         const SAVE_KEY = { pushup:'count', squat:'count', plank:'seconds', wallsit:'seconds' };
 
         function attemptSave() {
-            const userId = getUserId(); const mode = currentMode;
+            const mode = currentMode;
             const value = (mode==='plank'||mode==='wallsit') ? Math.floor(holdSeconds) : repCount;
 
             stopCameraCompletely();
             inDungeonMode = false; currentMode = null;
             showScreen('adventure');
 
-            if (!userId || value < 1) return;
+            if (value < 1) return;
 
             showSaveToast('Сохраняем результат...');
-            saveResultInBackground(mode, userId, value);
+            saveResultInBackground(mode, value);
         }
 
-        async function saveResultInBackground(mode, userId, value) {
-            const body = {user_id:userId}; body[SAVE_KEY[mode]] = value;
+        async function saveResultInBackground(mode, value) {
+            const body = withAuth({}); body[SAVE_KEY[mode]] = value;
             let attempt = 0;
             while (true) {
                 attempt++;
