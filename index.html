@@ -80,7 +80,7 @@
         .sub-tab-button { flex: 1; padding: 10px; font-size: var(--fs-caption); font-weight: 500; background: transparent; color: var(--text-dim); cursor: pointer; border: 1px solid var(--border-main); border-radius: 10px; box-sizing: border-box; }
         .sub-tab-button.active { border-color: var(--accent); color: var(--accent-bright); }
 
-        #leaderboard-list, #achievements-list { width: 100%; max-width: 784px; margin: 0 auto; }
+        #leaderboard-list, #achievements-list, #daily-quests-list { width: 100%; max-width: 784px; margin: 0 auto; }
         .leader-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0 auto 8px; padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; font-size: var(--fs-body); box-sizing: border-box; }
         .leader-row .rank { color: var(--text-dim); width: 28px; text-align: left; flex-shrink: 0; }
         .leader-row .mono { margin-left: 12px; flex-shrink: 0; }
@@ -293,8 +293,6 @@
     </div>
 
     <script>
-        // Независимая подстраховка: даже если основной скрипт ниже сломается синтаксически,
-        // экран загрузки принудительно скроется через 8 секунд.
         setTimeout(function() {
             var el = document.getElementById('boot-overlay');
             if (el) el.style.display = 'none';
@@ -324,7 +322,8 @@
 
         <div class="tab-row">
             <button class="tab-button active" id="mode-tab-campaign" onclick="switchAdventureMode('campaign')">Поход</button>
-            <button class="tab-button" id="mode-tab-free" onclick="switchAdventureMode('free')">Свободная</button>
+            <button class="tab-button" id="mode-tab-arena" onclick="switchAdventureMode('arena')">Арена</button>
+            <button class="tab-button" id="mode-tab-free" onclick="switchAdventureMode('free')">Свободная тренировка</button>
         </div>
 
         <div id="campaign-content">
@@ -347,11 +346,32 @@
             <div class="chapters-container" id="chapters-container"></div>
         </div>
 
+        <div id="arena-content" style="display:none;">
+            <div class="sub-tab-row">
+                <button class="sub-tab-button active" id="arena-tab-pushup" onclick="switchArenaTab('pushup')">Отжимания</button>
+                <button class="sub-tab-button" id="arena-tab-plank" onclick="switchArenaTab('plank')">Планка</button>
+                <button class="sub-tab-button" id="arena-tab-squat" onclick="switchArenaTab('squat')">Приседания</button>
+                <button class="sub-tab-button" id="arena-tab-wallsit" onclick="switchArenaTab('wallsit')">Стульчик</button>
+            </div>
+
+            <div class="card" style="text-align:left;">
+                <div class="section-label" style="margin-top:0;">Текущая волна</div>
+                <div id="arena-wave-info" style="font-size: var(--fs-heading); font-weight:600; color: var(--accent);">Волна 1</div>
+                <div id="arena-wave-desc" style="font-size: var(--fs-caption); color: var(--text-dim); margin-top:8px;">—</div>
+            </div>
+
+            <button class="btn btn-primary" onclick="startArenaActivity()">Начать бой</button>
+
+            <div style="max-width:784px; margin: 0 auto; text-align:center;">
+                <span onclick="showArenaIntro(true)" style="font-size: var(--fs-caption); color: var(--text-dim); cursor:pointer; text-decoration: underline; opacity:0.7;">Как это работает?</span>
+            </div>
+        </div>
+
         <div id="free-training-content" style="display:none;">
-            <div class="free-card" onclick="beginFreeTraining('pushup')">🤸 Свободные отжимания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
-            <div class="free-card" onclick="beginFreeTraining('plank')">🧘 Свободная планка<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
-            <div class="free-card" onclick="beginFreeTraining('squat')">🦵 Свободные приседания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
-            <div class="free-card" onclick="beginFreeTraining('wallsit')">🪑 Свободный стульчик<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('pushup')">Отжимания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('plank')">Планка<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('squat')">Приседания<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько сможешь</small></div>
+            <div class="free-card" onclick="beginFreeTraining('wallsit')">Стульчик<br><small style="opacity:0.6; font-weight:normal;">Без ограничений, сколько выстоишь</small></div>
         </div>
     </div>
 
@@ -425,6 +445,9 @@
                 <div class="stat-box"><div class="value mono" id="profile-stat-beststreak">—</div><div class="label">Рекорд серии</div></div>
                 <div class="stat-box"><div class="value mono" id="profile-stat-dungeon">—</div><div class="label">Уровень</div></div>
             </div>
+            <div class="stat-grid" style="grid-template-columns: repeat(1, 1fr);">
+                <div class="stat-box"><div class="value mono" id="profile-stat-arena">—</div><div class="label">Лучшая волна арены</div></div>
+            </div>
 
             <div id="profile-premium-card"></div>
         </div>
@@ -433,13 +456,17 @@
     <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen center-content">
         <h2>🏆 Таблица лидеров</h2>
+        <div class="tab-row">
+            <button class="tab-button active" id="lb-mode-normal" onclick="switchLeaderboardMode('normal')">Обычная</button>
+            <button class="tab-button" id="lb-mode-arena" onclick="switchLeaderboardMode('arena')">Арена</button>
+        </div>
         <div class="sub-tab-row">
             <button class="sub-tab-button active" id="lb-activity-pushup" onclick="switchLeaderboardActivity('pushup')">Отжимания</button>
             <button class="sub-tab-button" id="lb-activity-plank" onclick="switchLeaderboardActivity('plank')">Планка</button>
             <button class="sub-tab-button" id="lb-activity-squat" onclick="switchLeaderboardActivity('squat')">Приседания</button>
             <button class="sub-tab-button" id="lb-activity-wallsit" onclick="switchLeaderboardActivity('wallsit')">Стульчик</button>
         </div>
-        <div class="sub-tab-row">
+        <div class="sub-tab-row" id="lb-period-wrapper">
             <button class="sub-tab-button active" id="lb-period-today" onclick="switchLeaderboardPeriod('today')">Сегодня</button>
             <button class="sub-tab-button" id="lb-period-total" onclick="switchLeaderboardPeriod('total')">Всего</button>
         </div>
@@ -450,6 +477,9 @@
     <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <div id="screen-achievements" class="screen center-content">
         <h2>🎖 Достижения</h2>
+        <div class="section-label" style="margin-top:0;">Задания дня</div>
+        <div id="daily-quests-list"></div>
+        <div class="section-label">Достижения</div>
         <div id="achievements-list"></div>
     </div>
 
@@ -523,7 +553,7 @@
 
     <div id="overlay-warmup-tip" class="overlay-panel"><div class="overlay-box"><h3>🧘 Разомнись перед стартом</h3><p id="warmup-tip-text" style="text-align:center;">Совет</p><button class="btn btn-primary" onclick="proceedAfterWarmup()">Пропустить</button></div></div>
 
-    <div id="overlay-dungeon-loading" class="overlay-panel"><div class="overlay-box"><div class="save-toast-spinner" style="margin: 0 auto 20px; width:40px; height:40px; border-width:4px;"></div><h3 style="margin-bottom:0;">Загружаем подземелье...</h3></div></div>
+    <div id="overlay-dungeon-loading" class="overlay-panel"><div class="overlay-box"><div class="save-toast-spinner" style="margin: 0 auto 20px; width:40px; height:40px; border-width:4px;"></div><h3 style="margin-bottom:0;">Загружаем бой...</h3></div></div>
 
     <div id="overlay-no-stamina" class="overlay-panel">
         <div class="overlay-box">
@@ -549,9 +579,17 @@
 
     <div id="overlay-dungeon-load-failed" class="overlay-panel">
         <div class="overlay-box">
-            <h3>Не получилось загрузить приключение</h3>
+            <h3>Не получилось загрузить бой</h3>
             <p style="text-align:center;">Сервер медленно просыпается. Обычно повторная попытка помогает.</p>
             <button class="btn btn-primary" id="dungeon-fail-retry-btn">Попробовать снова</button>
+        </div>
+    </div>
+
+    <div id="overlay-arena-intro" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>🏟️ Арена</h3>
+            <p style="text-align:center;">Бесконечные волны врагов. Каждая волна сложнее предыдущей: 3 → 5 → 7 → 10 обычных врагов, а на 5-й волне цикла — сразу 10 врагов и два босса. После прохождения всех 10 глав враги становятся ещё крепче, и всё начинается заново. Сражайся, пока хватает сил — прогресс сохраняется, а лучшая достигнутая волна попадает в отдельную таблицу лидеров.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('overlay-arena-intro').classList.remove('active')">Понятно, вперёд!</button>
         </div>
     </div>
 
@@ -586,8 +624,6 @@
         const API_BASE = "https://pushup-bot-server.onrender.com";
 
         // ===== АВТОРИЗАЦИЯ ЧЕРЕЗ TELEGRAM initData =====
-        // Единственный источник правды о личности пользователя — подписанная
-        // Telegram-ом строка initData. user_id из URL/локальных переменных больше нигде не используется.
         function getInitData() {
             return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '';
         }
@@ -697,7 +733,7 @@
 
             if (name === 'profile') loadProfile();
             if (name === 'leaderboard') loadLeaderboard();
-            if (name === 'achievements') loadAchievements();
+            if (name === 'achievements') { loadAchievements(); loadDailyQuests(); }
             if (name === 'settings') renderSettingsScreen();
             if (name === 'adventure') { loadStamina(); switchAdventureTab(currentAdventureTab); }
 
@@ -908,7 +944,7 @@
         }
 
         // ===== ПРЕДЗАГРУЗКА ВСЕХ ДАННЫХ =====
-        const dataCache = { profile: null, dungeonInfo: {}, dungeonDetail: { pushup: {}, plank: {}, squat: {}, wallsit: {} }, leaderboard: {} };
+        const dataCache = { profile: null, dungeonInfo: {}, dungeonDetail: { pushup: {}, plank: {}, squat: {}, wallsit: {} }, leaderboard: {}, arenaPreview: {} };
 
         function hideBootOverlay() {
             const el = document.getElementById('boot-overlay');
@@ -929,7 +965,6 @@
         async function prefetchAllData() {
             const activities = ['pushup', 'plank', 'squat', 'wallsit'];
 
-            // ===== Первоочередное — блокирует экран загрузки =====
             const essential = await Promise.allSettled([
                 fetchJsonWithRetry(`${API_BASE}/api/profile?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1}),
                 fetchJsonWithRetry(`${API_BASE}/api/stamina?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:12000, retries:1}),
@@ -943,7 +978,6 @@
                 dataCache.dungeonDetail['pushup'][d.requested_dungeon] = d;
             }
 
-            // Прогружаем 4 подземелья вперёд (текущее + 3) для дисциплины по умолчанию
             if (dataCache.dungeonInfo['pushup']) {
                 const cur = dataCache.dungeonInfo['pushup'].current_dungeon;
                 await Promise.allSettled([
@@ -960,9 +994,8 @@
                 if (currentAdventureMode === 'campaign') renderChaptersFromCache(currentAdventureTab);
             }
 
-            // ===== Остальное — тихо в фоне, уже не задерживая пользователя =====
             fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=pushup&period=today`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
-                .then(d => { dataCache.leaderboard['pushup_today'] = d; }).catch(()=>{});
+                .then(d => { dataCache.leaderboard['normal_pushup_today'] = d; }).catch(()=>{});
 
             activities.filter(a => a !== 'pushup').forEach(activity => {
                 fetchJsonWithRetry(`${API_BASE}/api/dungeon_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:1})
@@ -1104,6 +1137,56 @@
         function buyPotionFromOverlay() { buyPotion(true); }
         function buyPotionFromProfile() { buyPotion(false); }
 
+        // ===== ЕЖЕДНЕВНЫЕ ЗАДАНИЯ =====
+        async function loadDailyQuests() {
+            const container = document.getElementById('daily-quests-list');
+            container.innerHTML = '<div class="loading">Загрузка...</div>';
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/daily_quests?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                renderDailyQuests(data);
+            } catch(e) { container.innerHTML = '<p>Не удалось загрузить задания.</p>'; }
+        }
+        function renderDailyQuests(data) {
+            const container = document.getElementById('daily-quests-list');
+            container.innerHTML = '';
+            data.quests.forEach(q => {
+                const row = document.createElement('div'); row.className = 'achievement-row';
+                const pct = Math.min(100, (q.progress / q.target) * 100);
+                let btnHtml;
+                if (q.claimed) btnHtml = `<span style="color:var(--success); font-size:var(--fs-caption); font-weight:600;">Получено ✅</span>`;
+                else if (q.completed) btnHtml = `<button onclick="claimQuest('${q.id}')" style="padding:8px 16px; background:var(--accent); color:#14100a; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:var(--fs-caption);">Забрать +${q.reward_xp} XP</button>`;
+                else btnHtml = `<span style="color:var(--text-dim); font-size:var(--fs-caption);">${q.progress}/${q.target}</span>`;
+                row.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                        <span>${q.title}</span>
+                        ${btnHtml}
+                    </div>
+                    <div class="achv-progress-bg"><div class="achv-progress-fill" style="width:${pct}%;"></div></div>
+                `;
+                container.appendChild(row);
+            });
+            const chest = document.createElement('div'); chest.className = 'achievement-row'; chest.style.textAlign = 'center';
+            if (data.chest.claimed) {
+                chest.innerHTML = `<span style="color:var(--success); font-weight:600;">Сундук дня открыт ✅</span>`;
+            } else if (data.chest.available) {
+                chest.innerHTML = `<button onclick="claimQuest('chest')" style="background: linear-gradient(90deg, var(--accent), var(--accent-bright)); color:#14100a; border:none; padding:14px 20px; border-radius:10px; font-weight:600; cursor:pointer; font-size: var(--fs-body);">🎁 Открыть сундук дня (+${data.chest.reward_xp} XP, +${data.chest.reward_essence} ✦)</button>`;
+            } else {
+                chest.innerHTML = `<span style="color:var(--text-dim); font-size:var(--fs-caption);">🎁 Выполни все 4 задания, чтобы открыть сундук дня</span>`;
+            }
+            container.appendChild(chest);
+        }
+        async function claimQuest(questId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/claim_quest`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({quest_id: questId}))});
+                const data = await res.json();
+                if (!data.success) { alert(data.error || "Не удалось получить награду."); return; }
+                invalidateCache('profile');
+                showSaveToast(`+${data.reward_xp} XP, +${data.reward_essence} ✦`, true);
+                vibrate('success');
+                loadDailyQuests();
+            } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
+        }
+
         // ===== ПРОФИЛЬ =====
         let profileDataCache = null;
         let activeProfileTab = 'pushup';
@@ -1161,6 +1244,7 @@
             document.getElementById('profile-stat-total').innerText = isTimeBased ? formatSeconds(source.total_seconds) : source.total;
             document.getElementById('profile-stat-beststreak').innerText = source.best_streak;
             document.getElementById('profile-stat-dungeon').innerText = "№" + source.dungeon;
+            document.getElementById('profile-stat-arena').innerText = "Волна " + (source.arena_wave || 1);
         }
         function switchProfileTab(tab) {
             activeProfileTab = tab;
@@ -1169,7 +1253,16 @@
         }
 
         // ===== ТАБЛИЦА ЛИДЕРОВ =====
+        let lbMode = 'normal';
         let lbActivity = 'pushup', lbPeriod = 'today', leaderboardRequestId = 0;
+
+        function switchLeaderboardMode(mode) {
+            lbMode = mode;
+            document.getElementById('lb-mode-normal').classList.toggle('active', mode==='normal');
+            document.getElementById('lb-mode-arena').classList.toggle('active', mode==='arena');
+            document.getElementById('lb-period-wrapper').style.display = mode==='arena' ? 'none' : 'flex';
+            loadLeaderboard();
+        }
         function switchLeaderboardActivity(activity) {
             lbActivity = activity;
             ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('lb-activity-'+t).classList.toggle('active', t===activity));
@@ -1188,31 +1281,32 @@
         async function loadLeaderboard() {
             const requestId = ++leaderboardRequestId;
             const list = document.getElementById('leaderboard-list'); const loading = document.getElementById('leaderboard-loading');
-            const cacheKey = `${lbActivity}_${lbPeriod}`;
-            if (dataCache.leaderboard[cacheKey]) { loading.style.display = 'none'; renderLeaderboardList(dataCache.leaderboard[cacheKey]); }
+            const cacheKey = `${lbMode}_${lbActivity}_${lbPeriod}`;
+            if (dataCache.leaderboard[cacheKey]) { loading.style.display = 'none'; renderLeaderboardList(dataCache.leaderboard[cacheKey], lbMode); }
             else loading.style.display = 'block';
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const url = lbMode === 'arena'
+                    ? `${API_BASE}/api/leaderboard?activity=${lbActivity}&arena=true`
+                    : `${API_BASE}/api/leaderboard?activity=${lbActivity}&period=${lbPeriod}`;
+                const data = await fetchJsonWithRetry(url, {cache:'no-store'}, {timeoutMs:15000, retries:1});
                 if (requestId !== leaderboardRequestId) return;
                 dataCache.leaderboard[cacheKey] = data;
                 loading.style.display = 'none';
-                renderLeaderboardList(data);
+                renderLeaderboardList(data, lbMode);
             } catch(e) { if (requestId === leaderboardRequestId && !dataCache.leaderboard[cacheKey]) loading.innerText = "Не удалось загрузить таблицу лидеров. Попробуйте позже."; }
         }
-        function renderLeaderboardList(data) {
+        function renderLeaderboardList(data, mode) {
             const list = document.getElementById('leaderboard-list');
             list.innerHTML = "";
             if (data.leaderboard.length === 0) { list.innerHTML = "<p>Пока никто не тренировался 🤷</p>"; return; }
             data.leaderboard.forEach((user, index) => {
                 const row = document.createElement('div'); row.className = 'leader-row';
-
                 const rankSpan = document.createElement('span'); rankSpan.className = 'rank'; rankSpan.textContent = index + 1;
                 const nameSpan = document.createElement('span');
                 nameSpan.style.cssText = 'flex:1; text-align:left; margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;';
-                nameSpan.textContent = user.name; // textContent — безопасно даже без валидации на сервере
+                nameSpan.textContent = user.name;
                 const valueSpan = document.createElement('span'); valueSpan.className = 'mono';
-                valueSpan.textContent = formatLeaderboardValue(user.value, lbActivity);
-
+                valueSpan.textContent = mode === 'arena' ? `Волна ${user.value}` : formatLeaderboardValue(user.value, lbActivity);
                 row.appendChild(rankSpan); row.appendChild(nameSpan); row.appendChild(valueSpan);
                 list.appendChild(row);
             });
@@ -1252,18 +1346,22 @@
             list.appendChild(staticRow);
         }
 
-        // ===== АККОРДЕОН ГЛАВ =====
+        // ===== АККОРДЕОН ГЛАВ (ПОХОД) =====
         let currentAdventureTab = 'pushup';
         let currentAdventureMode = 'campaign';
+        let currentArenaTab = 'pushup';
         let openChapterId = null;
         let currentDungeonGlobalCache = 1;
 
         function switchAdventureMode(mode) {
             currentAdventureMode = mode;
             document.getElementById('mode-tab-campaign').classList.toggle('active', mode==='campaign');
+            document.getElementById('mode-tab-arena').classList.toggle('active', mode==='arena');
             document.getElementById('mode-tab-free').classList.toggle('active', mode==='free');
             document.getElementById('campaign-content').style.display = mode==='campaign' ? 'block' : 'none';
+            document.getElementById('arena-content').style.display = mode==='arena' ? 'block' : 'none';
             document.getElementById('free-training-content').style.display = mode==='free' ? 'block' : 'none';
+            if (mode === 'arena') { showArenaIntro(false); loadArenaPreview(currentArenaTab); }
         }
 
         function switchAdventureTab(tab) {
@@ -1391,6 +1489,127 @@
             document.getElementById('zone-locked-desc').innerText = `Откроет «${zone.name}» и следующий уровень (босс) для дисциплины «${ACTIVITY_NAMES[activity]}» за ${PAIR_PRICE_STARS} ⭐. Можно также оформить премиум — он открывает все главы сразу.`;
             document.getElementById('zone-buy-btn').onclick = () => buyZone(activity, pairStart);
             document.getElementById('overlay-zone-locked').classList.add('active');
+        }
+
+        // ===== АРЕНА: интерфейс выбора =====
+        function switchArenaTab(tab) {
+            currentArenaTab = tab;
+            ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('arena-tab-'+t).classList.toggle('active', t===tab));
+            loadArenaPreview(tab);
+        }
+
+        async function loadArenaPreview(activity) {
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/arena_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                dataCache.arenaPreview[activity] = data;
+                if (currentArenaTab === activity) renderArenaPreview(data);
+            } catch(e) {}
+        }
+
+        function renderArenaPreview(data) {
+            document.getElementById('arena-wave-info').innerText = `Волна ${data.wave}`;
+            const chapterTitle = (CHAPTERS.find(c => c.chapter === data.chapter) || {}).title || '';
+            const hasBoss = data.enemies.some(e => e.is_boss);
+            let desc = hasBoss
+                ? `Глава ${data.chapter} «${chapterTitle}» · 10 врагов + 2 босса`
+                : `Глава ${data.chapter} «${chapterTitle}» · ${data.enemies.length} врагов`;
+            if (data.cycle > 1) desc += ` · Цикл ${data.cycle} (враги крепче)`;
+            document.getElementById('arena-wave-desc').innerText = desc;
+        }
+
+        function showArenaIntro(force) {
+            if (!force && localStorage.getItem('arenaIntroSeen') === 'true') return;
+            localStorage.setItem('arenaIntroSeen', 'true');
+            document.getElementById('overlay-arena-intro').classList.add('active');
+        }
+
+        function startArenaActivity() {
+            if (staminaCache.remaining <= 0) { document.getElementById('overlay-no-stamina').classList.add('active'); return; }
+            showWarmupTip(currentArenaTab, () => doStartArena(currentArenaTab));
+        }
+
+        let arenaStartTokens = {};
+
+        async function doStartArena(activity, attempt = 1) {
+            document.getElementById('overlay-dungeon-loading').classList.add('active');
+            const tokenKey = `arena_${activity}`;
+            if (!arenaStartTokens[tokenKey]) arenaStartTokens[tokenKey] = `arena_${activity}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            const token = arenaStartTokens[tokenKey];
+            try {
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/arena_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:20000, retries:2});
+
+                const consumeData = await fetchJsonWithRetry(`${API_BASE}/api/consume_stamina`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({token}))}, {timeoutMs:15000, retries:2});
+                if (!consumeData.success) {
+                    document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                    delete arenaStartTokens[tokenKey];
+                    document.getElementById('overlay-no-stamina').classList.add('active');
+                    return;
+                }
+                delete arenaStartTokens[tokenKey];
+                staminaCache = { remaining: consumeData.remaining, max: consumeData.max };
+                renderStaminaDots('stamina-dots', consumeData.remaining, consumeData.max);
+
+                combatMode = 'arena'; combatActivityType = activity; arenaWaveNumber = data.wave;
+                combatXpEstimate = data.xp_reward;
+                combatEnemies = data.enemies.map(e => ({ hp: e.hp, zone: e.zone, isBoss: e.is_boss }));
+                combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
+                inDungeonMode = true; dungeonJustWon = false; dungeonPaused = false;
+
+                document.getElementById('battle-header').style.display = 'block';
+                updateMonsterPortrait(); updateCombatHUD();
+                document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                startActivity(activity, true);
+            } catch(e) {
+                if (attempt < 3) { await new Promise(r => setTimeout(r, 1200 * attempt)); return doStartArena(activity, attempt + 1); }
+                document.getElementById('overlay-dungeon-loading').classList.remove('active');
+                alert("Не удалось загрузить арену. Попробуйте ещё раз — сервер мог временно спать.");
+            }
+        }
+
+        async function finishArenaWave() {
+            dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
+            showSaveToast(`Волна ${arenaWaveNumber} пройдена! +${combatXpEstimate} XP`, true);
+
+            const completedWave = arenaWaveNumber;
+            const activity = combatActivityType;
+            const isRepBased = (activity === 'pushup' || activity === 'squat');
+
+            if (isRepBased && !assaultModeEnabled) {
+                const overlay = document.getElementById('overlay-enemy-pause');
+                const titleEl = overlay.querySelector('h3');
+                const originalTitle = titleEl.innerText;
+                titleEl.innerText = 'Волна пройдена! 🎉';
+                startEnemyPause();
+                setTimeout(() => { titleEl.innerText = originalTitle; }, 5200);
+            }
+
+            let attempt = 0;
+            while (true) {
+                attempt++;
+                try {
+                    const res = await fetch(`${API_BASE}/api/arena_wave_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({activity, wave: completedWave}))});
+                    if (!res.ok) throw new Error('bad status');
+                    invalidateCache('profile');
+                    break;
+                } catch(e) {
+                    if (attempt >= 5) break;
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+
+            try {
+                const nextWave = await fetchJsonWithRetry(`${API_BASE}/api/arena_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:2});
+                arenaWaveNumber = nextWave.wave;
+                combatXpEstimate = nextWave.xp_reward;
+                combatEnemies = nextWave.enemies.map(e => ({ hp: e.hp, zone: e.zone, isBoss: e.is_boss }));
+                combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
+                updateMonsterPortrait(); updateCombatHUD();
+                dungeonJustWon = false;
+            } catch(e) {
+                showSaveToast('Не удалось загрузить следующую волну — нажми «Побег» и попробуй снова');
+            }
+
+            dungeonPaused = false;
         }
 
         // ===== ДАННЫЕ СЮЖЕТА =====
@@ -1921,10 +2140,11 @@
             if (cb) cb();
         }
 
-        // ===== СОСТОЯНИЕ БОЯ =====
-        let inDungeonMode = false, dungeonJustWon = false, dungeonActivityType = null, dungeonNumber = null;
-        let dungeonEnemies = [], dungeonEnemyIndex = 0, dungeonEnemyRemainingHP = 0, dungeonEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
-        let dungeonXpEstimate = 0;
+        // ===== ЕДИНЫЙ БОЕВОЙ ДВИЖОК (поход + арена) =====
+        let inDungeonMode = false, dungeonJustWon = false, combatMode = null, combatActivityType = null, dungeonNumber = null;
+        let combatEnemies = [], combatEnemyIndex = 0, combatEnemyRemainingHP = 0, combatEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
+        let combatXpEstimate = 0;
+        let arenaWaveNumber = 1;
         let dungeonStartTokens = {};
 
         function startDungeonActivity(activity, dungeonN) {
@@ -1972,13 +2192,15 @@
                 staminaCache = { remaining: consumeData.remaining, max: consumeData.max };
                 renderStaminaDots('stamina-dots', consumeData.remaining, consumeData.max);
 
-                inDungeonMode = true; dungeonJustWon = false; dungeonActivityType = activity; dungeonNumber = data.requested_dungeon;
-                dungeonXpEstimate = data.xp_reward;
-                dungeonEnemies = data.enemies; dungeonEnemyIndex = 0; dungeonEnemyMaxHP = dungeonEnemies[0]; dungeonEnemyRemainingHP = dungeonEnemies[0];
+                combatMode = 'dungeon'; inDungeonMode = true; dungeonJustWon = false;
+                combatActivityType = activity; dungeonNumber = data.requested_dungeon;
+                combatXpEstimate = data.xp_reward;
+                combatEnemies = data.enemies.map(hp => ({ hp, zone: dungeonNumber, isBoss: data.is_boss }));
+                combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
                 dungeonIsReplay = data.is_replay; dungeonPaused = false;
 
                 document.getElementById('battle-header').style.display = 'block';
-                updateMonsterPortrait(); updateDungeonHUD();
+                updateMonsterPortrait(); updateCombatHUD();
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
                 startActivity(activity, true);
 
@@ -2001,24 +2223,39 @@
             document.getElementById('overlay-dungeon-load-failed').classList.add('active');
         }
 
-        function updateMonsterPortrait() { const zone = getZoneForDungeon(dungeonNumber); document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone); }
-        function updateDungeonHUD() {
-            const zone = getZoneForDungeon(dungeonNumber);
-            document.getElementById('monster-name').innerText = `${zone.name} — Враг ${dungeonEnemyIndex+1} из ${dungeonEnemies.length}`;
-            const pct = Math.max(0, Math.min(100, (dungeonEnemyRemainingHP/dungeonEnemyMaxHP)*100));
-            document.getElementById('hp-bar-fill').style.width = pct + '%';
-            document.getElementById('hp-bar-text').innerText = `HP ${Math.max(0,Math.ceil(dungeonEnemyRemainingHP))} / ${dungeonEnemyMaxHP}`;
+        function updateMonsterPortrait() {
+            const enemy = combatEnemies[combatEnemyIndex];
+            const zone = getZoneForDungeon(enemy.zone);
+            document.getElementById('monster-portrait').innerHTML = monsterVisualHtml(zone);
         }
-        function applyDungeonDamage(amount) {
+        function updateCombatHUD() {
+            const enemy = combatEnemies[combatEnemyIndex];
+            const zone = getZoneForDungeon(enemy.zone);
+            const label = (combatMode === 'arena')
+                ? `Волна ${arenaWaveNumber} — Враг ${combatEnemyIndex+1} из ${combatEnemies.length}`
+                : `${zone.name} — Враг ${combatEnemyIndex+1} из ${combatEnemies.length}`;
+            document.getElementById('monster-name').innerText = label;
+            const pct = Math.max(0, Math.min(100, (combatEnemyRemainingHP/combatEnemyMaxHP)*100));
+            document.getElementById('hp-bar-fill').style.width = pct + '%';
+            document.getElementById('hp-bar-text').innerText = `HP ${Math.max(0,Math.ceil(combatEnemyRemainingHP))} / ${combatEnemyMaxHP}`;
+        }
+        function applyCombatDamage(amount) {
             if (!inDungeonMode || dungeonPaused) return;
-            dungeonEnemyRemainingHP -= amount;
-            if (dungeonEnemyRemainingHP <= 0) handleEnemyDefeated(-dungeonEnemyRemainingHP); else updateDungeonHUD();
+            combatEnemyRemainingHP -= amount;
+            if (combatEnemyRemainingHP <= 0) handleEnemyDefeated(-combatEnemyRemainingHP); else updateCombatHUD();
         }
         function handleEnemyDefeated(overflow) {
-            if (dungeonEnemyIndex === dungeonEnemies.length - 1) { finishDungeonVictory(); return; }
-            dungeonEnemyIndex++; dungeonEnemyMaxHP = dungeonEnemies[dungeonEnemyIndex]; dungeonEnemyRemainingHP = Math.max(0, dungeonEnemyMaxHP - overflow);
-            updateDungeonHUD();
-            const isRepBased = (dungeonActivityType === 'pushup' || dungeonActivityType === 'squat');
+            if (combatEnemyIndex === combatEnemies.length - 1) {
+                if (combatMode === 'arena') finishArenaWave(); else finishDungeonVictory();
+                return;
+            }
+            combatEnemyIndex++;
+            const enemy = combatEnemies[combatEnemyIndex];
+            combatEnemyMaxHP = enemy.hp;
+            combatEnemyRemainingHP = Math.max(0, enemy.hp - overflow);
+            updateMonsterPortrait();
+            updateCombatHUD();
+            const isRepBased = (combatActivityType === 'pushup' || combatActivityType === 'squat');
             if (isRepBased && !assaultModeEnabled) startEnemyPause();
         }
         function startEnemyPause() {
@@ -2030,12 +2267,12 @@
 
         function finishDungeonVictory() {
             dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
-            document.getElementById('dungeon-complete-xp').innerText = `+${dungeonXpEstimate} XP ⭐`;
+            document.getElementById('dungeon-complete-xp').innerText = `+${combatXpEstimate} XP ⭐`;
 
             const scene = STORY_SCENES[dungeonNumber];
             const proceed = () => document.getElementById('overlay-dungeon-complete').classList.add('active');
 
-            saveDungeonCompletionInBackground(dungeonActivityType, dungeonNumber);
+            saveDungeonCompletionInBackground(combatActivityType, dungeonNumber);
 
             if (scene && scene.post) showStoryScene(scene.post, proceed);
             else proceed();
@@ -2062,7 +2299,7 @@
             }
         }
 
-        function continueDungeon() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); dungeonPaused=false; doStartDungeonActivity(dungeonActivityType, dungeonNumber+1); }
+        function continueDungeon() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); dungeonPaused=false; doStartDungeonActivity(combatActivityType, dungeonNumber+1); }
         function finishDungeonSession() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); attemptSave(); }
 
         // ===== КАМЕРА =====
@@ -2135,7 +2372,7 @@
         }
         function countRepGeneric() {
             repCount++; counterEl.innerText = repCount; playHitSound(); triggerHitShake(); vibrate('light');
-            if (inDungeonMode) applyDungeonDamage(1);
+            if (inDungeonMode) applyCombatDamage(1);
         }
 
         function avgVisibility(indices, landmarks) { return indices.reduce((s,idx)=>s+landmarks[idx].visibility,0)/indices.length; }
@@ -2187,7 +2424,7 @@
             if (isInPosition) {
                 if (holdLastTimestamp !== null) {
                     const delta = (now-holdLastTimestamp)/1000; holdSeconds += delta;
-                    if (inDungeonMode) applyDungeonDamage(delta);
+                    if (inDungeonMode) applyCombatDamage(delta);
 
                     const currentSecond = Math.floor(holdSeconds);
                     if (currentSecond > lastHoldSecondMarked) { lastHoldSecondMarked = currentSecond; playTickSound(); }
@@ -2268,8 +2505,6 @@
             currentMode = mode; repCount = 0; stage = "up"; shoulderYAtUp = null; expectedShoulderDirection = null;
             holdSeconds = 0; holdLastTimestamp = null; lastHoldMinuteMarked = 0; lastHoldSecondMarked = 0;
 
-            // Жёсткий сброс состояния боя — защита от «зависшей» камеры,
-            // если предыдущая тренировка была прервана в момент паузы между врагами
             dungeonPaused = false;
             document.getElementById('overlay-enemy-pause').classList.remove('active');
             document.getElementById('overlay-dungeon-complete').classList.remove('active');
@@ -2277,7 +2512,7 @@
             document.getElementById('finishBtn').style.display = 'block';
             document.getElementById('finishBtn').innerText = isDungeon ? 'Побег' : 'Завершить';
             document.getElementById('battle-header').style.display = isDungeon ? 'block' : 'none';
-            if (!isDungeon) inDungeonMode = false;
+            if (!isDungeon) { inDungeonMode = false; combatMode = null; }
 
             const isTimeBased = (mode==='plank' || mode==='wallsit');
             statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий"
@@ -2316,7 +2551,7 @@
             const value = (mode==='plank'||mode==='wallsit') ? Math.floor(holdSeconds) : repCount;
 
             stopCameraCompletely();
-            inDungeonMode = false; currentMode = null;
+            inDungeonMode = false; combatMode = null; currentMode = null;
             showScreen('adventure');
 
             if (value < 1) return;
@@ -2351,7 +2586,7 @@
             attemptSave();
         });
 
-        startKeepAlivePing(); // держим соединение с сервером тёплым всё время, пока приложение открыто
+        startKeepAlivePing();
         checkUserStatus();
     </script>
 </body>
