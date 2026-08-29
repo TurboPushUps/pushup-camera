@@ -1491,6 +1491,53 @@
             document.getElementById('overlay-zone-locked').classList.add('active');
         }
 
+        // ===== ЛОКАЛЬНАЯ ГЕНЕРАЦИЯ ВОЛН АРЕНЫ (зеркало серверной формулы) =====
+        // Позволяет готовить следующую волну заранее, без ожидания ответа сервера
+        const PUSHUP_ZONES_HP = [
+            [3,15],[1,25],[4,30],[1,40],[5,45],[1,55],[6,60],[1,70],
+            [7,85],[1,100],[8,110],[1,125],[9,140],[1,160],[10,175],[1,200],
+            [11,215],[1,245],[12,260],[1,300]
+        ];
+        const PLANK_ZONES_HP = [
+            [3,12],[1,20],[4,24],[1,32],[5,36],[1,44],[6,48],[1,56],
+            [7,64],[1,76],[8,84],[1,96],[9,108],[1,124],[10,140],[1,160],
+            [11,172],[1,196],[12,208],[1,240]
+        ];
+        const SQUAT_ZONES_HP = PUSHUP_ZONES_HP.map(([c,t]) => [c, t*2]);
+        const WALLSIT_ZONES_HP = PLANK_ZONES_HP;
+        const ZONE_TABLES_HP = { pushup: PUSHUP_ZONES_HP, plank: PLANK_ZONES_HP, squat: SQUAT_ZONES_HP, wallsit: WALLSIT_ZONES_HP };
+
+        const ARENA_WAVES_PER_CHAPTER = 5, ARENA_CYCLE_LEN = 50;
+
+        function generateArenaWaveClient(activity, waveN) {
+            waveN = Math.max(1, waveN);
+            const zones = ZONE_TABLES_HP[activity];
+            const cycleIndex = Math.floor((waveN - 1) / ARENA_CYCLE_LEN);
+            const posInCycle = (waveN - 1) % ARENA_CYCLE_LEN;
+            const chapter = Math.floor(posInCycle / ARENA_WAVES_PER_CHAPTER) + 1;
+            const localWave = (posInCycle % ARENA_WAVES_PER_CHAPTER) + 1;
+            const scale = 1 + 0.5 * cycleIndex;
+
+            const nNormal = 2 * chapter - 1;
+            const nBoss = 2 * chapter;
+            const [normalCount, normalTotal] = zones[nNormal - 1];
+            const [, bossTotal] = zones[nBoss - 1];
+
+            const normalHpEach = Math.max(1, Math.round((normalTotal / normalCount) * scale));
+            const bossHpEach = Math.max(1, Math.round(bossTotal * scale));
+
+            const countsByLocalWave = { 1: 3, 2: 5, 3: 7, 4: 10 };
+            let enemies = [];
+            if (countsByLocalWave[localWave]) {
+                for (let i = 0; i < countsByLocalWave[localWave]; i++) enemies.push({ hp: normalHpEach, zone: nNormal, isBoss: false });
+            } else {
+                for (let i = 0; i < 10; i++) enemies.push({ hp: normalHpEach, zone: nNormal, isBoss: false });
+                for (let i = 0; i < 2; i++) enemies.push({ hp: bossHpEach, zone: nBoss, isBoss: true });
+            }
+            const xpReward = enemies.reduce((s, e) => s + e.hp, 0);
+            return { wave: waveN, chapter, local_wave: localWave, cycle: cycleIndex + 1, enemies, xp_reward: xpReward };
+        }
+
         // ===== АРЕНА: интерфейс выбора =====
         function switchArenaTab(tab) {
             currentArenaTab = tab;
@@ -1555,6 +1602,9 @@
                 combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
                 inDungeonMode = true; dungeonJustWon = false; dungeonPaused = false;
 
+                // Сразу готовим следующую волну заранее — переход между волнами будет мгновенным
+                arenaNextWaveCache = generateArenaWaveClient(activity, arenaWaveNumber + 1);
+
                 document.getElementById('battle-header').style.display = 'block';
                 updateMonsterPortrait(); updateCombatHUD();
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
@@ -1566,14 +1616,25 @@
             }
         }
 
-        async function finishArenaWave() {
+        function finishArenaWave() {
             dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
-            showSaveToast(`Волна ${arenaWaveNumber} пройдена! +${combatXpEstimate} XP`, true);
-
             const completedWave = arenaWaveNumber;
             const activity = combatActivityType;
-            const isRepBased = (activity === 'pushup' || activity === 'squat');
+            showSaveToast(`Волна ${completedWave} пройдена! +${combatXpEstimate} XP`, true);
 
+            // Следующая волна уже была подготовлена заранее — переключаемся мгновенно, без ожидания сервера
+            const nextWaveData = arenaNextWaveCache || generateArenaWaveClient(activity, completedWave + 1);
+            arenaWaveNumber = nextWaveData.wave;
+            combatXpEstimate = nextWaveData.xp_reward;
+            combatEnemies = nextWaveData.enemies.map(e => ({ hp: e.hp, zone: e.zone, isBoss: e.is_boss }));
+            combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
+            updateMonsterPortrait(); updateCombatHUD();
+            dungeonJustWon = false;
+
+            // Пока идёт пауза/следующий бой — заранее готовим волну после этой
+            arenaNextWaveCache = generateArenaWaveClient(activity, arenaWaveNumber + 1);
+
+            const isRepBased = (activity === 'pushup' || activity === 'squat');
             if (isRepBased && !assaultModeEnabled) {
                 const overlay = document.getElementById('overlay-enemy-pause');
                 const titleEl = overlay.querySelector('h3');
@@ -1581,8 +1642,15 @@
                 titleEl.innerText = 'Волна пройдена! 🎉';
                 startEnemyPause();
                 setTimeout(() => { titleEl.innerText = originalTitle; }, 5200);
+            } else {
+                dungeonPaused = false;
             }
 
+            // Сохранение прогресса на сервере — тихо, в фоне, никак не блокирует бой
+            persistArenaWaveInBackground(activity, completedWave);
+        }
+
+        async function persistArenaWaveInBackground(activity, completedWave) {
             let attempt = 0;
             while (true) {
                 attempt++;
@@ -1590,12 +1658,13 @@
                     const res = await fetch(`${API_BASE}/api/arena_wave_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({activity, wave: completedWave}))});
                     if (!res.ok) throw new Error('bad status');
                     invalidateCache('profile');
-                    break;
+                    return;
                 } catch(e) {
-                    if (attempt >= 5) break;
+                    if (attempt >= 5) return;
                     await new Promise(r => setTimeout(r, 1000));
                 }
             }
+        }
 
             try {
                 const nextWave = await fetchJsonWithRetry(`${API_BASE}/api/arena_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:2});
@@ -2145,6 +2214,7 @@
         let combatEnemies = [], combatEnemyIndex = 0, combatEnemyRemainingHP = 0, combatEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
         let combatXpEstimate = 0;
         let arenaWaveNumber = 1;
+        let arenaNextWaveCache = null;
         let dungeonStartTokens = {};
 
         function startDungeonActivity(activity, dungeonN) {
