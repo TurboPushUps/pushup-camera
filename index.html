@@ -335,7 +335,7 @@
             </div>
 
             <div class="info-tip" id="camera-tip">
-                💡 Совет: для отжиманий и планки поставь телефон так, чтобы было видно плечи, локти и запястья (для планки — сбоку). Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
+                💡 Совет: для отжиманий и планки поставь телефон на пол так, чтобы было видно плечи, локти, запястья и лицо. Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
             </div>
 
             <div class="info-tip active" id="free-story-banner" style="border-color: #7c5cff; background: rgba(124,92,255,0.08);">
@@ -545,7 +545,7 @@
         <div class="overlay-box">
             <h3>Как ставить телефон</h3>
             <p><strong>Отжимания:</strong> телефон на полу, видно плечи, локти, запястья.</p>
-            <p><strong>Планка:</strong> телефон сбоку, видно плечо, бедро, колено.</p>
+            <p><strong>Планка:</strong> телефон на полу спереди, как для отжиманий — видно плечи, локти, запястья и лицо. Обопрись на предплечья, ноги вытянуты, стопы должны быть видны на заднем плане.</p>
             <p><strong>Приседания и стульчик:</strong> встань лицом к камере на расстоянии, чтобы было видно всё тело от плеч до стоп.</p>
             <button class="btn btn-primary" onclick="document.getElementById('overlay-instructions').classList.remove('active')">Понятно</button>
         </div>
@@ -788,7 +788,7 @@
 
         // ===== ПОДСКАЗКИ-РАЗМИНКА =====
         const PUSHUP_TIPS = ["Разомни запястья и плечи 15–20 секунд.", "Держи спину прямой на всём протяжении.", "Дыши равномерно: вдох вниз, выдох вверх."];
-        const PLANK_TIPS = ["Тело — одна прямая линия от плеч до пяток.", "Напряги мышцы кора и ягодиц.", "Дыши спокойно, не задерживай дыхание."];
+        const PLANK_TIPS = ["Встань лицом к камере на предплечья, тело — одна прямая линия.", "Напряги мышцы кора и ягодиц, не провисай в пояснице.", "Дыши спокойно, не задерживай дыхание.", "Ноги вытянуты, вес на носках — колени не касаются пола."];
         const SQUAT_TIPS = ["Держи спину прямой, колени не выходят за носки.", "Разомни колени и тазобедренные суставы.", "Опускайся до параллели бедра с полом."];
         const WALLSIT_TIPS = ["Спина прямая, угол в колене около 90°.", "Разомни ноги перед стартом.", "Держи вес равномерно на обеих ногах."];
         const TIPS_BY_ACTIVITY = { pushup: PUSHUP_TIPS, plank: PLANK_TIPS, squat: SQUAT_TIPS, wallsit: WALLSIT_TIPS };
@@ -2445,22 +2445,43 @@
             if (inDungeonMode) applyCombatDamage(1);
         }
 
-        function avgVisibility(indices, landmarks) { return indices.reduce((s,idx)=>s+landmarks[idx].visibility,0)/indices.length; }
-        function getPlankSidePoints(landmarks) {
-            const leftIndices=[LEFT_SHOULDER,LEFT_ELBOW,LEFT_WRIST,LEFT_HIP,LEFT_KNEE,LEFT_ANKLE];
-            const rightIndices=[RIGHT_SHOULDER,RIGHT_ELBOW,RIGHT_WRIST,RIGHT_HIP,RIGHT_KNEE,RIGHT_ANKLE];
-            return avgVisibility(leftIndices,landmarks) >= avgVisibility(rightIndices,landmarks)
-                ? {shoulder:LEFT_SHOULDER,elbow:LEFT_ELBOW,wrist:LEFT_WRIST,hip:LEFT_HIP,knee:LEFT_KNEE,ankle:LEFT_ANKLE}
-                : {shoulder:RIGHT_SHOULDER,elbow:RIGHT_ELBOW,wrist:RIGHT_WRIST,hip:RIGHT_HIP,knee:RIGHT_KNEE,ankle:RIGHT_ANKLE};
-        }
+        // ===== ПЛАНКА — лицом к камере, как отжимания =====
+        const NOSE = 0;
+
         function checkPlankPosition(landmarks) {
-            const p = getPlankSidePoints(landmarks);
-            const required = [p.shoulder,p.elbow,p.wrist,p.hip,p.knee,p.ankle];
-            if (!required.every(idx=>landmarks[idx].visibility>0.6)) return {valid:false, reason:"not_visible", points:p};
-            const bodyAngle = calculateAngle(landmarks[p.shoulder],landmarks[p.hip],landmarks[p.knee]);
-            const legAngle = calculateAngle(landmarks[p.hip],landmarks[p.knee],landmarks[p.ankle]);
-            const isStraight = bodyAngle>150 && legAngle>150;
-            return {valid:isStraight, reason:isStraight?"ok":"not_straight", points:p};
+            const requiredArms = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST, NOSE];
+            const armsVisible = requiredArms.every(idx => landmarks[idx].visibility > 0.6);
+            if (!armsVisible) return { valid: false, reason: "not_visible" };
+
+            // Стопы видны далеко на заднем плане только если ноги вытянуты (настоящая планка).
+            // Если встать на колени, стопы обычно складываются и пропадают из кадра — это и ловим.
+            const leftAnkleVisible = landmarks[LEFT_ANKLE].visibility > 0.35;
+            const rightAnkleVisible = landmarks[RIGHT_ANKLE].visibility > 0.35;
+            if (!leftAnkleVisible && !rightAnkleVisible) {
+                return { valid: false, reason: "knees_down" };
+            }
+
+            const leftElbowAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
+            const rightElbowAngle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_ELBOW], landmarks[RIGHT_WRIST]);
+            const avgElbowAngle = (leftElbowAngle + rightElbowAngle) / 2;
+            if (avgElbowAngle < 55 || avgElbowAngle > 115) {
+                return { valid: false, reason: "elbow_angle" };
+            }
+
+            // Если бёдра всё же попали в кадр — дополнительно проверяем, что тело не провисает и не «горкой»
+            const leftHipVisible = landmarks[LEFT_HIP].visibility > 0.5;
+            const rightHipVisible = landmarks[RIGHT_HIP].visibility > 0.5;
+            if (leftHipVisible || rightHipVisible) {
+                const hipIdx = leftHipVisible ? LEFT_HIP : RIGHT_HIP;
+                const shoulderIdx = leftHipVisible ? LEFT_SHOULDER : RIGHT_SHOULDER;
+                const kneeIdx = leftHipVisible ? LEFT_KNEE : RIGHT_KNEE;
+                if (landmarks[kneeIdx].visibility > 0.4) {
+                    const bodyAngle = calculateAngle(landmarks[shoulderIdx], landmarks[hipIdx], landmarks[kneeIdx]);
+                    if (bodyAngle < 140) return { valid: false, reason: "body_bent" };
+                }
+            }
+
+            return { valid: true, reason: "ok" };
         }
 
         function checkWallsitPosition(landmarks) {
@@ -2535,11 +2556,12 @@
                     statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🧍";
                     if (inPosition && !dungeonPaused) countSquats(lm);
                 } else if (currentMode === 'plank') {
+                    drawPoints(lm, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
                     const result = checkPlankPosition(lm);
-                    drawPoints(lm, [result.points.shoulder,result.points.elbow,result.points.wrist,result.points.hip,result.points.knee,result.points.ankle],
-                        [[result.points.shoulder,result.points.elbow],[result.points.elbow,result.points.wrist],[result.points.shoulder,result.points.hip],[result.points.hip,result.points.knee],[result.points.knee,result.points.ankle]]);
-                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
-                    else if (result.reason==="not_straight") statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
+                    if (result.reason === "not_visible") statusEl.innerText = "Встаньте лицом к камере, чтобы было видно плечи, локти, запястья и лицо 🧍";
+                    else if (result.reason === "knees_down") statusEl.innerText = "Не вижу стоп — похоже, вы на коленях. Выпрямите ноги 🦵";
+                    else if (result.reason === "elbow_angle") statusEl.innerText = "Обопритесь на предплечья, локти под прямым углом 📏";
+                    else if (result.reason === "body_bent") statusEl.innerText = "Выпрямите тело в одну линию, не прогибайтесь 📏";
                     else statusEl.innerText = "Отлично держите планку! 🔥";
                     updateHoldTimer(result.valid && !dungeonPaused);
                 } else if (currentMode === 'wallsit') {
@@ -2587,7 +2609,7 @@
             const isTimeBased = (mode==='plank' || mode==='wallsit');
             statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий"
                 : mode==='squat' ? "Встаньте лицом к камере 🧍"
-                : mode==='plank' ? "Встаньте боком к камере, покажите всё тело 🚶"
+                : mode==='plank' ? "Встаньте лицом к камере, обопритесь на предплечья 🧍"
                 : "Встаньте лицом к камере, покажите всё тело 🧍";
             counterEl.innerText = isTimeBased ? "00:00" : "0";
 
