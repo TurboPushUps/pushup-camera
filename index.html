@@ -112,6 +112,7 @@
         .bottom-nav-item.active { color: var(--accent); }
         .bottom-nav-item.active .bottom-nav-icon { filter: grayscale(1) sepia(1) hue-rotate(-10deg) saturate(4) brightness(0.95); }
 
+        /* ===== СТАМИНА ===== */
         .stamina-bar { width: 100%; max-width: 784px; margin: 0 auto var(--block-gap); padding: 14px 20px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
         .stamina-bar .stamina-label { font-size: var(--fs-body); color: var(--text-main); text-align: left; }
         .stamina-dots { display: flex; gap: 6px; }
@@ -119,6 +120,7 @@
         .stamina-dot.filled { background: var(--accent); }
         .stamina-bar .premium-badge { font-size: var(--fs-caption); color: var(--accent-bright); font-weight: 600; margin-left: 8px; }
 
+        /* ===== МАГАЗИН ЗЕЛИЙ ===== */
         .wallet-row {
             display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 784px;
             margin: 0 auto var(--block-gap); padding: 16px 20px; background: var(--bg-card); border: 1px solid var(--border-main);
@@ -135,6 +137,7 @@
         .potion-btn-text { text-align: left; font-size: var(--fs-body); font-weight: 600; color: var(--text-main); }
         .potion-btn-sub { font-size: var(--fs-caption); color: var(--text-dim); margin-top: 4px; }
 
+        /* ===== ГЛАВЫ — АККОРДЕОН ===== */
         .chapters-container { max-width: 784px; margin: 0 auto; }
         .chapter-block { margin-bottom: 10px; border: 1px solid var(--border-main); border-radius: 14px; overflow: hidden; background: var(--bg-card); }
         .chapter-header { display: flex; align-items: center; gap: 14px; padding: 18px; cursor: pointer; }
@@ -171,12 +174,14 @@
         .free-card { max-width: 784px; margin: 0 auto var(--block-gap); padding: 22px; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 14px; cursor: pointer; font-size: var(--fs-body); font-weight: 500; color: var(--text-main); box-sizing: border-box; }
         .free-card:active { border-color: var(--accent); }
 
+        /* ===== ПРЕМИУМ ===== */
         .premium-card { max-width: 784px; margin: 0 auto var(--block-gap); padding: 24px; text-align: left; background: linear-gradient(135deg, rgba(124,92,255,0.15), rgba(245,158,11,0.1)); border: 1px solid #7c5cff; border-radius: 16px; box-sizing: border-box; }
         .premium-card h3 { color: #a78bfa; margin-bottom: 10px; font-size: var(--fs-body); }
         .premium-card ul { margin: 10px 0; padding-left: 20px; font-size: var(--fs-caption); color: var(--text-dim); line-height: 1.7; }
         .premium-card .btn-premium { background: linear-gradient(90deg, #7c5cff, #a78bfa); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 10px; font-weight: 600; font-size: var(--fs-body); cursor: pointer; margin-top: 8px; }
         .premium-active-badge { display: inline-block; padding: 6px 14px; background: rgba(124,92,255,0.2); color: #a78bfa; border-radius: 20px; font-size: var(--fs-caption); font-weight: 600; }
 
+        /* ===== ЭКРАН БОЯ — КАМЕРА ===== */
         .camera-fullscreen-wrapper { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100dvh; background: #000; overflow: hidden; z-index: 1; }
         .camera-fullscreen-wrapper video { display: none; }
         .camera-fullscreen-wrapper canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -214,6 +219,7 @@
             font-size: var(--fs-body); font-weight: 600; color: #fff; cursor: pointer; white-space: nowrap;
         }
 
+        /* ===== ТИХОЕ СОХРАНЕНИЕ ===== */
         .save-toast {
             position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%) translateY(-140%);
             z-index: 4000; background: var(--bg-card); border: 1px solid var(--border-main); border-radius: 24px;
@@ -237,6 +243,7 @@
         .overlay-box p { text-align: left; font-size: var(--fs-caption); line-height: 1.5; color: var(--text-dim); }
         .countdown-number { font-size: var(--fs-heading); color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
 
+        /* ===== СЮЖЕТ — СТИЛЬ ЧАТА ===== */
         .story-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; background: rgba(5,4,8,0.97); flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; cursor: pointer; }
         .story-overlay.active { display: flex; }
         .story-skip-btn { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); right: 20px; z-index: 3001; background: rgba(255,255,255,0.1); color: var(--text-dim); border: 1px solid var(--border-main); border-radius: 20px; padding: 8px 16px; font-size: var(--fs-caption); cursor: pointer; }
@@ -292,6 +299,7 @@
         }, 8000);
     </script>
 
+    <!-- ===== РЕГИСТРАЦИЯ НИКНЕЙМА ===== -->
     <div id="screen-register" class="screen center-content">
         <h1>⚔️ PushUp Hero</h1>
         <p style="font-size: var(--fs-caption); color: var(--text-dim);">Придумай себе игровой никнейм — он будет виден другим в таблице лидеров.</p>
@@ -300,6 +308,7 @@
         <button class="btn btn-primary" onclick="submitNickname()">Продолжить</button>
     </div>
 
+    <!-- ===== КАРТА ПРИКЛЮЧЕНИЙ ===== -->
     <div id="screen-adventure" class="screen">
         <h2 style="margin-top:20px;">Карта приключений</h2>
 
@@ -326,7 +335,7 @@
             </div>
 
             <div class="info-tip" id="camera-tip">
-                💡 Совет: для отжиманий и планки поставь телефон на пол так, чтобы было видно плечи, локти, запястья и лицо. Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
+                💡 Совет: для отжиманий и планки поставь телефон так, чтобы было видно плечи, локти и запястья (для планки — сбоку). Для приседаний и стульчика встань лицом к камере, чтобы было видно бёдра, колени и стопы.
             </div>
 
             <div class="info-tip active" id="free-story-banner" style="border-color: #7c5cff; background: rgba(124,92,255,0.08);">
@@ -366,6 +375,7 @@
         </div>
     </div>
 
+    <!-- ===== КАМЕРА / БОЙ ===== -->
     <div id="screen-activity" class="screen" style="padding:0;">
         <div class="camera-fullscreen-wrapper">
             <video id="video" width="480" height="640" autoplay playsinline muted></video>
@@ -386,6 +396,7 @@
         </div>
     </div>
 
+    <!-- ===== ПРОФИЛЬ ===== -->
     <div id="screen-profile" class="screen center-content">
         <h2>🛡️ Профиль</h2>
         <div id="profile-loading" class="loading">Загрузка...</div>
@@ -442,6 +453,7 @@
         </div>
     </div>
 
+    <!-- ===== ТАБЛИЦА ЛИДЕРОВ ===== -->
     <div id="screen-leaderboard" class="screen center-content">
         <h2>🏆 Таблица лидеров</h2>
         <div class="tab-row">
@@ -462,6 +474,7 @@
         <div id="leaderboard-list"></div>
     </div>
 
+    <!-- ===== ДОСТИЖЕНИЯ ===== -->
     <div id="screen-achievements" class="screen center-content">
         <h2>🎖 Достижения</h2>
         <div class="section-label" style="margin-top:0;">Задания дня</div>
@@ -470,6 +483,7 @@
         <div id="achievements-list"></div>
     </div>
 
+    <!-- ===== НАСТРОЙКИ ===== -->
     <div id="screen-settings" class="screen center-content">
         <h1>⚙️ Настройки</h1>
 
@@ -515,6 +529,7 @@
         </div>
     </div>
 
+    <!-- ===== ОВЕРЛЕИ ===== -->
     <div id="overlay-enemy-pause" class="overlay-panel"><div class="overlay-box"><h3>Враг повержен! 💥</h3><p style="text-align:center;">Передышка перед следующим врагом</p><div class="countdown-number" id="pause-countdown">5</div></div></div>
 
     <div id="overlay-dungeon-complete" class="overlay-panel">
@@ -530,7 +545,7 @@
         <div class="overlay-box">
             <h3>Как ставить телефон</h3>
             <p><strong>Отжимания:</strong> телефон на полу, видно плечи, локти, запястья.</p>
-            <p><strong>Планка:</strong> телефон на полу спереди, как для отжиманий — видно плечи, локти, запястья и лицо. Обопрись на предплечья, ноги вытянуты, стопы должны быть видны на заднем плане.</p>
+            <p><strong>Планка:</strong> телефон сбоку, видно плечо, бедро, колено.</p>
             <p><strong>Приседания и стульчик:</strong> встань лицом к камере на расстоянии, чтобы было видно всё тело от плеч до стоп.</p>
             <button class="btn btn-primary" onclick="document.getElementById('overlay-instructions').classList.remove('active')">Понятно</button>
         </div>
@@ -578,6 +593,7 @@
         </div>
     </div>
 
+    <!-- ===== СЮЖЕТНАЯ СЦЕНА ===== -->
     <div id="story-overlay" class="story-overlay" onclick="handleStoryTap()">
         <button class="story-skip-btn" onclick="event.stopPropagation(); skipStoryScene();">Пропустить сцену</button>
         <div class="story-scroll" id="story-scroll"></div>
@@ -607,6 +623,7 @@
     <script>
         const API_BASE = "https://pushup-bot-server.onrender.com";
 
+        // ===== АВТОРИЗАЦИЯ ЧЕРЕЗ TELEGRAM initData =====
         function getInitData() {
             return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) || '';
         }
@@ -620,6 +637,7 @@
             return `${params.toString()}${extraStr}`;
         }
 
+        // ===== ТЕМА =====
         let currentTheme = localStorage.getItem('theme') || 'dark';
         function applyTheme() {
             document.documentElement.setAttribute('data-theme', currentTheme);
@@ -641,6 +659,7 @@
             }
         })();
 
+        // ===== СЮЖЕТ ВКЛ/ВЫКЛ =====
         let storyEnabled = localStorage.getItem('storyEnabled') !== 'false';
         function toggleStory() {
             storyEnabled = document.getElementById('story-checkbox').checked;
@@ -723,6 +742,7 @@
             requestAnimationFrame(() => enforceScreenHeight(name));
         }
 
+        // ===== ГЛАВЫ / ЗОНЫ =====
         const CHAPTERS = [
             { chapter: 1, title: "Крылья во тьме", start: 1, end: 2 },
             { chapter: 2, title: "Кости не забывают", start: 3, end: 4 },
@@ -766,8 +786,9 @@
         function getZoneForDungeon(n) { return ZONES.find(z => z.n === n) || ZONES[ZONES.length - 1]; }
         function monsterVisualHtml(zone) { return zone.image ? `<img src="${zone.image}" alt="${zone.name}">` : '👹'; }
 
+        // ===== ПОДСКАЗКИ-РАЗМИНКА =====
         const PUSHUP_TIPS = ["Разомни запястья и плечи 15–20 секунд.", "Держи спину прямой на всём протяжении.", "Дыши равномерно: вдох вниз, выдох вверх."];
-        const PLANK_TIPS = ["Встань лицом к камере на предплечья, тело — одна прямая линия.", "Напряги мышцы кора и ягодиц, не провисай в пояснице.", "Дыши спокойно, не задерживай дыхание.", "Ноги вытянуты, вес на носках — колени не касаются пола."];
+        const PLANK_TIPS = ["Тело — одна прямая линия от плеч до пяток.", "Напряги мышцы кора и ягодиц.", "Дыши спокойно, не задерживай дыхание."];
         const SQUAT_TIPS = ["Держи спину прямой, колени не выходят за носки.", "Разомни колени и тазобедренные суставы.", "Опускайся до параллели бедра с полом."];
         const WALLSIT_TIPS = ["Спина прямая, угол в колене около 90°.", "Разомни ноги перед стартом.", "Держи вес равномерно на обеих ногах."];
         const TIPS_BY_ACTIVITY = { pushup: PUSHUP_TIPS, plank: PLANK_TIPS, squat: SQUAT_TIPS, wallsit: WALLSIT_TIPS };
@@ -793,6 +814,7 @@
         }
         function beginFreeTraining(mode) { showWarmupTip(mode, () => startActivity(mode, false)); }
 
+        // ===== ЗВУК / ВИБРАЦИЯ / НАСТРОЙКИ =====
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
         let vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
         let cameraTipEnabled = localStorage.getItem('cameraTipEnabled') === 'true';
@@ -898,6 +920,7 @@
             } catch(e) {}
         }
 
+        // ===== РЕГИСТРАЦИЯ =====
         async function checkUserStatus() {
             try {
                 const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
@@ -920,6 +943,7 @@
             } catch(e) { errorEl.innerText = "Ошибка соединения. Попробуйте ещё раз."; }
         }
 
+        // ===== ПРЕДЗАГРУЗКА ВСЕХ ДАННЫХ =====
         const dataCache = { profile: null, dungeonInfo: {}, dungeonDetail: { pushup: {}, plank: {}, squat: {}, wallsit: {} }, leaderboard: {}, arenaPreview: {} };
 
         function hideBootOverlay() {
@@ -993,6 +1017,7 @@
             if (keys.includes('leaderboard')) dataCache.leaderboard = {};
         }
 
+        // ===== СТАМИНА =====
         function renderStaminaDots(containerId, remaining, max) {
             const el = document.getElementById(containerId);
             if (!el) return;
@@ -1013,6 +1038,7 @@
             } catch(e) {}
         }
 
+        // ===== ПРЕМИУМ =====
         function renderPremiumCard(containerId) {
             const el = document.getElementById(containerId);
             if (!el || !profileDataCache) return;
@@ -1062,6 +1088,7 @@
             } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
 
+        // ===== МАГАЗИН ЗЕЛИЙ =====
         function renderWalletUI() {
             if (!profileDataCache || !profileDataCache.wallet) return;
             const w = profileDataCache.wallet;
@@ -1110,6 +1137,7 @@
         function buyPotionFromOverlay() { buyPotion(true); }
         function buyPotionFromProfile() { buyPotion(false); }
 
+        // ===== ЕЖЕДНЕВНЫЕ ЗАДАНИЯ =====
         async function loadDailyQuests() {
             const container = document.getElementById('daily-quests-list');
             container.innerHTML = '<div class="loading">Загрузка...</div>';
@@ -1159,6 +1187,7 @@
             } catch(e) { alert("Ошибка соединения. Попробуйте позже."); }
         }
 
+        // ===== ПРОФИЛЬ =====
         let profileDataCache = null;
         let activeProfileTab = 'pushup';
         const LEVELS_JS = [
@@ -1223,6 +1252,7 @@
             renderProfileValues();
         }
 
+        // ===== ТАБЛИЦА ЛИДЕРОВ =====
         let lbMode = 'normal';
         let lbActivity = 'pushup', lbPeriod = 'today', leaderboardRequestId = 0;
 
@@ -1282,6 +1312,7 @@
             });
         }
 
+        // ===== ДОСТИЖЕНИЯ =====
         async function loadAchievements() {
             const list = document.getElementById('achievements-list');
             const data = dataCache.profile;
@@ -1315,6 +1346,7 @@
             list.appendChild(staticRow);
         }
 
+        // ===== АККОРДЕОН ГЛАВ (ПОХОД) =====
         let currentAdventureTab = 'pushup';
         let currentAdventureMode = 'campaign';
         let currentArenaTab = 'pushup';
@@ -1459,52 +1491,7 @@
             document.getElementById('overlay-zone-locked').classList.add('active');
         }
 
-        // ===== ЛОКАЛЬНАЯ ГЕНЕРАЦИЯ ВОЛН АРЕНЫ (зеркало серверной формулы) =====
-        const PUSHUP_ZONES_HP = [
-            [3,15],[1,25],[4,30],[1,40],[5,45],[1,55],[6,60],[1,70],
-            [7,85],[1,100],[8,110],[1,125],[9,140],[1,160],[10,175],[1,200],
-            [11,215],[1,245],[12,260],[1,300]
-        ];
-        const PLANK_ZONES_HP = [
-            [3,12],[1,20],[4,24],[1,32],[5,36],[1,44],[6,48],[1,56],
-            [7,64],[1,76],[8,84],[1,96],[9,108],[1,124],[10,140],[1,160],
-            [11,172],[1,196],[12,208],[1,240]
-        ];
-        const SQUAT_ZONES_HP = PUSHUP_ZONES_HP.map(([c,t]) => [c, t*2]);
-        const WALLSIT_ZONES_HP = PLANK_ZONES_HP;
-        const ZONE_TABLES_HP = { pushup: PUSHUP_ZONES_HP, plank: PLANK_ZONES_HP, squat: SQUAT_ZONES_HP, wallsit: WALLSIT_ZONES_HP };
-
-        const ARENA_WAVES_PER_CHAPTER = 5, ARENA_CYCLE_LEN = 50;
-
-        function generateArenaWaveClient(activity, waveN) {
-            waveN = Math.max(1, waveN);
-            const zones = ZONE_TABLES_HP[activity];
-            const cycleIndex = Math.floor((waveN - 1) / ARENA_CYCLE_LEN);
-            const posInCycle = (waveN - 1) % ARENA_CYCLE_LEN;
-            const chapter = Math.floor(posInCycle / ARENA_WAVES_PER_CHAPTER) + 1;
-            const localWave = (posInCycle % ARENA_WAVES_PER_CHAPTER) + 1;
-            const scale = 1 + 0.5 * cycleIndex;
-
-            const nNormal = 2 * chapter - 1;
-            const nBoss = 2 * chapter;
-            const [normalCount, normalTotal] = zones[nNormal - 1];
-            const [, bossTotal] = zones[nBoss - 1];
-
-            const normalHpEach = Math.max(1, Math.round((normalTotal / normalCount) * scale));
-            const bossHpEach = Math.max(1, Math.round(bossTotal * scale));
-
-            const countsByLocalWave = { 1: 3, 2: 5, 3: 7, 4: 10 };
-            let enemies = [];
-            if (countsByLocalWave[localWave]) {
-                for (let i = 0; i < countsByLocalWave[localWave]; i++) enemies.push({ hp: normalHpEach, zone: nNormal, isBoss: false });
-            } else {
-                for (let i = 0; i < 10; i++) enemies.push({ hp: normalHpEach, zone: nNormal, isBoss: false });
-                for (let i = 0; i < 2; i++) enemies.push({ hp: bossHpEach, zone: nBoss, isBoss: true });
-            }
-            const xpReward = enemies.reduce((s, e) => s + e.hp, 0);
-            return { wave: waveN, chapter, local_wave: localWave, cycle: cycleIndex + 1, enemies, xp_reward: xpReward };
-        }
-
+        // ===== АРЕНА: интерфейс выбора =====
         function switchArenaTab(tab) {
             currentArenaTab = tab;
             ['pushup','plank','squat','wallsit'].forEach(t => document.getElementById('arena-tab-'+t).classList.toggle('active', t===tab));
@@ -1542,7 +1529,6 @@
         }
 
         let arenaStartTokens = {};
-        let arenaNextWaveCache = null;
 
         async function doStartArena(activity, attempt = 1) {
             document.getElementById('overlay-dungeon-loading').classList.add('active');
@@ -1569,8 +1555,6 @@
                 combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
                 inDungeonMode = true; dungeonJustWon = false; dungeonPaused = false;
 
-                arenaNextWaveCache = generateArenaWaveClient(activity, arenaWaveNumber + 1);
-
                 document.getElementById('battle-header').style.display = 'block';
                 updateMonsterPortrait(); updateCombatHUD();
                 document.getElementById('overlay-dungeon-loading').classList.remove('active');
@@ -1582,23 +1566,14 @@
             }
         }
 
-        function finishArenaWave() {
+        async function finishArenaWave() {
             dungeonPaused = true; dungeonJustWon = true; playVictorySound(); vibrate('success');
+            showSaveToast(`Волна ${arenaWaveNumber} пройдена! +${combatXpEstimate} XP`, true);
+
             const completedWave = arenaWaveNumber;
             const activity = combatActivityType;
-            showSaveToast(`Волна ${completedWave} пройдена! +${combatXpEstimate} XP`, true);
-
-            const nextWaveData = arenaNextWaveCache || generateArenaWaveClient(activity, completedWave + 1);
-            arenaWaveNumber = nextWaveData.wave;
-            combatXpEstimate = nextWaveData.xp_reward;
-            combatEnemies = nextWaveData.enemies.map(e => ({ hp: e.hp, zone: e.zone, isBoss: e.is_boss }));
-            combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
-            updateMonsterPortrait(); updateCombatHUD();
-            dungeonJustWon = false;
-
-            arenaNextWaveCache = generateArenaWaveClient(activity, arenaWaveNumber + 1);
-
             const isRepBased = (activity === 'pushup' || activity === 'squat');
+
             if (isRepBased && !assaultModeEnabled) {
                 const overlay = document.getElementById('overlay-enemy-pause');
                 const titleEl = overlay.querySelector('h3');
@@ -1606,14 +1581,8 @@
                 titleEl.innerText = 'Волна пройдена! 🎉';
                 startEnemyPause();
                 setTimeout(() => { titleEl.innerText = originalTitle; }, 5200);
-            } else {
-                dungeonPaused = false;
             }
 
-            persistArenaWaveInBackground(activity, completedWave);
-        }
-
-        async function persistArenaWaveInBackground(activity, completedWave) {
             let attempt = 0;
             while (true) {
                 attempt++;
@@ -1621,14 +1590,29 @@
                     const res = await fetch(`${API_BASE}/api/arena_wave_complete`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(withAuth({activity, wave: completedWave}))});
                     if (!res.ok) throw new Error('bad status');
                     invalidateCache('profile');
-                    return;
+                    break;
                 } catch(e) {
-                    if (attempt >= 5) return;
+                    if (attempt >= 5) break;
                     await new Promise(r => setTimeout(r, 1000));
                 }
             }
+
+            try {
+                const nextWave = await fetchJsonWithRetry(`${API_BASE}/api/arena_info?${authQueryString('activity=' + activity)}`, {cache:'no-store'}, {timeoutMs:15000, retries:2});
+                arenaWaveNumber = nextWave.wave;
+                combatXpEstimate = nextWave.xp_reward;
+                combatEnemies = nextWave.enemies.map(e => ({ hp: e.hp, zone: e.zone, isBoss: e.is_boss }));
+                combatEnemyIndex = 0; combatEnemyMaxHP = combatEnemies[0].hp; combatEnemyRemainingHP = combatEnemies[0].hp;
+                updateMonsterPortrait(); updateCombatHUD();
+                dungeonJustWon = false;
+            } catch(e) {
+                showSaveToast('Не удалось загрузить следующую волну — нажми «Побег» и попробуй снова');
+            }
+
+            dungeonPaused = false;
         }
 
+        // ===== ДАННЫЕ СЮЖЕТА =====
         function A(text) { return { speaker: 'author', text }; }
         function E(text) { return { speaker: 'ally', name: 'Эйра', avatar: 'Eira.png', text }; }
         function S(text) { return { speaker: 'player', name: 'Странник', text }; }
@@ -1639,28 +1623,436 @@
         function MO(text) { return { speaker: 'boss', name: 'Морвен', avatar: 'Main_Boss_Final.png', text }; }
 
         const STORY_SCENES = {
-            1: { pre: [A("Вход в пещеру был открыт совсем недавно. На камнях ещё видны остатки разрушенной печати. Из глубины доносится шорох сотен крыльев."), E("Здесь что-то не так. Обычные животные не пытаются прорваться сквозь древние печати."), A("Из темноты раздаётся пронзительный визг."), E("Приготовься. Они уже заметили нас."), M("Летучая мышь", "Rat.png", "КРРР-ААА!"), S("Тогда пусть летят.")], post: [A("Последняя тварь падает на каменный пол. Но впереди слышится другой звук. Медленные шаги. Кто-то гораздо крупнее приближается из глубины пещеры.")] },
-            2: { pre: [A("На стенах больше нет следов когтей. Вместо них — древние символы и потемневшие металлические цепи."), E("Эти существа кому-то служили."), M("Неизвестный голос", "Rat_Boss.png", "Не служили. — Повиновались.", "gold"), A("Из темноты выходит высокий вампир."), M("Вампир", "Rat_Boss.png", "Странник… Я чувствую твою кровь отсюда.", "gold"), E("Он охраняет проход."), M("Вампир", "Rat_Boss.png", "Нет. — Я охраняю вас от того, что находится дальше.", "gold"), S("Тогда отойди."), M("Вампир", "Rat_Boss.png", "Попробуй заставить меня.", "gold")], post: [M("Вампир", "Rat_Boss.png", "Ты даже не понимаешь… — Он хотел, чтобы ты победил.", "gold"), A("Вампир рассыпается в чёрный пепел."), E("Кто — «он»?"), A("Ответа нет."), A("Первая печать разрушена. Но теперь ясно главное. Кто-то ожидал появления Странника.")] },
-            3: { pre: [A("За пещерами начинается древний город. Его жители умерли сотни лет назад. По крайней мере, должны были. Из тумана появляется первый вооружённый скелет. За ним второй. Потом ещё десятки."), E("Они не бродят бесцельно. Посмотри. Это армия."), S("Тогда найдём её командира.")], post: [A("Последний скелет рассыпается. Но никто не пытался убежать."), E("Даже мёртвые обычно боятся уничтожения. — Кто-то заставляет их сражаться."), A("Вдалеке слышится тяжёлый удар металла.")] },
-            4: { pre: [A("В центре огромного зала стоит скелет в древних доспехах. Вокруг него — сотни неподвижных воинов."), M("Командир скелетов", "Skelet_Boss.png", "Живой. — Ты далеко зашёл.", "gold"), S("Освободи их."), M("Командир скелетов", "Skelet_Boss.png", "Они уже были мертвы. — Я дал им цель.", "gold"), E("Кто поднял тебя?"), A("Командир молчит. Затем медленно вытаскивает меч."), M("Командир скелетов", "Skelet_Boss.png", "Победи меня. — И, возможно, узнаешь.", "gold")], post: [M("Командир скелетов", "Skelet_Boss.png", "Сила есть… — Посмотрим, хватит ли её, когда враг окажется сильнее тебя.", "gold"), A("Его тело рассыпается. На полу остаётся металлический знак. Тот же символ, который был в пещере вампира."), E("Один хозяин. — Разные армии."), A("Теперь сомнений нет. Кто-то намеренно собирает существ, которых обычно невозможно заставить сражаться вместе. Но зачем?")] },
-            5: { pre: [A("Дорога приводит в горы. Здесь исчезли караваны. На дороге лежат разбитые телеги и огромные следы."), A("Из-за скалы выходит огромный тролль. Он тащит за собой цепь. На цепи висит тот же символ."), E("Стой. — Посмотри на его шею."), S("Он прикован."), A("Тролль замечает героя. Его глаза вспыхивают красным."), M("Тролль", "Troll.png", "УБИТЬ!")], post: [A("Тролль падает. Красный свет в его глазах исчезает. На мгновение чудовище выглядит почти спокойным."), M("Тролль", "Troll.png", "Брат… — Беги…"), A("Он умирает."), E("Брат?"), A("Земля начинает дрожать.")] },
-            6: { pre: [A("Огромные ворота в скале разлетаются. Из крепости выходит двухголовый тролль. Одна голова покрыта шрамами. Вторая украшена костями и металлическими кольцами."), M("Первая голова", "Troll_Boss.png", "Ты убил его.", "gold"), M("Вторая голова", "Troll_Boss.png", "Он был слаб.", "gold"), M("Первая голова", "Troll_Boss.png", "Заткнись.", "gold"), M("Вторая голова", "Troll_Boss.png", "Сам заткнись.", "gold"), A("Обе головы смотрят на Странника."), M("Двухголовый тролль", "Troll_Boss.png", "А ТЕПЕРЬ УБЬЁМ ТЕБЯ!", "gold"), E("С этим переговоры будут короткими.")], post: [M("Первая голова", "Troll_Boss.png", "Неплохо… маленький человек.", "gold"), A("Вторая неожиданно смотрит куда-то за спину героя."), M("Вторая голова", "Troll_Boss.png", "Он смотрит.", "gold"), E("Кто?"), M("Вторая голова", "Troll_Boss.png", "Хозяин.", "gold"), A("Глаза тролля гаснут. Третий командир повержен. Но впервые появляется ощущение, что победы Странника — часть чьего-то плана. Будто враги не пытаются остановить его. Будто они проверяют его.")] },
-            7: { pre: [A("Здесь нет птиц. Нет насекомых. Нет даже ветра. Между деревьями движутся бледные силуэты."), E("Не слушай их."), S("Почему?"), E("Потому что они говорят голосами тех, кого ты хочешь услышать."), A("Из тумана появляется призрак."), M("Призрак", "Ghost.png", "Странник… — Вернись."), A("За ним появляются другие."), M("Призраки", "Ghost.png", "Вернись… — Пока ещё можешь.")], post: [A("Призраки исчезают. На несколько секунд лес становится совершенно тихим. А затем сотни голосов одновременно произносят:"), M("Голоса леса", "Ghost.png", "МЫ ТЕБЯ ВИДИМ.")] },
-            8: { pre: [A("Из тумана появляются десятки призраков. Они больше не пытаются выглядеть людьми. Их тела вытягиваются в поток бледного дыма и летят прямо к Страннику."), E("Это не один противник. — Это сотни душ, связанные вместе."), M("Рой", "Ghost_Boss.png", "ОСТАНЬСЯ С НАМИ. — ЗАБУДЬ БОЛЬ. — ЗАБУДЬ ПУТЬ.", "gold"), S("Нет.")], post: [A("Вой постепенно стихает. Из исчезающего тумана появляется один призрак. Он выглядит иначе. Спокойнее."), M("Призрак", "Ghost_Boss.png", "Спасибо.", "gold"), E("Кто сделал это с вами?"), A("Призрак поднимает руку и показывает вперёд."), M("Призрак", "Ghost_Boss.png", "Тот… — кого ты ищешь.", "gold"), A("Призрак исчезает."), A("Где-то далеко от Странника. В огромном тёмном зале загорается огонь. Перед человеком на троне лежат четыре разбитые печати."), U("Летучие мыши. — Мёртвые. — Тролли. — Души."), A("Он медленно поднимается."), U("И всё ещё жив."), A("Рядом появляется неизвестное существо."), V("Приказать уничтожить его?"), A("Пауза."), U("Нет. — Откройте следующую дверь.")] },
-            9: { pre: [A("С каждым шагом воздух становится тяжелее. Вода вокруг дороги начинает двигаться, хотя ветра нет. Из болота поднимается нечто огромное."), E("Оно не родилось таким. — Посмотри на его тело. В нём слишком много чужого."), A("Тварь поворачивает голову. В её глазах вспыхивает зелёный свет."), M("Болотная тварь", "Swamp.png", "ЖИВОЕ… — ОТДАЙ…", "green"), S("Что именно?"), M("Болотная тварь", "Swamp.png", "ВСЁ.", "green")], post: [A("Чудовище падает в воду. Его тело начинает распадаться на грязь, корни и кости. Эйра замечает металлический обруч среди останков."), E("Его тоже подчинили."), A("Из глубины болот раздаётся протяжный гул. Будто кто-то только что узнал о смерти своего слуги.")] },
-            10: { pre: [A("За болотами находится разрушенный дворец. Половина его стен давно ушла под воду. Но внутри всё ещё горят зелёные огни. В огромном зале на троне сидит Король болот."), M("Король болот", "Swamp_Boss.png", "Ещё один живой пришёл в моё царство.", "gold"), E("Мы не хотим твоего царства."), M("Король болот", "Swamp_Boss.png", "Ложь. — Живые всегда хотят чужого. — Землю. — Власть. — Бессмертие.", "gold"), S("Мне нужен проход."), M("Король болот", "Swamp_Boss.png", "Тогда возьми его. — Если сможешь.", "gold")], post: [M("Король болот", "Swamp_Boss.png", "Значит… правда.", "gold"), E("Что правда?"), M("Король болот", "Swamp_Boss.png", "Ты именно тот, кого он ждал.", "gold"), E("Кто?"), M("Король болот", "Swamp_Boss.png", "Его посланник уже здесь.", "gold"), A("Король рассыпается в болотную жижу. В конце зала стоит высокий силуэт. Светлые волосы. Тёмная кожа. Острые уши. Чёрные доспехи. Он медленно хлопает в ладоши."), V("Наконец-то. — Я уже начал думать, что слухи о тебе преувеличены."), E("Кто ты?"), V("Я разговариваю со Странником."), V("Можешь называть меня Варен."), S("Ты служишь ему?"), V("Служу? — Нет. — Я нахожусь рядом с тем, кто однажды будет править всем этим миром."), E("Тогда передай своему хозяину, что мы идём за ним."), V("Он знает. — В этом и смысл."), A("Варен исчезает в клубах чёрного дыма."), A("Теперь враг впервые обрёл лицо. Но вопросов стало только больше. Почему тот, кто управляет армиями чудовищ, не пытается остановить Странника? Почему его слуга позволяет ему идти дальше? И почему каждый поверженный командир говорит одно и то же: ТЕБЯ ЖДАЛИ.")] },
-            11: { pre: [A("Ворота открыты. Внутри десятки рыцарей стоят неподвижно. Их доспехи покрыты ржавчиной. Но когда Странник делает первый шаг, все шлемы одновременно поворачиваются в его сторону."), E("Они были защитниками этих земель."), M("Голос из строя", "Fallen_knight.png", "Были."), A("Первый рыцарь вытаскивает меч."), M("Павший рыцарь", "Fallen_knight.png", "Теперь мы защищаем нового господина."), S("Тогда вы выбрали не ту сторону."), M("Павший рыцарь", "Fallen_knight.png", "Мы не выбирали.")], post: [A("Последний рыцарь падает. Под его шлемом нет лица. Только чёрный дым."), E("Они уже давно мертвы. — Кто-то просто заставляет доспехи продолжать сражаться."), A("На стене появляется надпись, словно кто-то только что выжег её огнём: ЕЩЁ СИЛЬНЕЕ.")] },
-            12: { pre: [A("В центре крепости находится огромный круглый зал. Там ждёт последний защитник крепости — Чёрный рыцарь. Его доспехи выглядят новыми."), M("Чёрный рыцарь", "Black_knight.png", "Странник. — Я ждал тебя.", "gold"), E("Разумеется. — Теперь нас везде ждут."), M("Чёрный рыцарь", "Black_knight.png", "Не меня недооценивай.", "gold"), A("Он поднимает меч."), M("Чёрный рыцарь", "Black_knight.png", "Остальные были мертвы. — Я служу добровольно.", "gold"), S("Почему?"), M("Чёрный рыцарь", "Black_knight.png", "Потому что видел, что приближается.", "gold"), E("И что же?"), M("Чёрный рыцарь", "Black_knight.png", "Конец.", "gold")], post: [A("Рыцарь снимает шлем. Под ним оказывается обычный человек. Старый. Уставший."), M("Чёрный рыцарь", "Black_knight.png", "Он не собирает армию ради войны.", "gold"), E("Тогда ради чего?"), M("Чёрный рыцарь", "Black_knight.png", "Ради того, кто сможет открыть дверь.", "gold"), S("Какую дверь?"), M("Чёрный рыцарь", "Black_knight.png", "Ту, к которой ты сейчас идёшь.", "gold"), A("Он умирает."), E("Мне это не нравится."), S("Что именно?"), E("Мы думали, что разрушаем его армию. — А что, если именно этого он и хочет?")] },
-            13: { pre: [A("Земля раскалывается прямо под ногами. Из трещин поднимаются существа, тела которых словно состоят из камня и огня."), E("Это уже не создания нашего мира."), V("Наконец-то догадалась."), A("Он стоит на высокой скале."), V("Дальше начинаются настоящие земли моего господина."), S("Спускайся."), V("Зачем? — Пока ты ещё развлекаешь меня."), A("Он исчезает. Из разлома поднимается чудовище.")], post: [A("После смерти твари разлом не закрывается. Наоборот. Становится шире."), E("Странник… — Каждый раз, когда мы побеждаем, происходит одно и то же."), S("Печати становятся слабее."), E("Да.")] },
-            14: { pre: [A("Перед огромными воротами стоит демон. На его теле выгравированы несколько символов печатей."), M("Демон", "Flame_Master.png", "Наконец. — Последняя живая печать.", "gold"), E("Что он сказал?"), M("Демон", "Flame_Master.png", "Ты всё ещё не понимаешь, человек? — ПЕЧАТЬ — ЭТО ТЫ.", "gold"), A("Тишина."), S("Тогда попробуй сломать меня."), M("Демон", "Flame_Master.png", "С удовольствием.", "gold")], post: [A("Демон падает. Из его груди выходит поток энергии и входит в тело Странника. На мгновение весь экран темнеет. Странник видит огромную дверь. За ней что-то движется."), M("Голос", "Main_Boss.png", "Ещё немного.", "gold"), A("Видение исчезает."), E("Что ты видел?"), S("Дверь.")] },
-            15: { pre: [A("Теперь путь невозможно повернуть назад. Странник и Эйра входят в огромный разлом. Здесь нет привычного неба. Нет земли. Лишь бесконечные разрушенные мосты и острова камня. Здесь появляются знакомые враги, но изменённые."), E("Он собирал их не просто так."), S("Он изучал их."), E("И улучшал."), V("Наконец-то ты начинаешь понимать. — Всё, что ты победил… — стало материалом для следующего поколения."), S("Значит, теперь твоя очередь."), V("Не сегодня.")], post: [A("Вдали появляется огромная цитадель. Она висит прямо над бездной."), E("Вот куда нас вели."), A("Где-то внутри цитадели открываются огромные глаза.")] },
-            16: { pre: [A("Перед мостом стоит гигантское существо. На его теле находятся фрагменты всех предыдущих врагов: кости, крылья, шкура тролля, призрачный дым, демонический огонь."), E("Он собрал его из всего, что мы победили."), M("Страж", "Abyss_Guardian.png", "СТРАННИК. — ПОСЛЕДНЯЯ ПРОВЕРКА.", "gold"), S("Я уже устал от ваших проверок."), M("Страж", "Abyss_Guardian.png", "ТОГДА УМРИ.", "gold")], post: [A("Страж падает. Мост к цитадели открывается. Но одновременно раздаётся голос Варена."), V("Прекрасно. — Ты прошёл дальше, чем любой до тебя."), E("До него были другие?"), V("Конечно."), S("Где они?"), V("Ты только что сражался с ними."), A("Пауза."), E("Страж…"), V("Именно.")] },
-            17: { pre: [A("Странник входит в крепость неизвестного властителя. Вместо армии здесь находятся статуи — каждая изображает одного из предыдущих Странников."), E("Сколько их было?"), V("Много. — Некоторые были сильнее тебя. — Некоторые умнее. — Один почти добрался до трона."), S("А ты убил его?"), V("Конечно. — Это было великолепно."), E("Ты больной."), V("Нет. — Я просто люблю честные вещи. — Страх. — Боль. — Победу. — И смерть."), S("Тогда заканчиваем."), V("Пока нет."), A("Он выпускает элитных стражей.")], post: [A("Странник подходит к Варену. Но тот не убегает."), V("Теперь да."), A("Он вытаскивает два клинка.")] },
-            18: { pre: [V("Знаешь, что мне в тебе нравится?"), S("Ничего не приходит в голову."), V("Ты всё ещё думаешь, что выбираешь путь сам."), A("Он медленно обходит героя."), V("Летучие мыши. — Мертвецы. — Тролли. — Призраки. — Болота. — Крепость. — Бездна."), V("Каждый твой шаг был предусмотрен."), E("Тогда зачем мы здесь?"), V("Чтобы открыть дверь."), S("Как?"), V("Победив меня."), V("Так что постарайся.")], post: [A("Варен лежит на полу. Один из его клинков сломан. Но он смеётся."), S("Что смешного?"), V("Ты."), A("Он кашляет кровью."), V("Ты всё ещё не понял."), A("За его спиной начинает открываться огромная дверь."), E("Нет…"), V("Именно. — Моя смерть была последним ключом."), S("Ты знал?"), V("Я ждал этого дня много лет."), A("Дверь полностью открывается. Из темноты доносится голос."), U("Войди."), A("Варен закрывает глаза."), V("Наконец-то…")] },
-            19: { pre: [A("За дверью находится огромный пустой зал. В конце стоит трон. На нём сидит тот самый силуэт, которого Странник видел в видениях. Когда Странник делает первый шаг, все двери позади закрываются. Эйра пытается пройти следом. Но между ними возникает стена чёрного огня."), E("Странник!"), U("Она больше не нужна."), S("А я?"), A("Фигура поднимается с трона."), U("Ты был нужен с самого начала."), A("Он выходит из тени."), MR("Меня называли многими именами. — Королём. — Проклятым. — Разрушителем."), A("Он подходит ближе."), MR("Но ты можешь называть меня Морвен."), S("Зачем ты привёл меня сюда?"), A("Морвен раскрывает ладонь. В ней появляется изображение мира. По нему проходят трещины."), MR("Ты думаешь, печати удерживали меня внутри?"), S("А разве нет?"), MR("Нет. — Они удерживали это."), A("За троном появляется огромная дверь. Гораздо больше предыдущей. Из-за неё доносится тяжёлый удар."), MR("Ты разрушал их одну за другой."), S("Потому что ты заставлял своих существ нападать."), MR("Именно. — Мне был нужен тот, кто достаточно силён, чтобы пройти весь путь. — И достаточно упрям, чтобы никогда не остановиться."), E("Не слушай его!"), MR("Почему? — Разве я хоть раз солгал?"), A("Он смотрит на Странника."), MR("Я никогда не обещал остановить тебя. — Никогда не скрывал дорогу. — Никогда не мешал тебе становиться сильнее."), MR("Потому что мне нужен был не слуга."), A("Пауза."), MR("Мне нужен был ПРЕЕМНИК.")], post: [A("Странник остаётся стоять. Морвен впервые выглядит впечатлённым."), MR("Вот теперь я уверен."), S("В чём?"), MR("Что ты способен пережить мою силу."), A("Он протягивает руку."), MR("Встань рядом со мной. — И мир больше никогда не сможет заставить тебя склониться."), E("Странник!")] },
-            20: { pre: [A("Странник смотрит на протянутую руку. А затем сжимает кулак."), S("Я не прошёл весь этот путь, чтобы кому-то служить."), A("Морвен медленно опускает руку."), MO("Хорошо."), A("На его лице появляется улыбка."), MO("Именно этот ответ я и надеялся услышать."), A("Тронный зал начинает разрушаться."), MO("Тогда докажи, что достоин собственной воли.")], post: [A("Морвен лежит у трона. Его силуэт начинает распадаться. Но он не выглядит разгневанным."), MO("Значит… — всё-таки ты."), S("Закрой дверь."), MO("Я уже не могу."), A("Странник смотрит на огромную печать за троном. Она расколота."), MO("Именно поэтому мне был нужен ты."), E("Что находится там?"), A("Морвен смотрит на дверь. Впервые в его голосе слышен страх."), MO("То, чего боялся даже я."), A("Тишина."), S("Как её закрыть?"), MO("Никак."), A("Пауза."), MO("Но теперь…"), A("Он смотрит на Странника."), MO("есть тот, кто сможет удержать её."), A("Морвен исчезает."), A("Странник и Эйра выходят из разрушающейся цитадели. Позади Бездна начинает закрываться."), E("Всё закончилось?"), A("Странник долго смотрит на затихающий разлом."), S("Нет."), E("Я тоже так думаю."), A("Проходит несколько дней. По всему миру исчезает красное свечение. Мёртвые снова становятся мёртвыми. Призраки покидают леса. Тролли уходят обратно в горы. Но далеко на севере происходит другое. В древней горе появляется трещина. Из неё выходит рука."), A("МОРВЕН БЫЛ НЕ ПРИЧИНОЙ ПРОИСХОДЯЩЕГО. ОН БЫЛ ПЕРВОЙ ЛИНИЕЙ ОБОРОНЫ."), E("Ты ведь понимаешь, что теперь можешь уйти?"), S("Могу."), E("И?"), A("Странник смотрит на дорогу впереди."), S("Показывай путь."), A("КОНЕЦ ПЕРВОЙ КАМПАНИИ")] }
+            1: {
+                pre: [
+                    A("Вход в пещеру был открыт совсем недавно. На камнях ещё видны остатки разрушенной печати. Из глубины доносится шорох сотен крыльев."),
+                    E("Здесь что-то не так. Обычные животные не пытаются прорваться сквозь древние печати."),
+                    A("Из темноты раздаётся пронзительный визг."),
+                    E("Приготовься. Они уже заметили нас."),
+                    M("Летучая мышь", "Rat.png", "КРРР-ААА!"),
+                    S("Тогда пусть летят.")
+                ],
+                post: [A("Последняя тварь падает на каменный пол. Но впереди слышится другой звук. Медленные шаги. Кто-то гораздо крупнее приближается из глубины пещеры.")]
+            },
+            2: {
+                pre: [
+                    A("На стенах больше нет следов когтей. Вместо них — древние символы и потемневшие металлические цепи."),
+                    E("Эти существа кому-то служили."),
+                    M("Неизвестный голос", "Rat_Boss.png", "Не служили. — Повиновались.", "gold"),
+                    A("Из темноты выходит высокий вампир."),
+                    M("Вампир", "Rat_Boss.png", "Странник… Я чувствую твою кровь отсюда.", "gold"),
+                    E("Он охраняет проход."),
+                    M("Вампир", "Rat_Boss.png", "Нет. — Я охраняю вас от того, что находится дальше.", "gold"),
+                    S("Тогда отойди."),
+                    M("Вампир", "Rat_Boss.png", "Попробуй заставить меня.", "gold")
+                ],
+                post: [
+                    M("Вампир", "Rat_Boss.png", "Ты даже не понимаешь… — Он хотел, чтобы ты победил.", "gold"),
+                    A("Вампир рассыпается в чёрный пепел."),
+                    E("Кто — «он»?"),
+                    A("Ответа нет."),
+                    A("Первая печать разрушена. Но теперь ясно главное. Кто-то ожидал появления Странника.")
+                ]
+            },
+            3: {
+                pre: [
+                    A("За пещерами начинается древний город. Его жители умерли сотни лет назад. По крайней мере, должны были. Из тумана появляется первый вооружённый скелет. За ним второй. Потом ещё десятки."),
+                    E("Они не бродят бесцельно. Посмотри. Это армия."),
+                    S("Тогда найдём её командира.")
+                ],
+                post: [
+                    A("Последний скелет рассыпается. Но никто не пытался убежать."),
+                    E("Даже мёртвые обычно боятся уничтожения. — Кто-то заставляет их сражаться."),
+                    A("Вдалеке слышится тяжёлый удар металла.")
+                ]
+            },
+            4: {
+                pre: [
+                    A("В центре огромного зала стоит скелет в древних доспехах. Вокруг него — сотни неподвижных воинов."),
+                    M("Командир скелетов", "Skelet_Boss.png", "Живой. — Ты далеко зашёл.", "gold"),
+                    S("Освободи их."),
+                    M("Командир скелетов", "Skelet_Boss.png", "Они уже были мертвы. — Я дал им цель.", "gold"),
+                    E("Кто поднял тебя?"),
+                    A("Командир молчит. Затем медленно вытаскивает меч."),
+                    M("Командир скелетов", "Skelet_Boss.png", "Победи меня. — И, возможно, узнаешь.", "gold")
+                ],
+                post: [
+                    M("Командир скелетов", "Skelet_Boss.png", "Сила есть… — Посмотрим, хватит ли её, когда враг окажется сильнее тебя.", "gold"),
+                    A("Его тело рассыпается. На полу остаётся металлический знак. Тот же символ, который был в пещере вампира."),
+                    E("Один хозяин. — Разные армии."),
+                    A("Теперь сомнений нет. Кто-то намеренно собирает существ, которых обычно невозможно заставить сражаться вместе. Но зачем?")
+                ]
+            },
+            5: {
+                pre: [
+                    A("Дорога приводит в горы. Здесь исчезли караваны. На дороге лежат разбитые телеги и огромные следы."),
+                    A("Из-за скалы выходит огромный тролль. Он тащит за собой цепь. На цепи висит тот же символ."),
+                    E("Стой. — Посмотри на его шею."),
+                    S("Он прикован."),
+                    A("Тролль замечает героя. Его глаза вспыхивают красным."),
+                    M("Тролль", "Troll.png", "УБИТЬ!")
+                ],
+                post: [
+                    A("Тролль падает. Красный свет в его глазах исчезает. На мгновение чудовище выглядит почти спокойным."),
+                    M("Тролль", "Troll.png", "Брат… — Беги…"),
+                    A("Он умирает."),
+                    E("Брат?"),
+                    A("Земля начинает дрожать.")
+                ]
+            },
+            6: {
+                pre: [
+                    A("Огромные ворота в скале разлетаются. Из крепости выходит двухголовый тролль. Одна голова покрыта шрамами. Вторая украшена костями и металлическими кольцами."),
+                    M("Первая голова", "Troll_Boss.png", "Ты убил его.", "gold"),
+                    M("Вторая голова", "Troll_Boss.png", "Он был слаб.", "gold"),
+                    M("Первая голова", "Troll_Boss.png", "Заткнись.", "gold"),
+                    M("Вторая голова", "Troll_Boss.png", "Сам заткнись.", "gold"),
+                    A("Обе головы смотрят на Странника."),
+                    M("Двухголовый тролль", "Troll_Boss.png", "А ТЕПЕРЬ УБЬЁМ ТЕБЯ!", "gold"),
+                    E("С этим переговоры будут короткими.")
+                ],
+                post: [
+                    M("Первая голова", "Troll_Boss.png", "Неплохо… маленький человек.", "gold"),
+                    A("Вторая неожиданно смотрит куда-то за спину героя."),
+                    M("Вторая голова", "Troll_Boss.png", "Он смотрит.", "gold"),
+                    E("Кто?"),
+                    M("Вторая голова", "Troll_Boss.png", "Хозяин.", "gold"),
+                    A("Глаза тролля гаснут. Третий командир повержен. Но впервые появляется ощущение, что победы Странника — часть чьего-то плана. Будто враги не пытаются остановить его. Будто они проверяют его.")
+                ]
+            },
+            7: {
+                pre: [
+                    A("Здесь нет птиц. Нет насекомых. Нет даже ветра. Между деревьями движутся бледные силуэты."),
+                    E("Не слушай их."),
+                    S("Почему?"),
+                    E("Потому что они говорят голосами тех, кого ты хочешь услышать."),
+                    A("Из тумана появляется призрак."),
+                    M("Призрак", "Ghost.png", "Странник… — Вернись."),
+                    A("За ним появляются другие."),
+                    M("Призраки", "Ghost.png", "Вернись… — Пока ещё можешь.")
+                ],
+                post: [
+                    A("Призраки исчезают. На несколько секунд лес становится совершенно тихим. А затем сотни голосов одновременно произносят:"),
+                    M("Голоса леса", "Ghost.png", "МЫ ТЕБЯ ВИДИМ.")
+                ]
+            },
+            8: {
+                pre: [
+                    A("Из тумана появляются десятки призраков. Они больше не пытаются выглядеть людьми. Их тела вытягиваются в поток бледного дыма и летят прямо к Страннику."),
+                    E("Это не один противник. — Это сотни душ, связанные вместе."),
+                    M("Рой", "Ghost_Boss.png", "ОСТАНЬСЯ С НАМИ. — ЗАБУДЬ БОЛЬ. — ЗАБУДЬ ПУТЬ.", "gold"),
+                    S("Нет.")
+                ],
+                post: [
+                    A("Вой постепенно стихает. Из исчезающего тумана появляется один призрак. Он выглядит иначе. Спокойнее."),
+                    M("Призрак", "Ghost_Boss.png", "Спасибо.", "gold"),
+                    E("Кто сделал это с вами?"),
+                    A("Призрак поднимает руку и показывает вперёд."),
+                    M("Призрак", "Ghost_Boss.png", "Тот… — кого ты ищешь.", "gold"),
+                    A("Призрак исчезает."),
+                    A("Где-то далеко от Странника. В огромном тёмном зале загорается огонь. Перед человеком на троне лежат четыре разбитые печати."),
+                    U("Летучие мыши. — Мёртвые. — Тролли. — Души."),
+                    A("Он медленно поднимается."),
+                    U("И всё ещё жив."),
+                    A("Рядом появляется неизвестное существо."),
+                    V("Приказать уничтожить его?"),
+                    A("Пауза."),
+                    U("Нет. — Откройте следующую дверь.")
+                ]
+            },
+            9: {
+                pre: [
+                    A("С каждым шагом воздух становится тяжелее. Вода вокруг дороги начинает двигаться, хотя ветра нет. Из болота поднимается нечто огромное."),
+                    E("Оно не родилось таким. — Посмотри на его тело. В нём слишком много чужого."),
+                    A("Тварь поворачивает голову. В её глазах вспыхивает зелёный свет."),
+                    M("Болотная тварь", "Swamp.png", "ЖИВОЕ… — ОТДАЙ…", "green"),
+                    S("Что именно?"),
+                    M("Болотная тварь", "Swamp.png", "ВСЁ.", "green")
+                ],
+                post: [
+                    A("Чудовище падает в воду. Его тело начинает распадаться на грязь, корни и кости. Эйра замечает металлический обруч среди останков."),
+                    E("Его тоже подчинили."),
+                    A("Из глубины болот раздаётся протяжный гул. Будто кто-то только что узнал о смерти своего слуги.")
+                ]
+            },
+            10: {
+                pre: [
+                    A("За болотами находится разрушенный дворец. Половина его стен давно ушла под воду. Но внутри всё ещё горят зелёные огни. В огромном зале на троне сидит Король болот."),
+                    M("Король болот", "Swamp_Boss.png", "Ещё один живой пришёл в моё царство.", "gold"),
+                    E("Мы не хотим твоего царства."),
+                    M("Король болот", "Swamp_Boss.png", "Ложь. — Живые всегда хотят чужого. — Землю. — Власть. — Бессмертие.", "gold"),
+                    S("Мне нужен проход."),
+                    M("Король болот", "Swamp_Boss.png", "Тогда возьми его. — Если сможешь.", "gold")
+                ],
+                post: [
+                    M("Король болот", "Swamp_Boss.png", "Значит… правда.", "gold"),
+                    E("Что правда?"),
+                    M("Король болот", "Swamp_Boss.png", "Ты именно тот, кого он ждал.", "gold"),
+                    E("Кто?"),
+                    M("Король болот", "Swamp_Boss.png", "Его посланник уже здесь.", "gold"),
+                    A("Король рассыпается в болотную жижу. В конце зала стоит высокий силуэт. Светлые волосы. Тёмная кожа. Острые уши. Чёрные доспехи. Он медленно хлопает в ладоши."),
+                    V("Наконец-то. — Я уже начал думать, что слухи о тебе преувеличены."),
+                    E("Кто ты?"),
+                    V("Я разговариваю со Странником."),
+                    V("Можешь называть меня Варен."),
+                    S("Ты служишь ему?"),
+                    V("Служу? — Нет. — Я нахожусь рядом с тем, кто однажды будет править всем этим миром."),
+                    E("Тогда передай своему хозяину, что мы идём за ним."),
+                    V("Он знает. — В этом и смысл."),
+                    A("Варен исчезает в клубах чёрного дыма."),
+                    A("Теперь враг впервые обрёл лицо. Но вопросов стало только больше. Почему тот, кто управляет армиями чудовищ, не пытается остановить Странника? Почему его слуга позволяет ему идти дальше? И почему каждый поверженный командир говорит одно и то же: ТЕБЯ ЖДАЛИ.")
+                ]
+            },
+            11: {
+                pre: [
+                    A("Ворота открыты. Внутри десятки рыцарей стоят неподвижно. Их доспехи покрыты ржавчиной. Но когда Странник делает первый шаг, все шлемы одновременно поворачиваются в его сторону."),
+                    E("Они были защитниками этих земель."),
+                    M("Голос из строя", "Fallen_knight.png", "Были."),
+                    A("Первый рыцарь вытаскивает меч."),
+                    M("Павший рыцарь", "Fallen_knight.png", "Теперь мы защищаем нового господина."),
+                    S("Тогда вы выбрали не ту сторону."),
+                    M("Павший рыцарь", "Fallen_knight.png", "Мы не выбирали.")
+                ],
+                post: [
+                    A("Последний рыцарь падает. Под его шлемом нет лица. Только чёрный дым."),
+                    E("Они уже давно мертвы. — Кто-то просто заставляет доспехи продолжать сражаться."),
+                    A("На стене появляется надпись, словно кто-то только что выжег её огнём: ЕЩЁ СИЛЬНЕЕ.")
+                ]
+            },
+            12: {
+                pre: [
+                    A("В центре крепости находится огромный круглый зал. Там ждёт последний защитник крепости — Чёрный рыцарь. Его доспехи выглядят новыми."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Странник. — Я ждал тебя.", "gold"),
+                    E("Разумеется. — Теперь нас везде ждут."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Не меня недооценивай.", "gold"),
+                    A("Он поднимает меч."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Остальные были мертвы. — Я служу добровольно.", "gold"),
+                    S("Почему?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Потому что видел, что приближается.", "gold"),
+                    E("И что же?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Конец.", "gold")
+                ],
+                post: [
+                    A("Рыцарь снимает шлем. Под ним оказывается обычный человек. Старый. Уставший."),
+                    M("Чёрный рыцарь", "Black_knight.png", "Он не собирает армию ради войны.", "gold"),
+                    E("Тогда ради чего?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Ради того, кто сможет открыть дверь.", "gold"),
+                    S("Какую дверь?"),
+                    M("Чёрный рыцарь", "Black_knight.png", "Ту, к которой ты сейчас идёшь.", "gold"),
+                    A("Он умирает."),
+                    E("Мне это не нравится."),
+                    S("Что именно?"),
+                    E("Мы думали, что разрушаем его армию. — А что, если именно этого он и хочет?")
+                ]
+            },
+            13: {
+                pre: [
+                    A("Земля раскалывается прямо под ногами. Из трещин поднимаются существа, тела которых словно состоят из камня и огня."),
+                    E("Это уже не создания нашего мира."),
+                    V("Наконец-то догадалась."),
+                    A("Он стоит на высокой скале."),
+                    V("Дальше начинаются настоящие земли моего господина."),
+                    S("Спускайся."),
+                    V("Зачем? — Пока ты ещё развлекаешь меня."),
+                    A("Он исчезает. Из разлома поднимается чудовище.")
+                ],
+                post: [
+                    A("После смерти твари разлом не закрывается. Наоборот. Становится шире."),
+                    E("Странник… — Каждый раз, когда мы побеждаем, происходит одно и то же."),
+                    S("Печати становятся слабее."),
+                    E("Да.")
+                ]
+            },
+            14: {
+                pre: [
+                    A("Перед огромными воротами стоит демон. На его теле выгравированы несколько символов печатей."),
+                    M("Демон", "Flame_Master.png", "Наконец. — Последняя живая печать.", "gold"),
+                    E("Что он сказал?"),
+                    M("Демон", "Flame_Master.png", "Ты всё ещё не понимаешь, человек? — ПЕЧАТЬ — ЭТО ТЫ.", "gold"),
+                    A("Тишина."),
+                    S("Тогда попробуй сломать меня."),
+                    M("Демон", "Flame_Master.png", "С удовольствием.", "gold")
+                ],
+                post: [
+                    A("Демон падает. Из его груди выходит поток энергии и входит в тело Странника. На мгновение весь экран темнеет. Странник видит огромную дверь. За ней что-то движется."),
+                    M("Голос", "Main_Boss.png", "Ещё немного.", "gold"),
+                    A("Видение исчезает."),
+                    E("Что ты видел?"),
+                    S("Дверь.")
+                ]
+            },
+            15: {
+                pre: [
+                    A("Теперь путь невозможно повернуть назад. Странник и Эйра входят в огромный разлом. Здесь нет привычного неба. Нет земли. Лишь бесконечные разрушенные мосты и острова камня. Здесь появляются знакомые враги, но изменённые."),
+                    E("Он собирал их не просто так."),
+                    S("Он изучал их."),
+                    E("И улучшал."),
+                    V("Наконец-то ты начинаешь понимать. — Всё, что ты победил… — стало материалом для следующего поколения."),
+                    S("Значит, теперь твоя очередь."),
+                    V("Не сегодня.")
+                ],
+                post: [
+                    A("Вдали появляется огромная цитадель. Она висит прямо над бездной."),
+                    E("Вот куда нас вели."),
+                    A("Где-то внутри цитадели открываются огромные глаза.")
+                ]
+            },
+            16: {
+                pre: [
+                    A("Перед мостом стоит гигантское существо. На его теле находятся фрагменты всех предыдущих врагов: кости, крылья, шкура тролля, призрачный дым, демонический огонь."),
+                    E("Он собрал его из всего, что мы победили."),
+                    M("Страж", "Abyss_Guardian.png", "СТРАННИК. — ПОСЛЕДНЯЯ ПРОВЕРКА.", "gold"),
+                    S("Я уже устал от ваших проверок."),
+                    M("Страж", "Abyss_Guardian.png", "ТОГДА УМРИ.", "gold")
+                ],
+                post: [
+                    A("Страж падает. Мост к цитадели открывается. Но одновременно раздаётся голос Варена."),
+                    V("Прекрасно. — Ты прошёл дальше, чем любой до тебя."),
+                    E("До него были другие?"),
+                    V("Конечно."),
+                    S("Где они?"),
+                    V("Ты только что сражался с ними."),
+                    A("Пауза."),
+                    E("Страж…"),
+                    V("Именно.")
+                ]
+            },
+            17: {
+                pre: [
+                    A("Странник входит в крепость неизвестного властителя. Вместо армии здесь находятся статуи — каждая изображает одного из предыдущих Странников."),
+                    E("Сколько их было?"),
+                    V("Много. — Некоторые были сильнее тебя. — Некоторые умнее. — Один почти добрался до трона."),
+                    S("А ты убил его?"),
+                    V("Конечно. — Это было великолепно."),
+                    E("Ты больной."),
+                    V("Нет. — Я просто люблю честные вещи. — Страх. — Боль. — Победу. — И смерть."),
+                    S("Тогда заканчиваем."),
+                    V("Пока нет."),
+                    A("Он выпускает элитных стражей.")
+                ],
+                post: [
+                    A("Странник подходит к Варену. Но тот не убегает."),
+                    V("Теперь да."),
+                    A("Он вытаскивает два клинка.")
+                ]
+            },
+            18: {
+                pre: [
+                    V("Знаешь, что мне в тебе нравится?"),
+                    S("Ничего не приходит в голову."),
+                    V("Ты всё ещё думаешь, что выбираешь путь сам."),
+                    A("Он медленно обходит героя."),
+                    V("Летучие мыши. — Мертвецы. — Тролли. — Призраки. — Болота. — Крепость. — Бездна."),
+                    V("Каждый твой шаг был предусмотрен."),
+                    E("Тогда зачем мы здесь?"),
+                    V("Чтобы открыть дверь."),
+                    S("Как?"),
+                    V("Победив меня."),
+                    V("Так что постарайся.")
+                ],
+                post: [
+                    A("Варен лежит на полу. Один из его клинков сломан. Но он смеётся."),
+                    S("Что смешного?"),
+                    V("Ты."),
+                    A("Он кашляет кровью."),
+                    V("Ты всё ещё не понял."),
+                    A("За его спиной начинает открываться огромная дверь."),
+                    E("Нет…"),
+                    V("Именно. — Моя смерть была последним ключом."),
+                    S("Ты знал?"),
+                    V("Я ждал этого дня много лет."),
+                    A("Дверь полностью открывается. Из темноты доносится голос."),
+                    U("Войди."),
+                    A("Варен закрывает глаза."),
+                    V("Наконец-то…")
+                ]
+            },
+            19: {
+                pre: [
+                    A("За дверью находится огромный пустой зал. В конце стоит трон. На нём сидит тот самый силуэт, которого Странник видел в видениях. Когда Странник делает первый шаг, все двери позади закрываются. Эйра пытается пройти следом. Но между ними возникает стена чёрного огня."),
+                    E("Странник!"),
+                    U("Она больше не нужна."),
+                    S("А я?"),
+                    A("Фигура поднимается с трона."),
+                    U("Ты был нужен с самого начала."),
+                    A("Он выходит из тени."),
+                    MR("Меня называли многими именами. — Королём. — Проклятым. — Разрушителем."),
+                    A("Он подходит ближе."),
+                    MR("Но ты можешь называть меня Морвен."),
+                    S("Зачем ты привёл меня сюда?"),
+                    A("Морвен раскрывает ладонь. В ней появляется изображение мира. По нему проходят трещины."),
+                    MR("Ты думаешь, печати удерживали меня внутри?"),
+                    S("А разве нет?"),
+                    MR("Нет. — Они удерживали это."),
+                    A("За троном появляется огромная дверь. Гораздо больше предыдущей. Из-за неё доносится тяжёлый удар."),
+                    MR("Ты разрушал их одну за другой."),
+                    S("Потому что ты заставлял своих существ нападать."),
+                    MR("Именно. — Мне был нужен тот, кто достаточно силён, чтобы пройти весь путь. — И достаточно упрям, чтобы никогда не остановиться."),
+                    E("Не слушай его!"),
+                    MR("Почему? — Разве я хоть раз солгал?"),
+                    A("Он смотрит на Странника."),
+                    MR("Я никогда не обещал остановить тебя. — Никогда не скрывал дорогу. — Никогда не мешал тебе становиться сильнее."),
+                    MR("Потому что мне нужен был не слуга."),
+                    A("Пауза."),
+                    MR("Мне нужен был ПРЕЕМНИК.")
+                ],
+                post: [
+                    A("Странник остаётся стоять. Морвен впервые выглядит впечатлённым."),
+                    MR("Вот теперь я уверен."),
+                    S("В чём?"),
+                    MR("Что ты способен пережить мою силу."),
+                    A("Он протягивает руку."),
+                    MR("Встань рядом со мной. — И мир больше никогда не сможет заставить тебя склониться."),
+                    E("Странник!")
+                ]
+            },
+            20: {
+                pre: [
+                    A("Странник смотрит на протянутую руку. А затем сжимает кулак."),
+                    S("Я не прошёл весь этот путь, чтобы кому-то служить."),
+                    A("Морвен медленно опускает руку."),
+                    MO("Хорошо."),
+                    A("На его лице появляется улыбка."),
+                    MO("Именно этот ответ я и надеялся услышать."),
+                    A("Тронный зал начинает разрушаться."),
+                    MO("Тогда докажи, что достоин собственной воли.")
+                ],
+                post: [
+                    A("Морвен лежит у трона. Его силуэт начинает распадаться. Но он не выглядит разгневанным."),
+                    MO("Значит… — всё-таки ты."),
+                    S("Закрой дверь."),
+                    MO("Я уже не могу."),
+                    A("Странник смотрит на огромную печать за троном. Она расколота."),
+                    MO("Именно поэтому мне был нужен ты."),
+                    E("Что находится там?"),
+                    A("Морвен смотрит на дверь. Впервые в его голосе слышен страх."),
+                    MO("То, чего боялся даже я."),
+                    A("Тишина."),
+                    S("Как её закрыть?"),
+                    MO("Никак."),
+                    A("Пауза."),
+                    MO("Но теперь…"),
+                    A("Он смотрит на Странника."),
+                    MO("есть тот, кто сможет удержать её."),
+                    A("Морвен исчезает."),
+                    A("Странник и Эйра выходят из разрушающейся цитадели. Позади Бездна начинает закрываться."),
+                    E("Всё закончилось?"),
+                    A("Странник долго смотрит на затихающий разлом."),
+                    S("Нет."),
+                    E("Я тоже так думаю."),
+                    A("Проходит несколько дней. По всему миру исчезает красное свечение. Мёртвые снова становятся мёртвыми. Призраки покидают леса. Тролли уходят обратно в горы. Но далеко на севере происходит другое. В древней горе появляется трещина. Из неё выходит рука."),
+                    A("МОРВЕН БЫЛ НЕ ПРИЧИНОЙ ПРОИСХОДЯЩЕГО. ОН БЫЛ ПЕРВОЙ ЛИНИЕЙ ОБОРОНЫ."),
+                    E("Ты ведь понимаешь, что теперь можешь уйти?"),
+                    S("Могу."),
+                    E("И?"),
+                    A("Странник смотрит на дорогу впереди."),
+                    S("Показывай путь."),
+                    A("КОНЕЦ ПЕРВОЙ КАМПАНИИ")
+                ]
+            }
         };
 
+        // ===== ДВИЖОК ПОКАЗА СЦЕН =====
         let storyLines = [], storyLineIndex = -1, storyTypingInterval = null, storyIsTyping = false, storyOnComplete = null;
 
         function showStoryScene(lines, onComplete) {
@@ -1748,6 +2140,7 @@
             if (cb) cb();
         }
 
+        // ===== ЕДИНЫЙ БОЕВОЙ ДВИЖОК (поход + арена) =====
         let inDungeonMode = false, dungeonJustWon = false, combatMode = null, combatActivityType = null, dungeonNumber = null;
         let combatEnemies = [], combatEnemyIndex = 0, combatEnemyRemainingHP = 0, combatEnemyMaxHP = 0, dungeonIsReplay = false, dungeonPaused = false;
         let combatXpEstimate = 0;
@@ -1909,6 +2302,7 @@
         function continueDungeon() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); dungeonPaused=false; doStartDungeonActivity(combatActivityType, dungeonNumber+1); }
         function finishDungeonSession() { document.getElementById('overlay-dungeon-complete').classList.remove('active'); attemptSave(); }
 
+        // ===== КАМЕРА =====
         const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
         const skeletonCanvas = document.getElementById('skeletonCanvas'), skeletonCtx = skeletonCanvas.getContext('2d');
         const statusEl = document.getElementById('status'), counterEl = document.getElementById('counter');
@@ -1921,7 +2315,6 @@
             const radians = Math.atan2(c.y-b.y, c.x-b.x) - Math.atan2(a.y-b.y, a.x-b.x);
             let angle = Math.abs(radians*180.0/Math.PI); if (angle>180.0) angle = 360-angle; return angle;
         }
-        const NOSE = 0;
         const LEFT_SHOULDER=11, RIGHT_SHOULDER=12, LEFT_ELBOW=13, RIGHT_ELBOW=14, LEFT_WRIST=15, RIGHT_WRIST=16;
         const LEFT_HIP=23, RIGHT_HIP=24, LEFT_KNEE=25, RIGHT_KNEE=26, LEFT_ANKLE=27, RIGHT_ANKLE=28;
 
@@ -1982,38 +2375,22 @@
             if (inDungeonMode) applyCombatDamage(1);
         }
 
-        // ===== ПЛАНКА — лицом к камере, как отжимания =====
+        function avgVisibility(indices, landmarks) { return indices.reduce((s,idx)=>s+landmarks[idx].visibility,0)/indices.length; }
+        function getPlankSidePoints(landmarks) {
+            const leftIndices=[LEFT_SHOULDER,LEFT_ELBOW,LEFT_WRIST,LEFT_HIP,LEFT_KNEE,LEFT_ANKLE];
+            const rightIndices=[RIGHT_SHOULDER,RIGHT_ELBOW,RIGHT_WRIST,RIGHT_HIP,RIGHT_KNEE,RIGHT_ANKLE];
+            return avgVisibility(leftIndices,landmarks) >= avgVisibility(rightIndices,landmarks)
+                ? {shoulder:LEFT_SHOULDER,elbow:LEFT_ELBOW,wrist:LEFT_WRIST,hip:LEFT_HIP,knee:LEFT_KNEE,ankle:LEFT_ANKLE}
+                : {shoulder:RIGHT_SHOULDER,elbow:RIGHT_ELBOW,wrist:RIGHT_WRIST,hip:RIGHT_HIP,knee:RIGHT_KNEE,ankle:RIGHT_ANKLE};
+        }
         function checkPlankPosition(landmarks) {
-            const requiredArms = [LEFT_SHOULDER, RIGHT_SHOULDER, LEFT_ELBOW, RIGHT_ELBOW, LEFT_WRIST, RIGHT_WRIST, NOSE];
-            const armsVisible = requiredArms.every(idx => landmarks[idx].visibility > 0.6);
-            if (!armsVisible) return { valid: false, reason: "not_visible" };
-
-            const leftAnkleVisible = landmarks[LEFT_ANKLE].visibility > 0.35;
-            const rightAnkleVisible = landmarks[RIGHT_ANKLE].visibility > 0.35;
-            if (!leftAnkleVisible && !rightAnkleVisible) {
-                return { valid: false, reason: "knees_down" };
-            }
-
-            const leftElbowAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
-            const rightElbowAngle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_ELBOW], landmarks[RIGHT_WRIST]);
-            const avgElbowAngle = (leftElbowAngle + rightElbowAngle) / 2;
-            if (avgElbowAngle < 55 || avgElbowAngle > 115) {
-                return { valid: false, reason: "elbow_angle" };
-            }
-
-            const leftHipVisible = landmarks[LEFT_HIP].visibility > 0.5;
-            const rightHipVisible = landmarks[RIGHT_HIP].visibility > 0.5;
-            if (leftHipVisible || rightHipVisible) {
-                const hipIdx = leftHipVisible ? LEFT_HIP : RIGHT_HIP;
-                const shoulderIdx = leftHipVisible ? LEFT_SHOULDER : RIGHT_SHOULDER;
-                const kneeIdx = leftHipVisible ? LEFT_KNEE : RIGHT_KNEE;
-                if (landmarks[kneeIdx].visibility > 0.4) {
-                    const bodyAngle = calculateAngle(landmarks[shoulderIdx], landmarks[hipIdx], landmarks[kneeIdx]);
-                    if (bodyAngle < 140) return { valid: false, reason: "body_bent" };
-                }
-            }
-
-            return { valid: true, reason: "ok" };
+            const p = getPlankSidePoints(landmarks);
+            const required = [p.shoulder,p.elbow,p.wrist,p.hip,p.knee,p.ankle];
+            if (!required.every(idx=>landmarks[idx].visibility>0.6)) return {valid:false, reason:"not_visible", points:p};
+            const bodyAngle = calculateAngle(landmarks[p.shoulder],landmarks[p.hip],landmarks[p.knee]);
+            const legAngle = calculateAngle(landmarks[p.hip],landmarks[p.knee],landmarks[p.ankle]);
+            const isStraight = bodyAngle>150 && legAngle>150;
+            return {valid:isStraight, reason:isStraight?"ok":"not_straight", points:p};
         }
 
         function checkWallsitPosition(landmarks) {
@@ -2088,12 +2465,11 @@
                     statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🧍";
                     if (inPosition && !dungeonPaused) countSquats(lm);
                 } else if (currentMode === 'plank') {
-                    drawPoints(lm, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
                     const result = checkPlankPosition(lm);
-                    if (result.reason === "not_visible") statusEl.innerText = "Встаньте лицом к камере, чтобы было видно плечи, локти, запястья и лицо 🧍";
-                    else if (result.reason === "knees_down") statusEl.innerText = "Не вижу стоп — похоже, вы на коленях. Выпрямите ноги 🦵";
-                    else if (result.reason === "elbow_angle") statusEl.innerText = "Обопритесь на предплечья, локти под прямым углом 📏";
-                    else if (result.reason === "body_bent") statusEl.innerText = "Выпрямите тело в одну линию, не прогибайтесь 📏";
+                    drawPoints(lm, [result.points.shoulder,result.points.elbow,result.points.wrist,result.points.hip,result.points.knee,result.points.ankle],
+                        [[result.points.shoulder,result.points.elbow],[result.points.elbow,result.points.wrist],[result.points.shoulder,result.points.hip],[result.points.hip,result.points.knee],[result.points.knee,result.points.ankle]]);
+                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте боком к камере, покажите всё тело 🚶";
+                    else if (result.reason==="not_straight") statusEl.innerText = "Выпрямите тело и ноги в одну линию 📏";
                     else statusEl.innerText = "Отлично держите планку! 🔥";
                     updateHoldTimer(result.valid && !dungeonPaused);
                 } else if (currentMode === 'wallsit') {
@@ -2141,7 +2517,7 @@
             const isTimeBased = (mode==='plank' || mode==='wallsit');
             statusEl.innerText = mode==='pushup' ? "Займите позицию для отжиманий"
                 : mode==='squat' ? "Встаньте лицом к камере 🧍"
-                : mode==='plank' ? "Встаньте лицом к камере, обопритесь на предплечья 🧍"
+                : mode==='plank' ? "Встаньте боком к камере, покажите всё тело 🚶"
                 : "Встаньте лицом к камере, покажите всё тело 🧍";
             counterEl.innerText = isTimeBased ? "00:00" : "0";
 
@@ -2151,6 +2527,7 @@
 
         const tg = window.Telegram.WebApp;
 
+        // ===== ТИХОЕ СОХРАНЕНИЕ =====
         let saveToastTimeout = null;
         function showSaveToast(text, isSuccess = false) {
             const toast = document.getElementById('save-toast');
@@ -2165,6 +2542,7 @@
         tg.onEvent('viewportChanged', applyTelegramViewportHeight);
         window.addEventListener('resize', applyTelegramViewportHeight);
 
+        // ===== СОХРАНЕНИЕ — ТИХОЕ, В ФОНЕ =====
         const SAVE_ENDPOINT = { pushup:'save_pushups', squat:'save_squats', plank:'save_plank', wallsit:'save_wallsit' };
         const SAVE_KEY = { pushup:'count', squat:'count', plank:'seconds', wallsit:'seconds' };
 
@@ -2213,4 +2591,3 @@
     </script>
 </body>
 </html>
-
