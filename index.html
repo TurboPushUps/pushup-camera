@@ -1125,12 +1125,12 @@
                 const row = document.createElement('div'); row.className = 'achievement-row';
                 const pct = Math.min(100, (q.progress / q.target) * 100);
                 let btnHtml;
-                if (q.claimed) btnHtml = `<span style="color:var(--success); font-size:var(--fs-caption); font-weight:600;">Получено ✅</span>`;
+                if (q.claimed) btnHtml = `<span style="color:var(--success); font-size:var(--fs-caption); font-weight:600; white-space:nowrap; flex-shrink:0;">Получено ✅</span>`;
                 else if (q.completed) btnHtml = `<button onclick="claimQuest('${q.id}')" style="padding:8px 16px; background:var(--accent); color:#14100a; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:var(--fs-caption);">Забрать +${q.reward_xp} XP</button>`;
                 else btnHtml = `<span style="color:var(--text-dim); font-size:var(--fs-caption);">${q.progress}/${q.target}</span>`;
                 row.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                        <span>${q.title}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                        <span style="flex:1; min-width:0;">${q.title}</span>
                         ${btnHtml}
                     </div>
                     <div class="achv-progress-bg"><div class="achv-progress-fill" style="width:${pct}%;"></div></div>
@@ -1988,10 +1988,17 @@
             const armsVisible = requiredArms.every(idx => landmarks[idx].visibility > 0.6);
             if (!armsVisible) return { valid: false, reason: "not_visible" };
 
-            const leftAnkleVisible = landmarks[LEFT_ANKLE].visibility > 0.35;
-            const rightAnkleVisible = landmarks[RIGHT_ANKLE].visibility > 0.35;
+            const leftAnkleVisible = landmarks[LEFT_ANKLE].visibility > 0.15;
+            const rightAnkleVisible = landmarks[RIGHT_ANKLE].visibility > 0.15;
             if (!leftAnkleVisible && !rightAnkleVisible) {
-                return { valid: false, reason: "knees_down" };
+                // Стопы физически видны, но далеко — модель распознавания снижает им «уверенность» из-за перспективы.
+                // Отличаем настоящую вытянутую планку от стойки на коленях: при коленях колено окажется
+                // почти так же близко (и хорошо видно) к камере, как плечи; при вытянутых ногах — заметно хуже.
+                const shoulderVis = (landmarks[LEFT_SHOULDER].visibility + landmarks[RIGHT_SHOULDER].visibility) / 2;
+                const kneeVis = Math.max(landmarks[LEFT_KNEE].visibility, landmarks[RIGHT_KNEE].visibility);
+                if (kneeVis > shoulderVis * 0.7) {
+                    return { valid: false, reason: "knees_down" };
+                }
             }
 
             const leftElbowAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
