@@ -289,7 +289,7 @@
         setTimeout(function() {
             var el = document.getElementById('boot-overlay');
             if (el) el.style.display = 'none';
-        }, 8000);
+        }, 25000);
     </script>
 
     <div id="screen-register" class="screen center-content">
@@ -570,6 +570,14 @@
         </div>
     </div>
 
+    <div id="overlay-boot-failed" class="overlay-panel">
+        <div class="overlay-box">
+            <h3>Не удалось загрузить профиль</h3>
+            <p id="boot-failed-text" style="text-align:center;">Сервер отвечает медленнее обычного — часто помогает повторная попытка.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('overlay-boot-failed').classList.remove('active'); checkUserStatus();">Попробовать снова</button>
+        </div>
+    </div>
+
     <div id="overlay-arena-intro" class="overlay-panel">
         <div class="overlay-box">
             <h3>🏟️ Арена</h3>
@@ -655,7 +663,7 @@
                     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                     const res = await fetch(url, { ...options, signal: controller.signal });
                     clearTimeout(timeoutId);
-                    if (!res.ok) throw new Error('Bad response status');
+                    if (!res.ok) { const err = new Error('Bad response status'); err.status = res.status; throw err; }
                     return await res.json();
                 } catch (e) {
                     lastError = e;
@@ -900,15 +908,22 @@
 
         async function checkUserStatus() {
             try {
-                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:15000, retries:1});
+                const data = await fetchJsonWithRetry(`${API_BASE}/api/user_status?${authQueryString()}`, {cache:'no-store'}, {timeoutMs:20000, retries:2});
+                hideBootOverlay();
                 if (data.has_nickname) { showScreen('adventure'); prefetchAllData(); }
-                else { hideBootOverlay(); document.getElementById('screen-register').classList.add('active'); }
+                else { document.getElementById('screen-register').classList.add('active'); }
             } catch(e) {
                 hideBootOverlay();
-                document.getElementById('screen-register').classList.add('active');
-                document.getElementById('nickname-error').innerText = "Не удалось связаться с сервером. Попробуйте позже.";
+                const textEl = document.getElementById('boot-failed-text');
+                if (e && e.status === 401) {
+                    textEl.innerText = 'Сессия Telegram устарела. Полностью закрой мини-приложение и открой его заново через бота.';
+                } else {
+                    textEl.innerText = 'Сервер отвечает медленнее обычного — часто помогает повторная попытка.';
+                }
+                document.getElementById('overlay-boot-failed').classList.add('active');
             }
         }
+        
         async function submitNickname() {
             const input = document.getElementById('nickname-input'); const errorEl = document.getElementById('nickname-error');
             const nickname = input.value.trim(); errorEl.innerText = "";
