@@ -2003,17 +2003,19 @@
             const armsVisible = requiredArms.every(idx => landmarks[idx].visibility > 0.6);
             if (!armsVisible) return { valid: false, reason: "not_visible" };
 
-            const leftElbowAngle = calculateAngle(landmarks[LEFT_SHOULDER], landmarks[LEFT_ELBOW], landmarks[LEFT_WRIST]);
-            const rightElbowAngle = calculateAngle(landmarks[RIGHT_SHOULDER], landmarks[RIGHT_ELBOW], landmarks[RIGHT_WRIST]);
-            const avgElbowAngle = (leftElbowAngle + rightElbowAngle) / 2;
-            if (avgElbowAngle < 55 || avgElbowAngle > 115) {
-                return { valid: false, reason: "elbow_angle" };
+            // Вместо угла в локте (он ненадёжен при виде строго спереди — искажается от того,
+            // сведены кулаки к центру или разведены) проверяем вертикальное положение:
+            // при опоре на предплечья локти и запястья всегда заметно ниже плеч на кадре,
+            // и это не зависит от того, как именно расположены кулаки.
+            const shoulderY = (landmarks[LEFT_SHOULDER].y + landmarks[RIGHT_SHOULDER].y) / 2;
+            const elbowY = (landmarks[LEFT_ELBOW].y + landmarks[RIGHT_ELBOW].y) / 2;
+
+            if ((elbowY - shoulderY) < 0.06) {
+                return { valid: false, reason: "not_on_forearms" };
             }
 
             // Проверка на «читерство коленями» работает только когда бёдра видны камере
             // УВЕРЕННО — это и есть признак, что человек стоит близко к камере на коленях.
-            // При настоящей вытянутой планке бёдра обычно видны слабо или не видны совсем —
-            // в этом случае просто доверяем углу в локтях и не блокируем позицию.
             const leftHipVis = landmarks[LEFT_HIP].visibility;
             const rightHipVis = landmarks[RIGHT_HIP].visibility;
             const hipVis = Math.max(leftHipVis, rightHipVis);
@@ -2099,22 +2101,21 @@
                 } else if (currentMode === 'squat') {
                     drawPoints(lm, SQUAT_POINTS, SQUAT_CONNECTIONS);
                     inPosition = checkSquatPosition(lm);
-                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги 🧍";
+                    statusEl.innerText = inPosition ? (dungeonPaused?"Передышка...":"Позиция ОК, считаем! 🦵") : "Встаньте лицом к камере, чтобы было видно ноги";
                     if (inPosition && !dungeonPaused) countSquats(lm);
                 } else if (currentMode === 'plank') {
                     drawPoints(lm, PUSHUP_POINTS, PUSHUP_CONNECTIONS);
                     const result = checkPlankPosition(lm);
-                    if (result.reason === "not_visible") statusEl.innerText = "Встаньте лицом к камере, чтобы было видно плечи, локти, запястья и лицо 🧍";
-                    else if (result.reason === "knees_down") statusEl.innerText = "Не вижу стоп — похоже, вы на коленях. Выпрямите ноги 🦵";
-                    else if (result.reason === "elbow_angle") statusEl.innerText = "Обопритесь на предплечья, локти под прямым углом 📏";
-                    else if (result.reason === "body_bent") statusEl.innerText = "Выпрямите тело в одну линию, не прогибайтесь 📏";
-                    else statusEl.innerText = "Отлично держите планку! 🔥";
+                    if (result.reason === "not_visible") statusEl.innerText = "Встаньте лицом к камере, чтобы было видно плечи, локти, запястья и лицо";
+                    else if (result.reason === "knees_down") statusEl.innerText = "Похоже, вы на коленях. Приподнимите бёдра";
+                    else if (result.reason === "not_on_forearms") statusEl.innerText = "Опуститесь ниже, обопритесь на предплечья";
+                    else statusEl.innerText = "Отлично держите планку!";
                     updateHoldTimer(result.valid && !dungeonPaused);
                 } else if (currentMode === 'wallsit') {
                     drawPoints(lm, WALLSIT_POINTS, WALLSIT_CONNECTIONS);
                     const result = checkWallsitPosition(lm);
-                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте лицом к камере, покажите всё тело 🧍";
-                    else if (result.reason==="not_straight") statusEl.innerText = "Держите спину прямой, угол в колене — прямой угол 📏";
+                    if (result.reason==="not_visible") statusEl.innerText = "Встаньте лицом к камере, покажите всё тело";
+                    else if (result.reason==="not_straight") statusEl.innerText = "Держите спину прямой, угол в колене — прямой угол";
                     else statusEl.innerText = "Отлично держите стульчик! 🔥";
                     updateHoldTimer(result.valid && !dungeonPaused);
                 }
